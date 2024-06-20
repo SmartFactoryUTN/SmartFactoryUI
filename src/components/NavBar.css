@@ -1,0 +1,32 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #282c34;
+    color: white;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-button {
+    background: none;
+    border: 1px solid white;
+    color: white;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+}
+
+.nav-button:hover {
+    background: white;
+    color: #282c34;
+}
