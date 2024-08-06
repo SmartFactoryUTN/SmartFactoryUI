@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 function MisTizadas() {
     const navigate = useNavigate();
@@ -82,7 +84,16 @@ function MisTizadas() {
        };
    
        return (
-                <Box sx={{ height: '100%', width: '600px' }}>
+                <Box sx={{ height: '100%', width: '600px', margin: 'auto', paddingTop: 4 }}>
+                    {/* Title and Button */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                        <Typography variant="h4">Mis Tizadas</Typography>
+                        <Button variant="contained" color="primary" onClick={() => navigate('/tizadas/crear')}>
+                            Crear Nueva
+                        </Button>
+                    </Box>
+                
+                {/* Data Table */}
                 <DataGrid
                     rows={rows}
                     columns={columns}
