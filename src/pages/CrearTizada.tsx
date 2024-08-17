@@ -1,6 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import { Height } from '@mui/icons-material';
 
 function MisTizadas() {
     const navigate = useNavigate();
@@ -47,54 +59,70 @@ function MisTizadas() {
        };
    
        return (
-           <div className="App">
-               <header className="App-header">
-                   <h1>Configura tu tizada</h1>
-                   <form onSubmit={handleSubmit}>
-                       <div>
-                           <label htmlFor="ancho">Ancho:</label>
-                           <input
-                               type="text"
-                               id="ancho"
-                               name="ancho"
-                               value={formData.ancho}
-                               onChange={handleChange}
-                           />
-                       </div>
-                       <div>
-                           <label htmlFor="largo">Largo:</label>
-                           <input
-                               type="text"
-                               id="largo"
-                               name="largo"
-                               value={formData.largo}
-                               onChange={handleChange}
-                           />
-                       </div>
-                       <div>
-                           <label htmlFor="tiempo">Tiempo Maximo:</label>
-                           <input
-                               type="text"
-                               id="tiempo"
-                               name="tiempo"
-                               value={formData.tiempo}
-                               onChange={handleChange}
-                           />
-                       </div>
-                       <div>
-                           <label htmlFor="porcentaje">Porcentaje de aprovechamiento de la mesa:</label>
-                           <input
-                               type="text"
-                               id="porcentaje"
-                               name="porcentaje"
-                               value={formData.porcentaje}
-                               onChange={handleChange}
-                           />
-                       </div>
-                       <Button type="submit" variant="contained">Crear</Button>
-                   </form>
-               </header>
-           </div>
+        <Container sx={{width:'50%', mt:'6%'}}>
+            <Typography align='left' color="black" variant="h6">Crear Nueva Tizada</Typography>
+            <Box 
+                component="form" onSubmit={handleSubmit}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}    
+            >
+                <TextField
+                    id="tizada-name"
+                    label="Nombre"
+                    defaultValue="Tizada {ID}"
+                    fullWidth
+                    margin="normal" 
+                />
+
+                <div>
+                <TextField
+                    id="standard-helperText"
+                    label="Dimensiones de la mesa"
+                    defaultValue="2"
+                    helperText="Ancho"
+                    variant="outlined"
+                    sx={{m:0, alignSelf:"left"}}
+                />
+                <TextField
+                    id="standard-helperText"
+                    label="(cm)"
+                    defaultValue="1"
+                    helperText="Alto"
+                    variant="outlined"
+                />
+                </div>
+                <ToggleButtonGroup>
+                <Tooltip title="Vistazo rápido de tu tizada">
+                    <ToggleButton value="rapida">Rápida y sencilla</ToggleButton>
+                </Tooltip>
+                    <ToggleButton value="android">Estándar</ToggleButton>
+                <Tooltip title="Puede tardar un poco más">
+                    <ToggleButton value="ios">Máxima Eficiencia</ToggleButton>
+                </Tooltip>
+                </ToggleButtonGroup>                
+                <TextField
+                    id="desperdicio"
+                    label="% desperdicio"
+                    defaultValue="1234"
+                    fullWidth
+                    margin="normal" 
+                />
+                <TextField
+                    id="tiempo"
+                    label="Tiempo???"
+                    defaultValue="5 minutos (?s"
+                    fullWidth
+                    margin="normal" 
+                />
+
+                
+
+
+                <Button sx={{width:"25%", alignSelf:"end"}} type="submit" variant="contained">Crear</Button>            
+        </Box>
+        </Container>
        );
    };
    
