@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -84,31 +85,33 @@ function MisTizadas() {
        };
    
        return (
-                <Box sx={{ height: '100%', width: '600px', margin: 'auto', paddingTop: 4 }}>
-                    {/* Title and Button */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                        <Typography variant="h4">Mis Tizadas</Typography>
-                        <Button variant="contained" color="primary" onClick={() => navigate('/tizadas/crear')}>
-                            Crear Nueva
-                        </Button>
-                    </Box>
+                <Container>
+                {/* Title and Button */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                    <Typography color="black" variant="h4">Mis Tizadas</Typography>
+                    <Button variant="contained" color="primary" onClick={() => navigate('/tizadas/crear')}>
+                        Crear Nueva
+                    </Button>
+                </Box>
                 
                 {/* Data Table */}
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    initialState={{
-                        pagination: {
-                        paginationModel: {
-                            pageSize: 5,
-                        },
-                        },
-                    }}
-                    pageSizeOptions={[5]}
-                    checkboxSelection
-                    disableRowSelectionOnClick
-                />
-            </Box>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        initialState={{
+                            pagination: {
+                            paginationModel: {
+                                pageSize: 5,
+                            },
+                            },
+                        }}
+                        pageSizeOptions={[5]}
+                        checkboxSelection
+                        disableRowSelectionOnClick
+                        sx={{'& .MuiDataGrid-scrollbar--horizontal': {display: 'block' } }}
+                        
+                    />
+                </Container>
        );
    };
    
