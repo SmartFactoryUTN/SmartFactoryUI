@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import CrearTizada from './pages/CrearTizada.tsx'; 
 import MisTizadas from './pages/MisTizadas'; 
+import VerTizada from './pages/VerTizada'; 
+
 import Navigation from './components/AppBar';
 
 import '@fontsource/roboto/300.css';
@@ -18,6 +20,7 @@ function App() {
           <Route path="/" element={<Navigate to="/tizadas" replace />} /> // Redirect "/" to "/tizadas"
           <Route path="/tizadas" element={<MisTizadas/>} />
           <Route path="/tizadas/crear" element={<CrearTizada />} />
+          <Route path="/tizadas/tizada" element={<VerTizada />} />
         </Routes>
       </div>
     </Router>

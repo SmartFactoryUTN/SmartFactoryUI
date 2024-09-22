@@ -19,25 +19,29 @@ function MisTizadas() {
         },
         {
             field: 'estado',
-            headerName: 'Estado',
+            headerName: 'Estado', //Creada En proceso Terminada Error
             width: 100,
-            editable: true,
           },
         {
           field: 'fecha',
           headerName: 'Fecha de Creación',
-          width: 110,
+          width: 150,
         },
         {
           field: 'actualizacion',
           headerName: 'Ultima Actualización',
-          width: 110,
+          width: 160,
         },
+        {
+            field: 'etapa',
+            headerName: 'Etapa', //Esperando las telas, pendiente de cortar, enviado cortador, cortada, 
+            width: 100,
+          },
       ];    
     
       const rows = [
         { id: 1, nombre: 'MiTizada', estado: 'en corte', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-        { id: 2, nombre: 'Estándar', estado: 'en corte', fecha: '03/08/2024', actualizacion: '03/08/2024'},
+        { id: 2, nombre: 'Esta tizada tiene: remera1, remera2, musculosa, short, pantalon mangas largas', estado: 'en corte', fecha: '03/08/2024', actualizacion: '03/08/2024'},
         { id: 3, nombre: 'Prueba', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
         { id: 4, nombre: 'Prueba2', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
       ];
@@ -108,6 +112,7 @@ function MisTizadas() {
                         pageSizeOptions={[5]}
                         checkboxSelection
                         disableRowSelectionOnClick
+                        disableColumnMenu
                         sx={{'& .MuiDataGrid-scrollbar--horizontal': {display: 'block' } }}
                         
                     />

@@ -51,10 +51,10 @@ function MisTizadas() {
    
                const result = await response.json();
                console.log('Success:', result);
-               navigate('/tizadas/crear');
+               navigate('/tizadas/tizada');
            } catch (error) {
                console.error('Error:', error);
-               navigate('/tizadas/crear')
+               navigate('/tizadas/tizada')
            }
        };
    
@@ -106,13 +106,6 @@ function MisTizadas() {
                     id="desperdicio"
                     label="% desperdicio"
                     defaultValue="1234"
-                    fullWidth
-                    margin="normal" 
-                />
-                <TextField
-                    id="tiempo"
-                    label="Tiempo???"
-                    defaultValue="5 minutos (?s"
                     fullWidth
                     margin="normal" 
                 />
