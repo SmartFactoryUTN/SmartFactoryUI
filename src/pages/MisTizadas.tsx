@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef} from '@mui/x-data-grid';
+import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
@@ -110,9 +111,9 @@ function MisTizadas() {
                             },
                         }}
                         pageSizeOptions={[5]}
-                        checkboxSelection
+                        checkboxSelection={false}
+                        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                         disableRowSelectionOnClick
-                        disableColumnMenu
                         sx={{'& .MuiDataGrid-scrollbar--horizontal': {display: 'block' } }}
                         
                     />
