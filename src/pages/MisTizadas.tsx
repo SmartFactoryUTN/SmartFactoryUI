@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid, GridColDef,GridRowParams} from '@mui/x-data-grid';
+import { DataGrid, GridColDef} from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -46,55 +45,12 @@ function MisTizadas() {
         { id: 3, nombre: 'Prueba', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
         { id: 4, nombre: 'Prueba2', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
       ];
-      
-      const [formData, setFormData] = useState({
-        ancho: '',
-        largo: '',
-        tiempo: '',
-        porcentaje: ''
-       });
-       
-       const handleRowClick = (params: GridRowParams) => {
+    const handleRowClick = () => {
             navigate(`/tizadas/tizada`);
         };
-   
-       // Handle input change
-       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-           const { name, value } = e.target;
-           setFormData({
-               ...formData,
-               [name]: value
-           });
-       };
-       
-       // Handle form submission
-       const handleSubmit = async (e: React.FormEvent) => {
-           e.preventDefault();
-   
-           try {
-               const response = await fetch('http://localhost:8080/api/data', { // 
-                   method: 'POST',
-                   headers: {
-                       'Content-Type': 'application/json'
-                   },
-                   body: JSON.stringify(formData)
-               });
-   
-               if (!response.ok) {
-                   throw new Error('Network response was not ok');
-               }
-   
-               const result = await response.json();
-               console.log('Success:', result);
-               navigate('/tizadas/crear');
-           } catch (error) {
-               console.error('Error:', error);
-               navigate('/tizadas/crear')
-           }
-       };
-   
-       return (
-                <Container>
+
+    return (
+        <Container>
                 {/* Title and Button */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                     <Typography color="black" variant="h4">Mis Tizadas</Typography>
@@ -142,7 +98,6 @@ function MisTizadas() {
                 />
                 </Container>
        );
-   };
+   }
    
    export default MisTizadas
-   

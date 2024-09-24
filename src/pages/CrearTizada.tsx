@@ -8,31 +8,16 @@ import TextField from '@mui/material/TextField';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import { Height } from '@mui/icons-material';
 
 function MisTizadas() {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
+    const [formData] = useState({
         ancho: '',
         largo: '',
         tiempo: '',
         porcentaje: ''
        });
-   
-       // Handle input change
-       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-           const { name, value } = e.target;
-           setFormData({
-               ...formData,
-               [name]: value
-           });
-       };
-   
-       // Handle form submission
+
        const handleSubmit = async (e: React.FormEvent) => {
            e.preventDefault();
    
@@ -117,6 +102,6 @@ function MisTizadas() {
         </Box>
         </Container>
        );
-   };
+   }
    
    export default MisTizadas
