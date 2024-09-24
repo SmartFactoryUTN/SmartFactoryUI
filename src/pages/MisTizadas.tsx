@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef,GridRowParams} from '@mui/x-data-grid';
+import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
@@ -52,6 +53,10 @@ function MisTizadas() {
         tiempo: '',
         porcentaje: ''
        });
+       
+       const handleRowClick = (params: GridRowParams) => {
+            navigate(`/tizadas/tizada`);
+        };
    
        // Handle input change
        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,23 +104,42 @@ function MisTizadas() {
                 </Box>
                 
                 {/* Data Table */}
-                    <DataGrid
-                        rows={rows}
-                        columns={columns}
-                        initialState={{
-                            pagination: {
-                            paginationModel: {
-                                pageSize: 5,
-                            },
-                            },
-                        }}
-                        pageSizeOptions={[5]}
-                        checkboxSelection
-                        disableRowSelectionOnClick
-                        disableColumnMenu
-                        sx={{'& .MuiDataGrid-scrollbar--horizontal': {display: 'block' } }}
-                        
-                    />
+                <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    initialState={{
+                        pagination: {
+                        paginationModel: {
+                            pageSize: 5,
+                        },
+                        },
+                    }}
+                    pageSizeOptions={[5]}
+                    checkboxSelection={false}
+                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                    disableRowSelectionOnClick
+                    onRowClick={handleRowClick}
+                    sx={{
+                        '& .MuiDataGrid-row': {
+                            cursor: 'pointer',
+                        },
+                        '& .MuiDataGrid-cell:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-cell:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-scrollbar--horizontal': {
+                            display: 'block',
+                        },
+                    }}
+                />
                 </Container>
        );
    };
