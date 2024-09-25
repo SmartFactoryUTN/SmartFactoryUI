@@ -122,7 +122,6 @@ function MisTizadas() {
                 />
                 </Container>
        );
-   };
+   }
    
    export default MisTizadas
-   
