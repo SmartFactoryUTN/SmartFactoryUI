@@ -1,5 +1,8 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid, GridColDef} from '@mui/x-data-grid';
+import { getTizadas } from '../api/methods'
+
+import { DataGrid, GridColDef, GridRowParams, GridValueFormatter } from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -7,50 +10,70 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-function MisTizadas() {
-    const navigate = useNavigate();
-    const columns: GridColDef<(typeof rows)[number]>[] = [
-        { field: 'id', headerName: 'ID', width: 90 },
-        {
-          field: 'nombre',
-          headerName: 'Nombre',
-          width: 150,
-          editable: true,
-        },
-        {
-            field: 'estado',
-            headerName: 'Estado', //Creada En proceso Terminada Error
-            width: 100,
-          },
-        {
-          field: 'fecha',
-          headerName: 'Fecha de Creación',
-          width: 150,
-        },
-        {
-          field: 'actualizacion',
-          headerName: 'Ultima Actualización',
-          width: 160,
-        },
-        {
-            field: 'etapa',
-            headerName: 'Etapa', //Esperando las telas, pendiente de cortar, enviado cortador, cortada, 
-            width: 100,
-          },
-      ];    
-    
-      const rows = [
-        { id: 1, nombre: 'MiTizada', estado: 'en corte', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-        { id: 2, nombre: 'Esta tizada tiene: remera1, remera2, musculosa, short, pantalon mangas largas', estado: 'en corte', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-        { id: 3, nombre: 'Prueba', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-        { id: 4, nombre: 'Prueba2', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-      ];
-    const handleRowClick = () => {
-            navigate(`/tizadas/tizada`);
-        };
+interface Tizada {
+    uuid: string;
+    name: string;
+    state: string;
+    createdAt: string;
+    updatedAt: string | null;
+  }
 
-    return (
-        <Container>
+function MisTizadas() {
+      const navigate = useNavigate();
+      const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    
+      useEffect(() => {
+        fetchTizadas();
+      }, []);
+    
+      const fetchTizadas = async () => {
+        try {
+          const response = await getTizadas();
+          if (response.status === "OK") {
+            setTizadas(response.data);
+          } else {
+            console.error("Failed to fetch tizadas");
+          }
+        } catch (error) {
+          console.error("Error fetching tizadas:", error);
+        }
+      };
+    
+      const formatDate: GridValueFormatter = (value: string | null) => {
+        if (value == null) return 'N/A';
+        try {
+          return new Date(value).toLocaleString();
+        } catch (error) {
+          console.error("Error formatting date:", error);
+          return 'Invalid Date';
+        }
+      };
+    
+    
+      const columns: GridColDef[] = [
+        { field: 'uuid', headerName: 'ID', width: 220 },
+        { field: 'name', headerName: 'Nombre', width: 200, editable: true },
+        { field: 'state', headerName: 'Estado', width: 120 },
+        { 
+          field: 'createdAt', 
+          headerName: 'Fecha de Creación', 
+          width: 180,
+          valueFormatter: formatDate,
+        },
+        { 
+            field: 'updatedAt', 
+            headerName: 'Ultima Actualización', 
+            width: 180,
+            valueFormatter: formatDate,
+        },
+      ];
+    
+      const handleRowClick = (params: GridRowParams) => {
+        navigate(`/tizadas/tizada/${params.row.uuid}`);
+      };
+      
+       return (
+                <Container>
                 {/* Title and Button */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                     <Typography color="black" variant="h4">Mis Tizadas</Typography>
@@ -61,8 +84,9 @@ function MisTizadas() {
                 
                 {/* Data Table */}
                 <DataGrid
-                    rows={rows}
+                    rows={tizadas}
                     columns={columns}
+                    getRowId={(row) => row.uuid}
                     initialState={{
                         pagination: {
                         paginationModel: {
