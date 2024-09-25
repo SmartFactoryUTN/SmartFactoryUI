@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid, GridColDef,GridRowParams} from '@mui/x-data-grid';
+import { getTizadas } from '../api/methods'
+
+import { DataGrid, GridColDef, GridRowParams, GridValueFormatter } from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -8,91 +10,68 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
+interface Tizada {
+    uuid: string;
+    name: string;
+    state: string;
+    createdAt: string;
+    updatedAt: string | null;
+  }
+
 function MisTizadas() {
-    const navigate = useNavigate();
-    const columns: GridColDef<(typeof rows)[number]>[] = [
-        { field: 'id', headerName: 'ID', width: 90 },
-        {
-          field: 'nombre',
-          headerName: 'Nombre',
-          width: 150,
-          editable: true,
-        },
-        {
-            field: 'estado',
-            headerName: 'Estado', //Creada En proceso Terminada Error
-            width: 100,
-          },
-        {
-          field: 'fecha',
-          headerName: 'Fecha de Creación',
-          width: 150,
-        },
-        {
-          field: 'actualizacion',
-          headerName: 'Ultima Actualización',
-          width: 160,
-        },
-        {
-            field: 'etapa',
-            headerName: 'Etapa', //Esperando las telas, pendiente de cortar, enviado cortador, cortada, 
-            width: 100,
-          },
-      ];    
+      const navigate = useNavigate();
+      const [tizadas, setTizadas] = useState<Tizada[]>([]);
     
-      const rows = [
-        { id: 1, nombre: 'MiTizada', estado: 'en corte', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-        { id: 2, nombre: 'Esta tizada tiene: remera1, remera2, musculosa, short, pantalon mangas largas', estado: 'en corte', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-        { id: 3, nombre: 'Prueba', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
-        { id: 4, nombre: 'Prueba2', estado: 'no enviada', fecha: '03/08/2024', actualizacion: '03/08/2024'},
+      useEffect(() => {
+        fetchTizadas();
+      }, []);
+    
+      const fetchTizadas = async () => {
+        try {
+          const response = await getTizadas();
+          if (response.status === "OK") {
+            setTizadas(response.data);
+          } else {
+            console.error("Failed to fetch tizadas");
+          }
+        } catch (error) {
+          console.error("Error fetching tizadas:", error);
+        }
+      };
+    
+      const formatDate: GridValueFormatter = (value: string | null) => {
+        if (value == null) return 'N/A';
+        try {
+          return new Date(value).toLocaleString();
+        } catch (error) {
+          console.error("Error formatting date:", error);
+          return 'Invalid Date';
+        }
+      };
+    
+    
+      const columns: GridColDef[] = [
+        { field: 'uuid', headerName: 'ID', width: 220 },
+        { field: 'name', headerName: 'Nombre', width: 200, editable: true },
+        { field: 'state', headerName: 'Estado', width: 120 },
+        { 
+          field: 'createdAt', 
+          headerName: 'Fecha de Creación', 
+          width: 180,
+          valueFormatter: formatDate,
+        },
+        { 
+            field: 'updatedAt', 
+            headerName: 'Ultima Actualización', 
+            width: 180,
+            valueFormatter: formatDate,
+        },
       ];
+    
+      const handleRowClick = (params: GridRowParams) => {
+        navigate(`/tizadas/tizada/${params.row.uuid}`);
+      };
       
-      const [formData, setFormData] = useState({
-        ancho: '',
-        largo: '',
-        tiempo: '',
-        porcentaje: ''
-       });
-       
-       const handleRowClick = (params: GridRowParams) => {
-            navigate(`/tizadas/tizada`);
-        };
-   
-       // Handle input change
-       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-           const { name, value } = e.target;
-           setFormData({
-               ...formData,
-               [name]: value
-           });
-       };
-       
-       // Handle form submission
-       const handleSubmit = async (e: React.FormEvent) => {
-           e.preventDefault();
-   
-           try {
-               const response = await fetch('http://localhost:8080/api/data', { // 
-                   method: 'POST',
-                   headers: {
-                       'Content-Type': 'application/json'
-                   },
-                   body: JSON.stringify(formData)
-               });
-   
-               if (!response.ok) {
-                   throw new Error('Network response was not ok');
-               }
-   
-               const result = await response.json();
-               console.log('Success:', result);
-               navigate('/tizadas/crear');
-           } catch (error) {
-               console.error('Error:', error);
-               navigate('/tizadas/crear')
-           }
-       };
-   
        return (
                 <Container>
                 {/* Title and Button */}
@@ -105,8 +84,9 @@ function MisTizadas() {
                 
                 {/* Data Table */}
                 <DataGrid
-                    rows={rows}
+                    rows={tizadas}
                     columns={columns}
+                    getRowId={(row) => row.uuid}
                     initialState={{
                         pagination: {
                         paginationModel: {
