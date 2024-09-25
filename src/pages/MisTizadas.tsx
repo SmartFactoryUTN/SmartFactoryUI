@@ -1,22 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTizadas } from '../api/methods'
+import {Tizada} from '../utils/types'
+import { formatDate } from '../utils/helpers'
 
-import { DataGrid, GridColDef, GridRowParams, GridValueFormatter } from '@mui/x-data-grid';
+{/* UI Components */}
+import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-
-interface Tizada {
-    uuid: string;
-    name: string;
-    state: string;
-    createdAt: string;
-    updatedAt: string | null;
-  }
 
 function MisTizadas() {
       const navigate = useNavigate();
@@ -37,18 +31,7 @@ function MisTizadas() {
         } catch (error) {
           console.error("Error fetching tizadas:", error);
         }
-      };
-    
-      const formatDate: GridValueFormatter = (value: string | null) => {
-        if (value == null) return 'N/A';
-        try {
-          return new Date(value).toLocaleString();
-        } catch (error) {
-          console.error("Error formatting date:", error);
-          return 'Invalid Date';
-        }
-      };
-    
+      };    
     
       const columns: GridColDef[] = [
         { field: 'uuid', headerName: 'ID', width: 220 },
