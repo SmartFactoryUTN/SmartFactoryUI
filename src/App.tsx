@@ -20,7 +20,7 @@ function App() {
           <Route path="/" element={<Navigate to="/tizadas" replace />} /> // Redirect "/" to "/tizadas"
           <Route path="/tizadas" element={<MisTizadas/>} />
           <Route path="/tizadas/crear" element={<CrearTizada />} />
-          <Route path="/tizadas/tizada" element={<VerTizada />} />
+          <Route path="/tizadas/tizada/:uuid" element={<VerTizada />} />
         </Routes>
       </div>
     </Router>
