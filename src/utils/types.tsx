@@ -1,4 +1,4 @@
-export interface Mold {
+export interface Molde {
     uuid: string;
     name: string;
     description: string;
@@ -11,7 +11,7 @@ export interface Mold {
 }
 
 export interface TizadaPart {
-    mold: Mold;
+    mold: Molde;
     quantity: number;
 }
 
