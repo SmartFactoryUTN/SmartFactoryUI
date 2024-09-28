@@ -84,50 +84,73 @@ function VerTizada() {
     }
 
     return (
-        <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)', flexDirection: 'column'}}>
-            <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-                {/* Main content area with placeholder SVG */}
-                <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
-                    <svg width="100%" height="100%" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100%" height="100%" fill="#f0f0f0" />
-                        <circle cx="250" cy="250" r="200" fill="#ddd" />
-                        <text x="250" y="250" fontFamily="Arial" fontSize="24" fill="#666" textAnchor="middle" dominantBaseline="middle">
-                            Tizada Placeholder
-                        </text>
-                    </svg>
-                </Box>
-                
-                {/* Right sidebar with information */}
-                <Box sx={{ width: 300, borderLeft: '1px solid #ccc', p: 2, overflowY: 'auto' }}>
-                    <Typography variant="h6" gutterBottom>Información de Tizada</Typography>
-                    <DataGrid
-                        rows={tizadaInfoRows}
-                        columns={tizadaInfoColumns}
-                        hideFooter={true}
-                        disableColumnMenu
-                        autoHeight
-                        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    />
-                    <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Moldes</Typography>
-                    <DataGrid
-                        rows={moldRows}
-                        columns={moldColumns}
-                        hideFooter={true}
-                        disableColumnMenu
-                        autoHeight
-                        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    />
-                </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '90vh', marginTop:2 }}>
+        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+            {/* Main content area */}
+            <Box sx={{ 
+                flex: 1, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                p: 2 
+            }}>
+                {tizada?.state === 'CREATED' ? (
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Typography variant="h6" sx={{ mb: 2 }}>
+                            ¿Todo listo para comenzar? Confirme que los datos sean correctos para empezar a generar su tizada.
+                        </Typography>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            size="large"
+                            // TODO: onClick={startTizadaProgress}
+                        >
+                            GENERAR TIZADA
+                        </Button>
+                    </Box>
+                ) : (
+                    <Typography variant="h6" align="center">
+                        {tizada?.state === 'IN_PROGRESS' ? 'Generación en progreso...' :
+                        tizada?.state === 'FINISHED' ? 'Tizada generada con éxito' :
+                        tizada?.state === 'ERROR' ? 'Error en la generación de la tizada' :
+                        'Estado desconocido'}
+                    </Typography>
+                )}
             </Box>
             
-            {/* Footer with back button */}
-            <Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/tizadas')}>
-                    Volver a Mis Tizadas
-                </Button>
+            {/* Right sidebar with information */}
+            <Box sx={{ width: 300, borderLeft: '1px solid #ccc', p: 2, overflowY: 'auto' }}>
+                <Typography variant="h6" gutterBottom>Información de Tizada</Typography>
+                <DataGrid
+                    rows={tizadaInfoRows}
+                    columns={tizadaInfoColumns}
+                    hideFooter={true}
+                    disableColumnMenu
+                    autoHeight
+                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                />
+                <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Moldes</Typography>
+                <DataGrid
+                    rows={moldRows}
+                    columns={moldColumns}
+                    hideFooter={true}
+                    disableColumnMenu
+                    autoHeight
+                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                />
             </Box>
         </Box>
-    );
+        
+        {/* Footer with back button */}
+        <Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
+            <Button variant="contained" color="primary" onClick={() => navigate('/tizadas')}>
+                Volver a Mis Tizadas
+            </Button>
+        </Box>
+    </Box>
+);
 }
+
   
 export default VerTizada;
