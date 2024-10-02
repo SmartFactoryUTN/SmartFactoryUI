@@ -3,6 +3,7 @@ import './App.css';
 import CrearTizada from './pages/CrearTizada.tsx'; 
 import MisTizadas from './pages/MisTizadas'; 
 import VerTizada from './pages/VerTizada'; 
+import MisMoldes from './pages/MisMoldes'; 
 
 import Navigation from './components/AppBar';
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/tizadas" element={<MisTizadas/>} />
           <Route path="/tizadas/crear" element={<CrearTizada />} />
           <Route path="/tizadas/tizada/:uuid" element={<VerTizada />} />
+          <Route path="/moldes" element={<MisMoldes />} />
         </Routes>
       </div>
     </Router>
