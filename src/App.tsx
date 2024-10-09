@@ -4,6 +4,7 @@ import CrearTizada from './pages/CrearTizada.tsx';
 import MisTizadas from './pages/MisTizadas'; 
 import VerTizada from './pages/VerTizada'; 
 import MisMoldes from './pages/MisMoldes'; 
+import SubirMolde from './pages/SubirMolde'; 
 
 import Navigation from './components/AppBar';
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/tizadas/crear" element={<CrearTizada />} />
           <Route path="/tizadas/tizada/:uuid" element={<VerTizada />} />
           <Route path="/moldes" element={<MisMoldes />} />
+          <Route path="/moldes/subir" element={<SubirMolde />} /> 
         </Routes>
       </div>
     </Router>
