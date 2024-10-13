@@ -54,12 +54,12 @@ function VerTizada() {
 
     const moldColumns: GridColDef[] = [
         { field: 'name', headerName: 'Nombre', width: 120 },
-        { 
-            field: 'area', 
-            headerName: 'Área', 
-            width: 80, 
-            valueFormatter: formatArea 
-        },        
+        //{ 
+        //    field: 'area', 
+        //    headerName: 'Área', 
+        //    width: 80, 
+        //    valueFormatter: formatArea 
+        //},        
         { field: 'description', headerName: 'Descripción', width: 150 },
         { field: 'quantity', headerName: 'Cantidad', width: 80 },
     ];

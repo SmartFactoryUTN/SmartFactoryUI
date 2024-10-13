@@ -10,19 +10,20 @@ import {
   Grid,
   TextField,
   Typography,
-  ToggleButton,
-  ToggleButtonGroup,
   Paper,
   Select,
   MenuItem,
   IconButton,
   FormControl,
   InputLabel,
+  InputAdornment
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
-type TizadaType = 'RAPIDA' | 'EFICIENTE' | 'PERSONALIZADO';
+// type TizadaType = 'RAPIDA' | 'EFICIENTE' | 'PERSONALIZADO';
 
 interface MoldSelection {
   uuid: string;
@@ -35,19 +36,20 @@ interface FormData {
   name: string;
   width: number;
   height: number;
-  tizadaType: TizadaType;
   wastePercentage: number | null;
+  maxTime: number;
   molds: MoldSelection[];
 }
 
 function CrearTizada() {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState<FormData>({ // Setear valores default
+    // Setear valores default
+    const [formData, setFormData] = useState<FormData>({ 
         name: '',
         width: 0,
         height: 0,
-        tizadaType: 'RAPIDA',
         wastePercentage: null,
+        maxTime: 12,
         molds: [{ uuid: '', quantity: 1 }],
     });
 
@@ -78,7 +80,8 @@ function CrearTizada() {
     };
 
 
-    {/* Si la tizada es tipo custom, mostrar */}
+    {/* Si la tizada es tipo custom, mostrar campos adicionales */}
+    {/*
     const handleTizadaTypeChange = (
         _event: React.MouseEvent<HTMLElement>,
         newType: TizadaType,
@@ -87,8 +90,17 @@ function CrearTizada() {
         setFormData((prev) => ({ ...prev, tizadaType: newType }));
         }
     };
+    */}
 
+    {/* Deshabilitar incrementar tiempo: maximo de 12 minutos */}
+    const handleTimeChange = (amount: number) => {
+      setFormData((prev) => ({
+          ...prev,
+          maxTime: Math.max(1, Math.min(12, prev.maxTime + amount))
+      }));
+    };    
 
+    {/* Logica de carga de moldes */}
     const handleMoldChange = (index: number, field: 'uuid' | 'quantity', value: string | number) => {
         const newMolds = [...formData.molds];
         newMolds[index] = { ...newMolds[index], [field]: value };
@@ -107,6 +119,7 @@ function CrearTizada() {
         setFormData((prev) => ({ ...prev, molds: newMolds }));
     };
       
+    {/* LLamada a la api */}
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(formData); // Replace with actual API call
@@ -117,7 +130,7 @@ function CrearTizada() {
     return (
         <Container maxWidth="md">
         <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h5" gutterBottom>
             Crear Nueva Tizada
             </Typography>
             <form onSubmit={handleSubmit}>
@@ -132,52 +145,41 @@ function CrearTizada() {
                     required
                 />
                 </Grid>
+                {/* Dimensiones de la mesa de corte */}
+                {/*
                 <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>
-                    Dimensiones de la mesa de corte
-                </Typography>
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        label="Ancho (cm)"
-                        name="width"
-                        type="number"
-                        value={formData.width}
-                        onChange={handleInputChange}
-                        required
-                    />
-                    </Grid>
-                    <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        label="Alto (cm)"
-                        name="height"
-                        type="number"
-                        value={formData.height}
-                        onChange={handleInputChange}
-                        required
-                    />
-                    </Grid>
+                  <Typography variant="h6" gutterBottom>
+                      Dimensiones de la mesa de corte
+                  </Typography>
+                  <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                      <TextField
+                          fullWidth
+                          label="Ancho (cm)"
+                          name="width"
+                          type="number"
+                          value={formData.width}
+                          onChange={handleInputChange}
+                          required
+                      />
+                      </Grid>
+                      <Grid item xs={6}>
+                      <TextField
+                          fullWidth
+                          label="Alto (cm)"
+                          name="height"
+                          type="number"
+                          value={formData.height}
+                          onChange={handleInputChange}
+                          required
+                      />
+                      </Grid>
+                  </Grid>
                 </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>
-                    Tipo de Tizada
-                </Typography>
-                <ToggleButtonGroup
-                    color="primary"
-                    value={formData.tizadaType}
-                    exclusive
-                    onChange={handleTizadaTypeChange}
-                    aria-label="Tipo de Tizada"
-                >
-                    <ToggleButton value="RAPIDA">Rápida</ToggleButton>
-                    <ToggleButton value="EFICIENTE">Eficiente</ToggleButton>
-                    <ToggleButton value="PERSONALIZADO">Personalizado</ToggleButton>
-                </ToggleButtonGroup>
-                </Grid>
-                {formData.tizadaType === 'PERSONALIZADO' && (
+                */}
+
+                {/*Mostrar campos acorde al tipo de tizada*/}
+                {/* {formData.tizadaType === 'PERSONALIZADO' && ( */}
                 <Grid item xs={12}>
                     <TextField
                     fullWidth
@@ -191,13 +193,65 @@ function CrearTizada() {
                     }}
                     />
                 </Grid>
-                )}
+                {/*)}*/}
+              
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Tiempo máximo"
+                    name="maxTime"
+                    type="number"
+                    value={formData.maxTime}
+                    onChange={handleInputChange}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <Typography sx={{ mr: 1 }}>minutos</Typography>
+                                <IconButton
+                                    onClick={() => handleTimeChange(1)}
+                                    edge="end"
+                                    disabled={formData.maxTime >= 12}
+                                >
+                                    <AddCircleOutlineIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <IconButton
+                                    onClick={() => handleTimeChange(-1)}
+                                    edge="start"
+                                    disabled={formData.maxTime <= 1}
+                                >
+                                    <RemoveCircleOutlineIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                        inputProps: { 
+                            min: 1, 
+                            max: 12,
+                            style: { textAlign: 'center' }
+                        }
+                    }}
+                    InputLabelProps={{ shrink: true }}
+                    sx={{
+                        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                            display: 'none',
+                        },
+                        '& input[type=number]': {
+                            MozAppearance: 'textfield',
+                        },
+                    }}
+                />
+                  
+                </Grid>
+
                 <Grid item xs={12}>
               <Typography variant="h6" gutterBottom>
                 Moldes
               </Typography>
               {formData.molds.map((mold, index) => (
-                <Grid container spacing={2} key={index} alignItems="center">
+                <Grid container spacing={2} key={index} sx={{ mb: 2 }} alignItems="center">
                   <Grid item xs={6}>
                     <FormControl fullWidth>
                       <InputLabel>Seleccionar Molde</InputLabel>
