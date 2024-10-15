@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getTizadaById, invokeTizada } from '../api/methods';
 import { Tizada } from '../utils/types';
 import { formatDate } from '../utils/helpers';
-
+import { TEST_USER_ID } from '../utils/constants';
 
 import { DataGrid, GridColDef} from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
@@ -43,7 +43,7 @@ function VerTizada() {
     const startTizadaProgress = async () => {
         if (!tizada) return;
         try {
-            const response = await invokeTizada(tizada.uuid, "currentUser"); // Replace "currentUser" with actual user info
+            const response = await invokeTizada(tizada.uuid, TEST_USER_ID);
             if (response.status === "OK") {
                 setSuccess(true);
                 //fetchTizadaData(); // TODO: Update current page data

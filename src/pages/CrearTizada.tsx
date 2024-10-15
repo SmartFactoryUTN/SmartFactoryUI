@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMoldes, createTizada } from '../api/methods';
 import { Molde } from '../utils/types';
+import { TEST_USER_ID } from '../utils/constants';
 
 import {
   Box,
@@ -40,6 +41,7 @@ interface FormData {
   height: number;
   utilizationPercentage: number | null;
   maxTime: number;
+  userUUID: string;
   molds: MoldSelection[];
 }
 
@@ -51,6 +53,7 @@ function CrearTizada() {
         width: 0,
         height: 0,
         utilizationPercentage: null,
+        userUUID: TEST_USER_ID,
         maxTime: 12,
         molds: [{ uuid: '', quantity: 1 }],
     });

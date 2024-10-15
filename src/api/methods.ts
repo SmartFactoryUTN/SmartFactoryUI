@@ -47,7 +47,7 @@ export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>
   }
 };
 
-export const invokeTizada = async (tizadaUUID: string, user: string): Promise<ApiResponse<any>> => {
+export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promise<ApiResponse<any>> => {
   try {
     const response = await fetch(`${BASE_API_URL}/tizada/invoke`, {
       method: 'POST',
@@ -56,7 +56,7 @@ export const invokeTizada = async (tizadaUUID: string, user: string): Promise<Ap
       },
       body: JSON.stringify({
         tizadaUUID,
-        user,
+        userUUID,
       }),
     });
 
