@@ -46,3 +46,28 @@ export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>
     throw error;
   }
 };
+
+export const invokeTizada = async (tizadaUUID: string, user: string): Promise<ApiResponse<any>> => {
+  try {
+    const response = await fetch(`${BASE_API_URL}/tizada/invoke`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tizadaUUID,
+        user,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: ApiResponse<any> = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error invoking tizada:", error);
+    throw error;
+  }
+};

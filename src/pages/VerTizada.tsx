@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getTizadaById } from '../api/methods';
+import { getTizadaById, invokeTizada } from '../api/methods';
 import { Tizada } from '../utils/types';
-import { formatDate, formatArea } from '../utils/helpers';
+import { formatDate } from '../utils/helpers';
 
 
 import { DataGrid, GridColDef} from '@mui/x-data-grid';
@@ -18,7 +18,9 @@ function VerTizada() {
     const { uuid } = useParams<{ uuid: string }>();
     const [loading, setLoading] = useState(true);
     const [tizada, setTizada] = useState<Tizada | null>(null);
-  
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<boolean>(false);
+
     useEffect(() => {
         const fetchTizadaData = async () => {
             setLoading(true);
@@ -38,6 +40,22 @@ function VerTizada() {
         fetchTizadaData();
     }, [uuid]);
   
+    const startTizadaProgress = async () => {
+        if (!tizada) return;
+        try {
+            const response = await invokeTizada(tizada.uuid, "currentUser"); // Replace "currentUser" with actual user info
+            if (response.status === "OK") {
+                setSuccess(true);
+                //fetchTizadaData(); // TODO: Update current page data
+            } else {
+                setError("Failed to start tizada generation. Please try again.");
+            }
+        } catch (error) {
+            console.error('Error starting tizada generation:', error);
+            setError("An error occurred while starting tizada generation. Please try again.");
+        }
+    };
+
     const tizadaInfoColumns: GridColDef[] = [
         { field: 'property', headerName: 'Propiedad', width: 150 },
         { field: 'value', headerName: 'Valor', width: 150 },
@@ -104,7 +122,7 @@ function VerTizada() {
                             variant="contained" 
                             color="primary" 
                             size="large"
-                            // TODO: onClick={startTizadaProgress}
+                            onClick={startTizadaProgress}
                         >
                             GENERAR TIZADA
                         </Button>
