@@ -35,10 +35,8 @@ function MisMoldes() {
       };
 
       const columns: GridColDef[] = [
-        { field: 'uuid', headerName: 'ID', width: 80 },
         { field: 'name', headerName: 'Nombre', width: 100, editable: true },
         { field: 'description', headerName: 'Descripción', width: 150, editable: true },
-        { field: 'stock', headerName: 'Stock', width: 80, editable: false },
         { 
           field: 'createdAt', 
           headerName: 'Fecha de Creación', 
@@ -50,7 +48,7 @@ function MisMoldes() {
             headerName: 'Ultima Actualización', 
             width: 180,
             valueFormatter: formatDate,
-        },
+        }
       ];
     
       const handleRowClick = (params: GridRowParams) => {
