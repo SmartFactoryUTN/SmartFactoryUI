@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMoldes } from '../api/methods';
+import { getMoldes, createTizada } from '../api/methods';
 import { Molde } from '../utils/types';
 
 import {
@@ -16,7 +16,9 @@ import {
   IconButton,
   FormControl,
   InputLabel,
-  InputAdornment
+  InputAdornment,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -36,7 +38,7 @@ interface FormData {
   name: string;
   width: number;
   height: number;
-  wastePercentage: number | null;
+  utilizationPercentage: number | null;
   maxTime: number;
   molds: MoldSelection[];
 }
@@ -48,11 +50,13 @@ function CrearTizada() {
         name: '',
         width: 0,
         height: 0,
-        wastePercentage: null,
+        utilizationPercentage: null,
         maxTime: 12,
         molds: [{ uuid: '', quantity: 1 }],
     });
-
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<boolean>(false);
+    
     {/* Mostrar moldes disponibles del usuario */}
     const [availableMolds, setAvailableMolds] = useState<Molde[]>([]);
 
@@ -60,24 +64,38 @@ function CrearTizada() {
         fetchMolds();
     }, []);
 
-    const fetchMolds = async () => {
-        try {
-          const result = await getMoldes();
-          if (result.status === 'ok') {
-            setAvailableMolds(result.data);
-          } else {
-            console.error('Failed to fetch molds');
-          }
-        } catch (error) {
-          console.error('Error fetching molds:', error);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const fetchMolds = useCallback(async () => {
+      if (isLoading) return; // Prevent multiple simultaneous calls
+      setIsLoading(true);
+      try {
+        const result = await getMoldes();
+        console.log('Fetched molds:', result);
+        if (result.status === 'OK') {
+          setAvailableMolds(result.data);
+        } else {
+          console.error('Failed to fetch molds');
+          setError('Failed to fetch molds. Please try again.');
         }
-      };
+      } catch (error) {
+        console.error('Error fetching molds:', error);
+        setError('An error occurred while fetching molds. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    }, []);
 
     {/* Actualizar los valores en el formulario */}
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+      const { name, value } = e.target;
+      if (name === 'maxTime') {
+          const numValue = Math.min(Math.max(parseInt(value) || 1, 1), 12);
+          setFormData((prev) => ({ ...prev, [name]: numValue }));
+      } else {
+          setFormData((prev) => ({ ...prev, [name]: value }));
+      }
+  };
 
 
     {/* Si la tizada es tipo custom, mostrar campos adicionales */}
@@ -120,12 +138,32 @@ function CrearTizada() {
     };
       
     {/* LLamada a la api */}
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log(formData); // Replace with actual API call
-        // TODO: Implement API call to create Tizada
-        navigate('/tizadas'); // Navigate back to Tizadas list after creation
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError(null);
+      setSuccess(false);
+
+      // Validate form data
+      if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
+          setError("Please select a mold and specify a valid quantity for each entry.");
+          return;
+      }
+      try {
+        const response = await createTizada(formData);
+        if (response.status === 'ok') {
+          setSuccess(true);
+          setTimeout(() => {
+            navigate('/tizadas');
+          }, 2000);
+        } else {
+            setError("Failed to create tizada. Please try again.");
+        }
+        } catch (error) {
+            console.error('Error creating tizada:', error);
+            setError("An error occurred while creating the tizada. Please try again.");
+      }
     };
+
 
     return (
         <Container maxWidth="md">
@@ -184,9 +222,9 @@ function CrearTizada() {
                     <TextField
                     fullWidth
                     label="Porcentaje de desperdicio deseado"
-                    name="wastePercentage"
+                    name="utilizationPercentage"
                     type="number"
-                    value={formData.wastePercentage || ''}
+                    value={formData.utilizationPercentage || ''}
                     onChange={handleInputChange}
                     InputProps={{
                         endAdornment: <Typography>%</Typography>,
@@ -313,6 +351,16 @@ function CrearTizada() {
           </Grid>
         </form>
       </Paper>
+      <Snackbar open={error !== null} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+            {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+        <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+            Tizada created successfully!
+        </Alert>
+      </Snackbar>
     </Container>
     );
 }
