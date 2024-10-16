@@ -78,7 +78,7 @@ function MisTizadas() {
                         },
                     }}
                     pageSizeOptions={[5]}
-                    checkboxSelection={false}
+                    checkboxSelection={true}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                     disableRowSelectionOnClick
                     onRowClick={handleRowClick}

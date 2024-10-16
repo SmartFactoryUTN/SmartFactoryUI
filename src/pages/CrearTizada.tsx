@@ -41,7 +41,7 @@ interface FormData {
   height: number;
   utilizationPercentage: number | null;
   maxTime: number;
-  userUUID: string;
+  //userUUID: string;
   molds: MoldSelection[];
 }
 
@@ -53,7 +53,7 @@ function CrearTizada() {
         width: 0,
         height: 0,
         utilizationPercentage: null,
-        userUUID: TEST_USER_ID,
+        //userUUID: TEST_USER_ID,
         maxTime: 12,
         molds: [{ uuid: '', quantity: 1 }],
     });
@@ -148,22 +148,22 @@ function CrearTizada() {
 
       // Validate form data
       if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
-          setError("Please select a mold and specify a valid quantity for each entry.");
+          setError("Por favor, seleccione un molde y especifíque una cantidad.");
           return;
       }
       try {
         const response = await createTizada(formData);
-        if (response.status === 'ok') {
+        if (response.status === 'success') {
           setSuccess(true);
           setTimeout(() => {
             navigate('/tizadas');
           }, 2000);
         } else {
-            setError("Failed to create tizada. Please try again.");
+            setError("Error al crear la tizada. Por favor, intentelo nuevamente.");
         }
         } catch (error) {
-            console.error('Error creating tizada:', error);
-            setError("An error occurred while creating the tizada. Please try again.");
+            console.error('Error creando la tizada:', error);
+            setError("Un error ocurrió al crear la tizada, intentelo de nuevo por favor.");
       }
     };
 
@@ -224,7 +224,7 @@ function CrearTizada() {
                 <Grid item xs={12}>
                     <TextField
                     fullWidth
-                    label="Porcentaje de desperdicio deseado"
+                    label="Porcentaje de aprovechamiento deseado"
                     name="utilizationPercentage"
                     type="number"
                     value={formData.utilizationPercentage || ''}
@@ -361,7 +361,7 @@ function CrearTizada() {
       </Snackbar>
       <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
         <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
-            Tizada created successfully!
+            ¡Nueva tizada creada!
         </Alert>
       </Snackbar>
     </Container>

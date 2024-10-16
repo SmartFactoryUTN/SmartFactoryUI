@@ -20,6 +20,7 @@ function VerTizada() {
     const [tizada, setTizada] = useState<Tizada | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
+    const [svgUrl, setSvgUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchTizadaData = async () => {
@@ -28,6 +29,9 @@ function VerTizada() {
                 const response = await getTizadaById(uuid!);
                 if (response.status === "OK") {
                     setTizada(response.data);
+                    if (response.data.state === 'FINISHED' && response.data.results && response.data.results.length > 0) {
+                        setSvgUrl(response.data.results[0].url);
+                    }
                 } else {
                     console.error("Failed to fetch tizada");
                 }
@@ -67,7 +71,7 @@ function VerTizada() {
             { id: 2, property: 'Estado', value: tizada.state },
             { id: 3, property: 'Fecha de Creación', value: tizada.createdAt, valueFormatter: formatDate, },
             { id: 4, property: 'Última Actualización', value: tizada.updatedAt, valueFormatter: formatDate, },
-            { id: 5, property: 'Cantidad Total', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
+            { id: 5, property: 'Total de moldes', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
         ]: [];
 
     const moldColumns: GridColDef[] = [
@@ -102,7 +106,7 @@ function VerTizada() {
     }
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '90vh', marginTop:2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '90vh', marginTop:2}}>
         <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
             {/* Main content area */}
             <Box sx={{ 
@@ -127,7 +131,17 @@ function VerTizada() {
                             GENERAR TIZADA
                         </Button>
                     </Box>
-                ) : (
+                ) :
+                tizada?.state === 'FINISHED' && svgUrl ? (
+                        <object
+                            type="image/svg+xml"
+                            data={svgUrl}
+                            height="100%"
+                            style={{paddingTop: "200px", margin: '100px 80px', border: '1px solid #ccc', borderRadius: '4px' }}
+                        >
+                            Su navegador no soporta SVGs
+                        </object>
+                ): (
                     <Typography variant="h6" align="center">
                         {tizada?.state === 'IN_PROGRESS' ? 'Generación en progreso...' :
                         tizada?.state === 'FINISHED' ? 'Tizada generada con éxito' :
