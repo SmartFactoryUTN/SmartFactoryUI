@@ -5,6 +5,7 @@ import MisTizadas from './pages/MisTizadas';
 import VerTizada from './pages/VerTizada'; 
 import MisMoldes from './pages/MisMoldes'; 
 import SubirMolde from './pages/SubirMolde'; 
+import Tutorial from './pages/Tutorial'; 
 
 import Navigation from './components/AppBar';
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/tizadas/tizada/:uuid" element={<VerTizada />} />
           <Route path="/moldes" element={<MisMoldes />} />
           <Route path="/moldes/subir" element={<SubirMolde />} /> 
+          <Route path="/moldes/crear" element={<Tutorial />} /> 
         </Routes>
       </div>
     </Router>
