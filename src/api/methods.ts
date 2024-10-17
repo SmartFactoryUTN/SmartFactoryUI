@@ -72,4 +72,35 @@ export const invokeTizada = async (tizadaUUID: string, user: string): Promise<Ap
   }
 };
 
-export const deleteTizada = {}; //TODO API CALL
+export const deleteTizada = async (uuid: string): Promise<ApiResponse<void>> => {
+  try {
+    const response = await fetch(`${BASE_API_URL}/tizada/${uuid}`, {
+      method: 'DELETE',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return { status: "OK", data: undefined };
+  } catch (error) {
+    console.error(`Error deleting tizada ${uuid}:`, error);
+    return { status: "ERROR", data: undefined };
+  }
+};
+
+export const deleteTizadas = async (uuids: string[]): Promise<ApiResponse<void>> => {
+  try {
+    const results = await Promise.all(uuids.map(uuid => deleteTizada(uuid)));
+    const hasError = results.some(result => result.status === "ERROR");
+    
+    if (hasError) {
+      return { status: "ERROR", data: undefined };
+    }
+    
+    return { status: "OK", data: undefined };
+  } catch (error) {
+    console.error("Error deleting tizadas:", error);
+    return { status: "ERROR", data: undefined };
+  }
+};

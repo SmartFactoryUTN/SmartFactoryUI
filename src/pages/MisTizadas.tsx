@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTizadas } from '../api/methods'
-import {Tizada} from '../utils/types'
-import { formatDate } from '../utils/helpers'
+import { getTizadas, deleteTizadas } from '../api/methods';
+import {Tizada} from '../utils/types';
+import { formatDate } from '../utils/helpers';
+import CustomToolbar from "../components/CustomToolbar";
 
 {/* UI Components */}
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
@@ -54,7 +55,20 @@ function MisTizadas() {
       const handleRowClick = (params: GridRowParams) => {
         navigate(`/tizadas/tizada/${params.row.uuid}`);
       };
-      
+
+      const handleDelete = async (selectedIds: string[]) => {
+        try {
+          const response = await deleteTizadas(selectedIds);
+          if (response.status === "OK") {
+            fetchTizadas();
+          } else {
+            console.error("Failed to delete some or all tizadas");
+          }
+        } catch (error) {
+          console.error("Error deleting tizadas:", error);
+        }
+      };
+
        return (
                 <Container>
                 {/* Title and Button */}
@@ -82,6 +96,14 @@ function MisTizadas() {
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                     disableRowSelectionOnClick
                     onRowClick={handleRowClick}
+                    slots={{
+                      toolbar: CustomToolbar,
+                    }}
+                    slotProps={{
+                      toolbar: {
+                        onDelete: handleDelete,
+                      },
+                    }}
                     sx={{
                         '& .MuiDataGrid-row': {
                             cursor: 'pointer',
