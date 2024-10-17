@@ -2,12 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMoldes, createTizada } from '../api/methods';
 import { Molde } from '../utils/types';
-import { TEST_USER_ID } from '../utils/constants';
+import PageLayout from '../components/layout/PageLayout';
 
 import {
   Box,
   Button,
-  Container,
   Grid,
   TextField,
   Typography,
@@ -169,8 +168,7 @@ function CrearTizada() {
 
 
     return (
-        <Container maxWidth="md">
-        <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+        <PageLayout>
             <Typography variant="h5" gutterBottom>
             Crear Nueva Tizada
             </Typography>
@@ -353,7 +351,6 @@ function CrearTizada() {
             </Grid>
           </Grid>
         </form>
-      </Paper>
       <Snackbar open={error !== null} autoHideDuration={6000} onClose={() => setError(null)}>
         <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
             {error}
@@ -364,7 +361,7 @@ function CrearTizada() {
             ¡Nueva tizada creada!
         </Alert>
       </Snackbar>
-    </Container>
+    </PageLayout>
     );
 }
 

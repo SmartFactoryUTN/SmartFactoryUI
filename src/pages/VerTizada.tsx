@@ -4,10 +4,10 @@ import { getTizadaById, invokeTizada } from '../api/methods';
 import { Tizada } from '../utils/types';
 import { formatDate } from '../utils/helpers';
 import { TEST_USER_ID } from '../utils/constants';
+import PageLayout from '../components/layout/PageLayout';
 
 import { DataGrid, GridColDef} from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
-import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -93,19 +93,9 @@ function VerTizada() {
         description: part.mold.description,
         quantity: part.quantity,
     })) || [];
-  
-    if (loading) {
-            return (
-                <Container>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
-                    <CircularProgress />
-                    <Typography variant="h6" sx={{ mt: 2 }}>Cargando Tizada...</Typography>
-                </Box>
-                </Container>
-            );
-    }
 
     return (
+        <PageLayout>
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '90vh', marginTop:2}}>
         <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
             {/* Main content area */}
@@ -132,6 +122,9 @@ function VerTizada() {
                         </Button>
                     </Box>
                 ) :
+                tizada?.state === 'IN_PROGRESS' ? (
+                    <CircularProgress />
+                ) :
                 tizada?.state === 'FINISHED' && svgUrl ? (
                         <object
                             type="image/svg+xml"
@@ -143,9 +136,7 @@ function VerTizada() {
                         </object>
                 ): (
                     <Typography variant="h6" align="center">
-                        {tizada?.state === 'IN_PROGRESS' ? 'Generación en progreso...' :
-                        tizada?.state === 'FINISHED' ? 'Tizada generada con éxito' :
-                        tizada?.state === 'ERROR' ? 'Error en la generación de la tizada' :
+                        {tizada?.state === 'ERROR' ? 'Error en la generación de la tizada' :
                         'Estado desconocido'}
                     </Typography>
                 )}
@@ -181,6 +172,7 @@ function VerTizada() {
             </Button>
         </Box>
     </Box>
+    </PageLayout>
 );
 }
 

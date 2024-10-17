@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { getMoldes } from '../api/methods'
 import { Molde } from '../utils/types'
 import { formatDate } from '../utils/helpers'
+import PageLayout from '../components/layout/PageLayout';
 
 {/* UI Components */}
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
@@ -56,7 +56,7 @@ function MisMoldes() {
       };
       
        return (
-                <Container>
+                <PageLayout>
                 {/* Title and Button */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                     <Typography color="black" variant="h4">Mis Moldes</Typography>
@@ -108,7 +108,7 @@ function MisMoldes() {
                         },
                     }}
                 />
-                </Container>
+                </PageLayout>
        );
    }
    
