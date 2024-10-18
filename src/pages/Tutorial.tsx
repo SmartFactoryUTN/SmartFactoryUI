@@ -18,13 +18,13 @@ const Tutorial: React.FC = () => {
 
   return (
     <PageLayout>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant="h5" component="h1" gutterBottom>
         Cómo digitalizar tus moldes para SmartFactory
       </Typography>
 
       <Typography paragraph>
         Para usar nuestro software de optimización de corte, necesitás tus patrones en formato SVG. 
-        Te recomendamos usar Seamly2D: un software gratuito y fácil de usar. Siguiendo esta guía, 
+        Te recomendamos usar Seamly2D: un software gratuito y fácil de usar. Siguiendo esta guía paso a paso, 
         podrás digitalizar tus moldes en aproximadamente 20 minutos.
       </Typography>
 

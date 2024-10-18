@@ -35,7 +35,6 @@ function MisTizadas() {
       };    
     
       const columns: GridColDef[] = [
-        { field: 'uuid', headerName: 'ID', width: 220 },
         { field: 'name', headerName: 'Nombre', width: 200, editable: true },
         { field: 'state', headerName: 'Estado', width: 120 },
         { 

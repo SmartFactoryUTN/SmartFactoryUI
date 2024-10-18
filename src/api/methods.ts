@@ -1,4 +1,6 @@
 import { BASE_API_URL } from '../utils/constants';
+import { TEST_USER_ID } from '../utils/constants';
+
 import { ApiResponse, Tizada, Molde } from '../utils/types';
 
 export const getTizadas = async (): Promise<ApiResponse<Tizada[]>> => {

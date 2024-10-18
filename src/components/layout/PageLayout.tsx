@@ -16,12 +16,11 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 
   return (
     <Box sx={{ 
-      paddingTop: theme.spacing(11), // Ajusta este valor según la altura de tu navbar
+      paddingTop: theme.spacing(11),
       paddingBottom: theme.spacing(4),
       backgroundColor: theme.palette.background.default,
       minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
+      color: theme.palette.text.primary,
     }}>
       <Container 
         maxWidth={maxWidth}

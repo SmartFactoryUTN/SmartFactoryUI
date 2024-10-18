@@ -173,8 +173,8 @@ function VerTizada() {
         </Box>
     </Box>
     </PageLayout>
-);
-}
+    );
+};
 
   
 export default VerTizada;
