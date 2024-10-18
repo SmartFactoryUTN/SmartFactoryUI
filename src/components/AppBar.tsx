@@ -16,7 +16,7 @@ const Navigation: React.FC = () => {
         {/* Navigation Buttons */}
         <Button color="inherit" component={Link} to="/tizadas">Tizada</Button>
         <Button color="inherit" component={Link} to="/moldes">Escaneo de Moldes</Button>
-        <Button color="inherit">Inventario</Button>
+        <Button color="inherit" component={Link} to="/inventario">Inventario</Button>
         
         {/* Profile icon with dropdown (simplified as IconButton for now) */}
         <IconButton color="inherit">

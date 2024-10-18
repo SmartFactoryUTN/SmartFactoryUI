@@ -1,7 +1,7 @@
 import { BASE_API_URL } from '../utils/constants';
 import { TEST_USER_ID } from '../utils/constants';
 
-import { ApiResponse, Tizada, Molde } from '../utils/types';
+import { ApiResponse, Tizada, Molde, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
 
 export const getTizadas = async (): Promise<ApiResponse<Tizada[]>> => {
   const response = await fetch(`${BASE_API_URL}/tizada`);
@@ -105,4 +105,19 @@ export const deleteTizadas = async (uuids: string[]): Promise<ApiResponse<void>>
     console.error("Error deleting tizadas:", error);
     return { status: "ERROR", data: undefined };
   }
+};
+
+export const getRollos = async (): Promise<ApiResponse<RolloDeTela[]>> => {
+  const response = await fetch(`${BASE_API_URL}/rollos`); //TODO : ajustar el url del endpoint
+  return await response.json();
+};
+
+export const getFabrics = async (): Promise<ApiResponse<FabricPiece[]>> => {
+  const response = await fetch(`${BASE_API_URL}/fabricPiece`); //TODO : ajustar el url del endpoint
+  return await response.json();
+};
+
+export const getPrendas = async (): Promise<ApiResponse<Prenda[]>> => {
+  const response = await fetch(`${BASE_API_URL}/prendas`); //TODO : ajustar el url del endpoint
+  return await response.json();
 };
