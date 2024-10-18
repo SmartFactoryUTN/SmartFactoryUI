@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import LoginButton from "./Login/LoginButton.tsx";
+import LogoutButton from "./Login/LogoutButton.tsx";
 
 const Navigation: React.FC = () => {
   return (
@@ -17,7 +19,9 @@ const Navigation: React.FC = () => {
         <Button color="inherit" component={Link} to="/tizadas">Tizada</Button>
         <Button color="inherit" component={Link} to="/moldes">Escaneo de Moldes</Button>
         <Button color="inherit">Inventario</Button>
-        
+        <LoginButton/>
+        <LogoutButton/>
+
         {/* Profile icon with dropdown (simplified as IconButton for now) */}
         <IconButton color="inherit">
           <AccountCircle />

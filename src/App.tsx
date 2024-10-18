@@ -4,7 +4,8 @@ import CrearTizada from './pages/CrearTizada.tsx';
 import MisTizadas from './pages/MisTizadas'; 
 import VerTizada from './pages/VerTizada'; 
 import MisMoldes from './pages/MisMoldes'; 
-import SubirMolde from './pages/SubirMolde'; 
+import SubirMolde from './pages/SubirMolde';
+import Callback from "./pages/Callback";
 
 import Navigation from './components/AppBar';
 
@@ -16,17 +17,18 @@ import '@fontsource/roboto/700.css';
 function App() {
   return (
     <Router>
-      <div className="App">
-      <Navigation />
-        <Routes>
-          <Route path="/" element={<Navigate to="/tizadas" replace />} /> // Redirect "/" to "/tizadas"
-          <Route path="/tizadas" element={<MisTizadas/>} />
-          <Route path="/tizadas/crear" element={<CrearTizada />} />
-          <Route path="/tizadas/tizada/:uuid" element={<VerTizada />} />
-          <Route path="/moldes" element={<MisMoldes />} />
-          <Route path="/moldes/subir" element={<SubirMolde />} /> 
-        </Routes>
-      </div>
+          <div className="App">
+          <Navigation />
+            <Routes>
+              <Route path="/" element={<Navigate to="/tizadas" replace />} /> // Redirect "/" to "/tizadas"
+              <Route path="/tizadas" element={<MisTizadas/>} />
+              <Route path="/tizadas/crear" element={<CrearTizada />} />
+              <Route path="/tizadas/tizada/:uuid" element={<VerTizada />} />
+              <Route path="/moldes" element={<MisMoldes />} />
+              <Route path="/moldes/subir" element={<SubirMolde />} />
+              <Route path="/callback" element={<Callback />} />
+            </Routes>
+          </div>
     </Router>
   );
 }
