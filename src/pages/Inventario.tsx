@@ -86,8 +86,64 @@ const prendaColumns: GridColDef[] = [
 return (
     <PageLayout>
         {/* Title */}
-        <Typography color="black" variant="h4">Inventario</Typography>
-                
+        <Typography color="black" variant="h4" sx={{ mb: 4 }}>Inventario</Typography>
+        
+        {/* Rollos de Tela Table */}
+        <Typography variant="h5" sx={{ mb: 2 }}>Rollos de Tela</Typography>
+        <Box sx={{ height: 400, width: '100%', mb: 4 }}>
+            <DataGrid
+                rows={rollos}
+                columns={rolloColumns}
+                getRowId={(row) => row.id}
+                initialState={{
+                    pagination: {
+                    paginationModel: {
+                        pageSize: 5,
+                    },
+                    },
+                }}
+                pageSizeOptions={[5]}
+                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            />
+        </Box>
+
+        {/* Fabrics Table */}
+        <Typography variant="h5" sx={{ mb: 2 }}>Moldes Cortados</Typography>
+        <Box sx={{ height: 400, width: '100%', mb: 4 }}>
+            <DataGrid
+                rows={fabrics}
+                columns={fabricColumns}
+                getRowId={(row) => row.id}
+                initialState={{
+                    pagination: {
+                    paginationModel: {
+                        pageSize: 5,
+                    },
+                    },
+                }}
+                pageSizeOptions={[5]}
+                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            />
+        </Box>
+
+        {/* Prendas Table */}
+        <Typography variant="h5" sx={{ mb: 2 }}>Prendas</Typography>
+        <Box sx={{ height: 400, width: '100%' }}>
+            <DataGrid
+                rows={prendas}
+                columns={prendaColumns}
+                getRowId={(row) => row.id}
+                initialState={{
+                    pagination: {
+                    paginationModel: {
+                        pageSize: 5,
+                    },
+                    },
+                }}
+                pageSizeOptions={[5]}
+                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            />
+        </Box>
     </PageLayout>
 );
 };
