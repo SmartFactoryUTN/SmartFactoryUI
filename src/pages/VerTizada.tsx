@@ -16,15 +16,13 @@ import Button from '@mui/material/Button';
 function VerTizada() {
     const navigate = useNavigate();
     const { uuid } = useParams<{ uuid: string }>();
-    const [loading, setLoading] = useState(true);
     const [tizada, setTizada] = useState<Tizada | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<boolean>(false);
+    //const [error, setError] = useState<string | null>(null);
+    //const [success, setSuccess] = useState<boolean>(false);
     const [svgUrl, setSvgUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchTizadaData = async () => {
-            setLoading(true);
             try {
                 const response = await getTizadaById(uuid!);
                 if (response.status === "OK") {
@@ -37,8 +35,6 @@ function VerTizada() {
                 }
             } catch (error) {
                 console.error('Error fetching tizada data:', error);
-            } finally {
-                setLoading(false);
             }
         };
         fetchTizadaData();
@@ -49,14 +45,14 @@ function VerTizada() {
         try {
             const response = await invokeTizada(tizada.uuid, TEST_USER_ID);
             if (response.status === "OK") {
-                setSuccess(true);
+                // setSuccess(true);
                 //fetchTizadaData(); // TODO: Update current page data
             } else {
-                setError("Failed to start tizada generation. Please try again.");
+                // setError("Failed to start tizada generation. Please try again.");
             }
         } catch (error) {
             console.error('Error starting tizada generation:', error);
-            setError("An error occurred while starting tizada generation. Please try again.");
+            // setError("An error occurred while starting tizada generation. Please try again.");
         }
     };
 

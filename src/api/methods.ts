@@ -1,5 +1,4 @@
 import { BASE_API_URL } from '../utils/constants';
-import { TEST_USER_ID } from '../utils/constants';
 
 import { ApiResponse, Tizada, Molde, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
 

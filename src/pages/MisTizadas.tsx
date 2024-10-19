@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTizadas, deleteTizadas } from '../api/methods';
 import {Tizada} from '../utils/types';
