@@ -24,7 +24,7 @@ function MisTizadas() {
       const fetchTizadas = async () => {
         try {
           const response = await getTizadas();
-          if (response.status === "OK") {
+          if (response.status === "success") {
             setTizadas(response.data);
           } else {
             console.error("Failed to fetch tizadas");
@@ -58,7 +58,7 @@ function MisTizadas() {
       const handleDelete = async (selectedIds: string[]) => {
         try {
           const response = await deleteTizadas(selectedIds);
-          if (response.status === "OK") {
+          if (response.status === "success") {
             fetchTizadas();
           } else {
             console.error("Failed to delete some or all tizadas");

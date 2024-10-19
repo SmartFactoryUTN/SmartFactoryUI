@@ -25,7 +25,7 @@ function VerTizada() {
         const fetchTizadaData = async () => {
             try {
                 const response = await getTizadaById(uuid!);
-                if (response.status === "OK") {
+                if (response.status === "success") {
                     setTizada(response.data);
                     if (response.data.state === 'FINISHED' && response.data.results && response.data.results.length > 0) {
                         setSvgUrl(response.data.results[0].url);
@@ -44,7 +44,7 @@ function VerTizada() {
         if (!tizada) return;
         try {
             const response = await invokeTizada(tizada.uuid, TEST_USER_ID);
-            if (response.status === "OK") {
+            if (response.status === "success") {
                 // setSuccess(true);
                 //fetchTizadaData(); // TODO: Update current page data
             } else {

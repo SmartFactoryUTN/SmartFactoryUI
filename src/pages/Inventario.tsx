@@ -28,7 +28,7 @@ fetchFabrics();
 const fetchRollos = async () => {
     try {
         const response = await getRollos(); // Not implemented
-        if (response.status === "OK") {
+        if (response.status === "success") {
             setRollos(response.data);
         } else {
             console.error("Failed to fetch tizadas");
