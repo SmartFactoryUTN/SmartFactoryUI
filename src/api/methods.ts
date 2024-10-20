@@ -1,6 +1,6 @@
 import { BASE_API_URL } from '../utils/constants';
 
-import { ApiResponse, Tizada, Molde, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
+import { ApiResponse, Tizada, Molde, CreateMoldePayload, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
 
 export const getTizadas = async (): Promise<ApiResponse<Tizada[]>> => {
   const response = await fetch(`${BASE_API_URL}/tizada`);
@@ -28,6 +28,40 @@ export const getMoldes = async (): Promise<ApiResponse<Molde[]>> => {
   }
 };
 
+export const createMolde = async (payload: CreateMoldePayload): Promise<ApiResponse<any>> => {
+  const queryParams = new URLSearchParams({
+    name: payload.name,
+    description: payload.description,
+    userUUID: payload.userUUID
+  });
+
+  const url = `${BASE_API_URL}/molde/create?${queryParams.toString()}`;
+
+  try {
+    const formData = new FormData();
+    formData.append('svg', payload.file);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      // You can set additional headers if needed
+      // headers: {
+      //   "Authorization": "Bearer your-access-token"
+      // },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create mold');
+    }
+
+    const data: ApiResponse<any> = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error creating mold:", error);
+    throw error;
+  }
+};
+
 export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>> => {
   try {
     const response = await fetch(`${BASE_API_URL}/tizada`, {
@@ -48,7 +82,7 @@ export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>
   }
 };
 
-export const invokeTizada = async (tizadaUUID: string, user: string): Promise<ApiResponse<any>> => {
+export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promise<ApiResponse<any>> => {
   try {
     const response = await fetch(`${BASE_API_URL}/tizada/invoke`, {
       method: 'POST',
@@ -57,7 +91,7 @@ export const invokeTizada = async (tizadaUUID: string, user: string): Promise<Ap
       },
       body: JSON.stringify({
         tizadaUUID,
-        user,
+        userUUID,
       }),
     });
 

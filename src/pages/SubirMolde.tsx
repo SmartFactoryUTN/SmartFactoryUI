@@ -1,56 +1,96 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { TEST_USER_ID } from '../utils/constants';
+import { createMolde } from '../api/methods';
 import { 
     Typography, 
     Box, 
     Button, 
-    IconButton
+    IconButton,
+    TextField
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PageLayout from '../components/layout/PageLayout';
 
+
 const SubirMolde: React.FC = () => {
     const navigate = useNavigate();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
-  
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
         const file = event.target.files[0];
         setSelectedFile(file);
   
-        // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
           setPreview(e.target?.result as string);
         };
         reader.readAsDataURL(file);
-  
-        // Capture SVG content to upload it as a field 
-        const svgReader = new FileReader();
-        svgReader.onload = (e) => {
-          const svgContent = e.target?.result as string;
-          console.log('SVG Content:', svgContent);
-        };
-        svgReader.readAsText(file);
       }
     };
   
-    const handleUpload = () => {
-      console.log('Uploading file:', selectedFile); // TODO
-      navigate('/moldes');
+    const handleUpload = async () => {
+      if (!selectedFile || !name || !description) {
+        setError('Por favor, complete todos los campos y seleccione un archivo.');
+        return;
+      }
+
+      try {
+        const response = await createMolde({
+          name,
+          description,
+          userUUID: TEST_USER_ID,
+          file: selectedFile,
+        });
+
+        if (response.status === 'OK') {
+          setSuccess(true);
+          setTimeout(() => navigate('/moldes'), 2000);
+        } else {
+          throw new Error('Failed to create mold');
+        }
+      } catch (err) {
+        setError('Ocurrió un error al subir el molde. Por favor, intente nuevamente.');
+      }
     };
 
   return (
       <PageLayout>
-      <Box sx={{ mt: 4, mb: 4 }}>
-        <IconButton onClick={() => navigate('/moldes')} sx={{ mb: 2 }}>
+        {/* Title and Button */}
+        <Box sx={{ display: 'flex', justifyContent: 'left', alignItems: 'center', marginBottom: 2 }}>
+        <IconButton onClick={() => navigate('/moldes')} sx={{ mr: 2, mb: 2 }}>
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" gutterBottom>
           Subir Nuevo Molde
         </Typography>
+        </Box>
+        
+        <Box sx={{ mb: 3 }}>
+          <TextField
+            fullWidth
+            label="Nombre del Molde"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Descripción"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            margin="normal"
+            multiline
+            rows={3}
+          />
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -99,7 +139,6 @@ const SubirMolde: React.FC = () => {
             </Button>
           </Box>
         )}
-      </Box>
       </PageLayout>
   );
 };
