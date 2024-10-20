@@ -6,6 +6,8 @@ import MisTizadas from './pages/MisTizadas';
 import VerTizada from './pages/VerTizada';
 import MisMoldes from './pages/MisMoldes';
 import SubirMolde from './pages/SubirMolde';
+import Tutorial from './pages/Tutorial';
+import Inventario from './pages/Inventario';
 import Callback from "./pages/Callback";
 
 import Navigation from './components/AppBar';
@@ -36,6 +38,8 @@ function App() {
                                 <Route path="/tizadas/tizada/:uuid" element={<VerTizada/>}/>
                                 <Route path="/moldes" element={<MisMoldes/>}/>
                                 <Route path="/moldes/subir" element={<SubirMolde/>}/>
+                                <Route path="/moldes/crear" element={<Tutorial />} />
+                                <Route path="/inventario" element={<Inventario />} />
                                 <Route path="/callback" element={<Callback/>}/>
                             </React.Fragment>
                         )

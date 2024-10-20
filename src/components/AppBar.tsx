@@ -8,31 +8,29 @@ import LoginButton from "./Login/LoginButton.tsx";
 
 const Navigation: React.FC = (props) => {
 
-  const {isAuthenticated} = props;
+    const {isAuthenticated} = props;
 
   return (
     <AppBar position="fixed" color="default">
-      <Toolbar>
-        {/* Application title or logo */}
-        <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'left', fontWeight: 'bold' }}>
-          SmartFactory
-        </Typography>
-        
-        {/* Navigation Buttons */}
-        {isAuthenticated && (
-            <div>
-              <Button color="inherit" component={Link} to="/tizadas">Tizada</Button>
-              <Button color="inherit" component={Link} to="/moldes">Escaneo de Moldes</Button>
-              <Button color="inherit">Inventario</Button></div>
-        )}
-        {!isAuthenticated && <LoginButton/>}
-        {isAuthenticated && <LogoutButton/>}
+        <Toolbar>
+            <Typography variant="h6" sx={{flexGrow: 1, textAlign: 'left', fontWeight: 'bold'}}>
+                SmartFactory
+            </Typography>
 
-        {/* Profile icon with dropdown (simplified as IconButton for now) */}
-        {isAuthenticated && (<IconButton color="inherit">
-          <AccountCircle/>
-        </IconButton>)}
-      </Toolbar>
+            {isAuthenticated && (
+                <div>
+                    <Button color="inherit" component={Link} to="/tizadas">Tizada</Button>
+                    <Button color="inherit" component={Link} to="/moldes">Escaneo de Moldes</Button>
+                    <Button color="inherit" component={Link} to="/inventario">Inventario</Button>
+                </div>
+            )}
+            {!isAuthenticated && <LoginButton/>}
+            {isAuthenticated && <LogoutButton/>}
+
+            {isAuthenticated && (<IconButton color="inherit">
+                <AccountCircle/>
+            </IconButton>)}
+        </Toolbar>
     </AppBar>
   );
 };

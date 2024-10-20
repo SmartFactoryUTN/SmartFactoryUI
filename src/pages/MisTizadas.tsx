@@ -1,12 +1,15 @@
-import {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {getTizadas} from '../api/methods'
-import {Tizada} from '../utils/types'
-import {formatDate} from '../utils/helpers'
-import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
-import {esES} from '@mui/x-data-grid/locales';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getTizadas, deleteTizadas } from '../api/methods'
+import { Tizada } from '../utils/types'
+import { formatDate } from '../utils/helpers'
+import CustomToolbar from "../components/CustomToolbar";
+import PageLayout from '../components/layout/PageLayout';
+
+
+import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
+import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
@@ -21,7 +24,7 @@ function MisTizadas() {
       const fetchTizadas = async () => {
         try {
           const response = await getTizadas();
-          if (response.status === "OK") {
+          if (response.status === "success") {
             setTizadas(response.data);
           } else {
             console.error("Failed to fetch tizadas");
@@ -32,7 +35,6 @@ function MisTizadas() {
       };    
     
       const columns: GridColDef[] = [
-        { field: 'uuid', headerName: 'ID', width: 220 },
         { field: 'name', headerName: 'Nombre', width: 200, editable: true },
         { field: 'state', headerName: 'Estado', width: 120 },
         { 
@@ -52,9 +54,22 @@ function MisTizadas() {
       const handleRowClick = (params: GridRowParams) => {
         navigate(`/tizadas/tizada/${params.row.uuid}`);
       };
-      
+
+      const handleDelete = async (selectedIds: string[]) => {
+        try {
+          const response = await deleteTizadas(selectedIds);
+          if (response.status === "success") {
+            fetchTizadas();
+          } else {
+            console.error("Failed to delete some or all tizadas");
+          }
+        } catch (error) {
+          console.error("Error deleting tizadas:", error);
+        }
+      };
+
        return (
-                <Container>
+                <PageLayout>
                 {/* Title and Button */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                     <Typography color="black" variant="h4">Mis Tizadas</Typography>
@@ -76,10 +91,18 @@ function MisTizadas() {
                         },
                     }}
                     pageSizeOptions={[5]}
-                    checkboxSelection={false}
+                    checkboxSelection={true}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                     disableRowSelectionOnClick
                     onRowClick={handleRowClick}
+                    slots={{
+                      toolbar: CustomToolbar,
+                    }}
+                    slotProps={{
+                      toolbar: {
+                        onDelete: handleDelete,
+                      },
+                    }}
                     sx={{
                         '& .MuiDataGrid-row': {
                             cursor: 'pointer',
@@ -101,7 +124,7 @@ function MisTizadas() {
                         },
                     }}
                 />
-                </Container>
+                </PageLayout>
        );
    }
    

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-    Container, 
     Typography, 
     Box, 
     Button, 
@@ -9,6 +8,7 @@ import {
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PageLayout from '../components/layout/PageLayout';
 
 const SubirMolde: React.FC = () => {
     const navigate = useNavigate();
@@ -43,7 +43,7 @@ const SubirMolde: React.FC = () => {
     };
 
   return (
-    <Container maxWidth="md">
+      <PageLayout>
       <Box sx={{ mt: 4, mb: 4 }}>
         <IconButton onClick={() => navigate('/moldes')} sx={{ mb: 2 }}>
           <ArrowBackIcon />
@@ -100,7 +100,7 @@ const SubirMolde: React.FC = () => {
           </Box>
         )}
       </Box>
-    </Container>
+      </PageLayout>
   );
 };
 

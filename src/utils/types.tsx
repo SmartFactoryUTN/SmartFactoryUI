@@ -20,12 +20,43 @@ export interface Tizada {
     name: string;
     parts: TizadaPart[];
     bin: string | null;
-    results: any[]; // You might want to define a more specific type for results
+    results: any[];
     state: 'CREATED' | 'IN_PROGRESS' | 'FINISHED' | 'ERROR';
     active: boolean;
     createdAt: string;
     updatedAt: string;
     deletedAt: string | null;
+}
+
+export interface RolloDeTela {
+    uuid: string;
+    name: string; 
+    color: string; // verificar y completar los atributos
+    // TODO: atributos de los rollos de tela
+}
+
+export interface FabricPiece {
+    uuid: string;
+    name: string;
+    stock: number; //verificar que este bien
+    // TODO: atributos de moldes cortados
+}
+
+export interface Prenda {
+    uuid: string;
+    name: string;
+    stock: number; //verificar que este bien
+    color: string; //verificar que este bien
+    garmentParts: GarmentPart[]; //verificar que este bien
+    // TODO: atributos de la prenda
+}
+
+export interface GarmentPart {
+    uuid: string;
+    cantidad: string;
+    color: string;
+    moldeUUID: string; // ver que este bien
+    //TODO: Atributos de las partes de prenda
 }
 
 export interface ApiResponse<T> {
