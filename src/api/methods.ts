@@ -1,7 +1,7 @@
 import { BASE_API_URL } from '../utils/constants';
 import { TEST_USER_ID } from '../utils/constants';
 
-import { ApiResponse, Tizada, Molde, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
+import {ApiResponse, Tizada, Molde, RolloDeTela, FabricPiece, Prenda, FabricColor} from '../utils/types';
 
 export const getTizadas = async (): Promise<ApiResponse<Tizada[]>> => {
   const response = await fetch(`${BASE_API_URL}/tizada`);
@@ -108,16 +108,21 @@ export const deleteTizadas = async (uuids: string[]): Promise<ApiResponse<void>>
 };
 
 export const getRollos = async (): Promise<ApiResponse<RolloDeTela[]>> => {
-  const response = await fetch(`${BASE_API_URL}/rollos`); //TODO : ajustar el url del endpoint
+  const response = await fetch(`${BASE_API_URL}/inventario/rollo`); //TODO : ajustar el url del endpoint
   return await response.json();
 };
 
 export const getFabrics = async (): Promise<ApiResponse<FabricPiece[]>> => {
-  const response = await fetch(`${BASE_API_URL}/fabricPiece`); //TODO : ajustar el url del endpoint
+  const response = await fetch(`${BASE_API_URL}/inventario/fabricPiece`); //TODO : ajustar el url del endpoint
   return await response.json();
 };
 
 export const getPrendas = async (): Promise<ApiResponse<Prenda[]>> => {
-  const response = await fetch(`${BASE_API_URL}/prendas`); //TODO : ajustar el url del endpoint
+  const response = await fetch(`${BASE_API_URL}/inventario/prenda`); //TODO : ajustar el url del endpoint
   return await response.json();
 };
+
+export const getFabricColors = async (): Promise<ApiResponse<FabricColor[]>> => {
+  const response = await fetch(`${BASE_API_URL}/inventario/color`);
+  return await response.json();
+}
