@@ -8,33 +8,35 @@ import Paper from '@mui/material/Paper';
 
 function createData(
   nombre: string,
+  tiempoAprendizaje: string,
   costo: string,
   especializado: string,
   comunidad: string,
   actualizaciones: string,
 ) {
-  return { nombre, costo, especializado, comunidad, actualizaciones };
+  return { nombre, tiempoAprendizaje, costo, especializado, comunidad, actualizaciones };
 }
 
 const rows = [
-  createData('Seamly2D', '✅', '✅', '✅', '✅'),
-  createData('Valentina', '✅', '✅', '⚠️', '⚠️'),
-  createData('Inkscape', '✅', '❌', '✅', '✅'),
-  createData('Gerber AccuMark', '❌', '✅', '❌', '✅'),
-  createData('Lectra Modaris', '❌', '✅', '❌', '✅'),
+  createData('Inkscape', '✅', '✅', '❌', '✅', '✅'),
+  createData('Seamly2D', '❌', '✅', '✅', '✅', '✅'),
+  createData('Valentina', '❌', '✅', '✅', '⚠️', '⚠️'),
+  createData('Gerber AccuMark', '❌', '❌', '✅', '❌', '✅'),
+  createData('Lectra Modaris', '❌', '❌', '✅', '❌', '✅'),
 ];
 
 export default function TablaComparativaSoftware() {
   return (
-    <TableContainer sx={{ mt: 3 }} component={Paper}>
+    <TableContainer sx={{ mt: 1, mb:2 }} component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small" aria-label="tabla comparativa de software">
         <TableHead>
           <TableRow>
             <TableCell>Software</TableCell>
-            <TableCell align="center">Costo</TableCell>
-            <TableCell align="center">Especializado en patrones</TableCell>
+            <TableCell align="center">Gratuita</TableCell>
+            <TableCell align="center">Especializada en confección de moldes</TableCell>
             <TableCell align="center">Comunidad activa</TableCell>
             <TableCell align="center">Actualizaciones frecuentes</TableCell>
+            <TableCell align="center">Tiempo de aprendizaje</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -50,6 +52,7 @@ export default function TablaComparativaSoftware() {
               <TableCell align="center">{row.especializado}</TableCell>
               <TableCell align="center">{row.comunidad}</TableCell>
               <TableCell align="center">{row.actualizaciones}</TableCell>
+              <TableCell align="center">{row.tiempoAprendizaje}</TableCell>
             </TableRow>
           ))}
         </TableBody>
