@@ -45,7 +45,8 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
     }, []);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, setError] = useState<string | null>(null); // FIXME: volver a agregar el error
 
     const fetchColors = useCallback(async () => {
         if (isLoading) return;

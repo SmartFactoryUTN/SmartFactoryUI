@@ -47,7 +47,8 @@ function CrearPrenda() {
     const [isLoadingMoldes, setIsLoadingMoldes] = useState<boolean>(false);
     const [isLoadingColors, setIsLoadingColors] = useState<boolean>(false);
 
-    const [error, setError] = useState<string | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, setError] = useState<string | null>(null); // FIXME: volver a agregar el error
     const [successMessage, setSuccessMessage] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
