@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'; //, useCallback
-// import { useNavigate } from 'react-router-dom';
-import { getRollos, getPrendas, getFabrics } from '../api/methods'; // Llamadas a la API
+import {useNavigate} from 'react-router-dom';
+import {getRollos, getPrendas, getFabrics} from '../api/methods'; // Llamadas a la API
 import {RolloDeTela, Prenda, FabricPiece} from '../utils/types'; // Entidades
 
 {/* UI Components */}
@@ -12,27 +12,32 @@ import Button from '@mui/material/Button';
 import PageLayout from '../components/layout/PageLayout';
 import NuevoRolloModal from "./NuevoRollo.tsx";
 
-
 function Inventario() {
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [rollos, setRollos] = useState<RolloDeTela[]>([]);
     const [fabrics, setFabrics] = useState<FabricPiece[]>([]);
     const [prendas, setPrendas] = useState<Prenda[]>([]);
+    const [selectedRollos, setSelectedRollos] = useState<string[]>([]);
+    const [selectedPrendas, setSelectedPrendas] = useState<string[]>([]);
 
-    const [openModal, setOpenModal] = useState<boolean>(false);
+    const [openModalRollo, setOpenModalRollo] = useState<boolean>(false);
 
     const handleOpenModal = () => {
-        setOpenModal(true);
+        setOpenModalRollo(true);
     };
 
     const handleCloseModal = () => {
-        setOpenModal(false);
+        setOpenModalRollo(false);
     };
 
-    const handleSave = () => {
-        // Manejar la creación de un nuevo rollo aquí
-        setOpenModal(false);
+    const handleSaveRollo = () => {
+        fetchRollos();
+    };
+
+    const handleConvert = () => {
+        // Lógica para convertir los rollos seleccionados
+        console.log("Convertir los rollos seleccionados");
     };
 
 // Traer rollos, prendas y fabrics del back
@@ -124,8 +129,18 @@ function Inventario() {
             {/* Rollos de Tela Table */}
             <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                 <Typography variant="h5" sx={{mb: 2}}>Rollos de Tela</Typography>
-                <Box>
-                    <Button variant="contained" color="primary" onClick={handleOpenModal} sx={{marginBottom: 2, minWidth: "20px", minHeight: "20px"}}>
+                <Box sx={{display: "flex", alignItems: "center"}}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleConvert}
+                        sx={{marginRight: 2, mb: 2}}
+                        disabled={selectedRollos.length === 0}
+                    >
+                        Convertir
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={handleOpenModal}
+                            sx={{mb: 2, minWidth: "20px", minHeight: "20px"}}>
                         {/*<Typography variant="h5">+</Typography>*/}
                         Nuevo rollo
                     </Button>
@@ -146,12 +161,20 @@ function Inventario() {
                     pageSizeOptions={[5]}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                     checkboxSelection={true}
+                    onRowSelectionModelChange={(newSelection) => {
+                        setSelectedRollos(newSelection as string[]);
+                    }}
                 />
             </Box>
 
             {/* Fabrics Table */}
-            <Typography variant="h5" sx={{mb: 2}}>Moldes Cortados</Typography>
-            <Box sx={{height: 400, width: '100%', mb: 4}}>
+            <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <Typography variant="h5" sx={{mb: 2}}>Moldes Cortados</Typography>
+                <Box sx={{display: "flex", alignItems: "center"}}>
+
+                </Box>
+            </Box>
+            <Box sx={{height: '400', width: '100%', mb: 4}}>
                 <DataGrid
                     rows={fabrics}
                     columns={fabricColumns}
@@ -169,7 +192,25 @@ function Inventario() {
             </Box>
 
             {/* Prendas Table */}
-            <Typography variant="h5" sx={{mb: 2}}>Prendas</Typography>
+            <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <Typography variant="h5" sx={{mb: 2}}>Prendas</Typography>
+                <Box sx={{display: "flex", alignItems: "center"}}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleConvert}
+                        sx={{marginRight: 2, mb: 2}}
+                        disabled={selectedPrendas.length === 0}
+                    >
+                        Convertir
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={() => navigate(`/inventario/prenda/crear`)}
+                            sx={{mb: 2, minWidth: "20px", minHeight: "20px"}}>
+                        {/*<Typography variant="h5">+</Typography>*/}
+                        Crear prenda
+                    </Button>
+                </Box>
+            </Box>
             <Box sx={{height: 400, width: '100%'}}>
                 <DataGrid
                     rows={prendas}
@@ -183,13 +224,17 @@ function Inventario() {
                         },
                     }}
                     pageSizeOptions={[5]}
+                    checkboxSelection={true}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                    onRowSelectionModelChange={(newSelection) => {
+                        setSelectedPrendas(newSelection as string[]);
+                    }}
                 />
             </Box>
             <NuevoRolloModal
-                open={openModal}
+                open={openModalRollo}
                 onClose={handleCloseModal}
-                onSave={handleSave}
+                onSave={handleSaveRollo}
             />
         </PageLayout>
     );

@@ -1,17 +1,44 @@
-import {useNavigate} from "react-router-dom";
-import React, {useCallback, useEffect, useState} from "react";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Select, TextField} from "@mui/material";
-import {getFabricColors} from "../api/methods.ts";
+import {useCallback, useEffect, useState} from "react";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle, FormControl,
+    MenuItem,
+    Select, Snackbar,
+    TextField
+} from "@mui/material";
+import {getFabricColors, createRollo} from "../api/methods.ts"; // Importa la función para crear rollo
 import {FabricColor} from "../utils/types.tsx";
-import {columnsStateInitializer} from "@mui/x-data-grid/internals";
 
-interface NuevoRolloForm {
-    name: string;
-    color: string;
-}
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 const NuevoRolloModal = ({open, onClose, onSave}) => {
     const [colors, setColors] = useState<FabricColor[]>([]);
+    const [selectedColor, setSelectedColor] = useState<FabricColor | null>(null);
+    const [newColorName, setNewColorName] = useState("");
+    const [rolloName, setRolloName] = useState(""); // Estado para el nombre del rollo
+    const [successMessage, setSuccessMessage] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
+
+    const handleChange = (event: any) => {
+        const selectedId = event.target.value;
+        const selected = colors.find((color) => color.fabricColorId === selectedId);
+        setSelectedColor(selected || null);
+    }
+
+    const handleAddColor = () => {
+        if (newColorName.trim()) {
+            const newColor = {
+                fabricColorId: `color-${Date.now()}`,
+                name: newColorName.trim()
+            };
+            setColors((prevColors) => [...prevColors, newColor]);
+            setNewColorName("");
+            setSelectedColor(newColor);
+        }
+    };
 
     useEffect(() => {
         fetchColors();
@@ -21,14 +48,14 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
     const [error, setError] = useState<string | null>(null);
 
     const fetchColors = useCallback(async () => {
-        if (isLoading) return
+        if (isLoading) return;
         setIsLoading(true);
         try {
-            const result = await getFabricColors()
+            const result = await getFabricColors();
             if (result.status === 'success') {
                 setColors(result.data);
             } else {
-                console.error('Failed to fetch colors:', result.data.message)
+                console.error('Failed to fetch colors:', result.data);
                 setError('Failed to fetch colors. Please try again.');
             }
         } catch (error) {
@@ -36,19 +63,100 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
         } finally {
             setIsLoading(false);
         }
-    })
+    }, [isLoading]);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        if (!rolloName || !selectedColor) {
+            // FIXME: mensajitos lindos
+            alert("Por favor, complete todos los campos.");
+            setIsSaving(false);
+            return;
+        }
+
+        try {
+            const response = await createRollo({
+                name: rolloName,
+                fabricColorId: selectedColor.fabricColorId
+            });
+
+            if (response.status === 'success') {
+                setSuccessMessage("¡Rollo guardado exitosamente!");
+                onSave(response.data);
+                setTimeout(() => {
+                    setSuccessMessage("");
+                    onClose();
+                }, 3000);
+            } else {
+                console.error('Error al guardar el rollo:', response.data.message);
+                setIsSaving(false);
+            }
+        } catch (error) {
+            console.error('Error en la llamada a la API:', error);
+        }
+    };
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose} maxWidth={false} fullWidth sx={{width: '600px', maxWidth: '90%', margin: 'auto'}}>
             <DialogTitle>Nuevo Rollo</DialogTitle>
             <DialogContent>
-                <TextField autoFocus margin="dense" label="Nombre del Rollo" fullWidth variant="outlined" />
-                <Select
-                    ></Select>
+                <FormControl fullWidth margin="dense">
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Nombre del Rollo"
+                        fullWidth
+                        variant="outlined"
+                        value={rolloName}
+                        onChange={(e) => setRolloName(e.target.value)}
+                    />
+                    <Select
+                        fullWidth
+                        value={selectedColor?.fabricColorId || ""}
+                        id={"colorSelect"}
+                        onChange={handleChange}
+                        variant={"outlined"}
+                        displayEmpty
+                        sx={{mt: 2}}
+                        renderValue={
+                            selectedColor?.fabricColorId ? undefined : () => "Seleccione color"
+                        }>
+                        <MenuItem value={""} disabled>
+                            Seleccione color
+                        </MenuItem>
+                        {colors.map((color) => (
+                            <MenuItem key={color.fabricColorId} value={color.fabricColorId}>
+                                {color.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <TextField
+                        margin="dense"
+                        label="Agregar nuevo color"
+                        value={newColorName}
+                        onChange={(e) => setNewColorName(e.target.value)}
+                        fullWidth
+                        variant="outlined"
+                        sx={{ mt: 2 }}
+                    />
+                    <Button
+                        onClick={handleAddColor}
+                        variant="contained"
+                        color="primary"
+                        sx={{ mt: 2 }}
+                    >
+                        Agregar Color
+                    </Button>
+                </FormControl>
+                <Snackbar
+                    open={!!successMessage}
+                    autoHideDuration={3000}
+                    message={successMessage}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Cancelar</Button>
-                <Button onClick={onSave}>Guardar</Button>
+                <Button onClick={handleSave} disabled={isSaving}>{isSaving ? "Guardando..." : "Guardar"}</Button>
             </DialogActions>
         </Dialog>
     );

@@ -1,6 +1,6 @@
-import { BASE_API_URL } from '../utils/constants';
+import {BASE_API_URL} from '../utils/constants';
 
-import { ApiResponse, Tizada, Molde, CreateMoldePayload, RolloDeTela, FabricPiece, Prenda, FabricColor } from '../utils/types';
+import { ApiResponse, FabricColor, FabricPiece, Molde, Prenda, RolloDeTela, Tizada, CreateMoldePayload } from '../utils/types';
 
 export const getTizadas = async (): Promise<ApiResponse<Tizada[]>> => {
   const response = await fetch(`${BASE_API_URL}/tizada`);
@@ -107,9 +107,9 @@ export const deleteTizada = async (uuid: string): Promise<ApiResponse<void>> => 
   try {
     const url = new URL(`${BASE_API_URL}/tizada/${uuid}`);
     url.searchParams.append('id', uuid);
-    
+
     const response = await fetch(url.toString(), {
-      method: 'DELETE', 
+      method: 'DELETE',
     });
     
     if (!response.ok) {
@@ -158,3 +158,41 @@ export const getFabricColors = async (): Promise<ApiResponse<FabricColor[]>> => 
   const response = await fetch(`${BASE_API_URL}/inventario/color`);
   return await response.json();
 }
+
+export const createRollo = async (rolloData: any): Promise<ApiResponse<any>> => {
+  try {
+    const response = await fetch(`${BASE_API_URL}/inventario/rollo`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(rolloData),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating roll:", error);
+    throw error;
+  }
+};
+
+export const createPrenda = async (prendaData: any): Promise<ApiResponse<any>> => {
+  try {
+    const response = await fetch(`${BASE_API_URL}/inventario/prenda`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(prendaData),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating garmnet:", error);
+    throw error;
+  }
+};
