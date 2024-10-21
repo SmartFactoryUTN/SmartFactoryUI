@@ -24,7 +24,7 @@ function MisMoldes() {
       const fetchMoldes = async () => {
         try {
           const response = await getMoldes();
-          if (response.status === "OK") {
+          if (response.status === "success") {
             setMoldes(response.data);
           } else {
             console.error("Failed to fetch user moldes");

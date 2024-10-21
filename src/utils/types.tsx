@@ -87,3 +87,10 @@ export interface ApiResponse<T> {
     status: string;
     data: T;
 }
+
+export interface CreateMoldePayload {
+    name: string;
+    description: string;
+    userUUID: string;
+    file: File;
+}

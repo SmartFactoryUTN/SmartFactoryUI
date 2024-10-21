@@ -1,12 +1,11 @@
-import {useState, useEffect, useCallback} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {getRollos, getPrendas, getFabrics} from '../api/methods'; // Llamadas a la API
+import { useState, useEffect } from 'react'; //, useCallback
+// import { useNavigate } from 'react-router-dom';
+import { getRollos, getPrendas, getFabrics } from '../api/methods'; // Llamadas a la API
 import {RolloDeTela, Prenda, FabricPiece} from '../utils/types'; // Entidades
 
-{/* UI Components */
-}
-import {DataGrid, GridColDef} from '@mui/x-data-grid';
-import {esES} from '@mui/x-data-grid/locales';
+{/* UI Components */}
+import { DataGrid, GridColDef } from '@mui/x-data-grid'; // , GridRowParams
+import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -15,7 +14,7 @@ import NuevoRolloModal from "./NuevoRollo.tsx";
 
 
 function Inventario() {
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const [rollos, setRollos] = useState<RolloDeTela[]>([]);
     const [fabrics, setFabrics] = useState<FabricPiece[]>([]);

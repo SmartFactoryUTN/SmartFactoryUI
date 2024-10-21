@@ -87,7 +87,7 @@ function CrearTizada() {
     try {
       const result = await getMoldes();
       console.log('Fetched molds:', result);
-      if (result.status === 'OK') {
+      if (result.status === 'success') {
         setAvailableMolds(result.data);
       } else {
         console.error('Failed to fetch molds');
