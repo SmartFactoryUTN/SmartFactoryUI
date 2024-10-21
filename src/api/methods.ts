@@ -196,3 +196,46 @@ export const createPrenda = async (prendaData: any): Promise<ApiResponse<any>> =
     throw error;
   }
 };
+
+export const convertRollos = async (convertRollosData: any): Promise<ApiResponse<any>> => {
+  try {
+    const response = await fetch(`${BASE_API_URL}/inventario/rollo/convert`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(convertRollosData),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error converting rolls:", error);
+    throw error;
+  }
+}
+
+export const getTizadasFinalizadas = async (): Promise<ApiResponse<Tizada[]>> => {
+  const response = await fetch(`${BASE_API_URL}/tizada?finalizadas=true`);
+  return await response.json();
+};
+
+export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse<any>> => {
+  try {
+    const response = await fetch(`${BASE_API_URL}/inventario/fabricPiece/convert`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(convertPrendaData),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error converting roll:", error);
+    throw error;
+  }
+}

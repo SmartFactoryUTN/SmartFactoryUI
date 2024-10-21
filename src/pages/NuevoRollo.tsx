@@ -18,7 +18,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
     const [colors, setColors] = useState<FabricColor[]>([]);
     const [selectedColor, setSelectedColor] = useState<FabricColor | null>(null);
     const [newColorName, setNewColorName] = useState("");
-    const [rolloName, setRolloName] = useState(""); // Estado para el nombre del rollo
+    const [rolloName, setRolloName] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
@@ -68,7 +68,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
     const handleSave = async () => {
         setIsSaving(true);
         if (!rolloName || !selectedColor) {
-            // FIXME: mensajitos lindos
+            // FIXME: mensajitos lindos en vez de alert todo feo
             alert("Por favor, complete todos los campos.");
             setIsSaving(false);
             return;
@@ -82,7 +82,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
 
             if (response.status === 'success') {
                 setSuccessMessage("¡Rollo guardado exitosamente!");
-                onSave(response.data);
+                onSave();
                 setTimeout(() => {
                     setSuccessMessage("");
                     onClose();

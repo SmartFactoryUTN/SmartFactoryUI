@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import PageLayout from '../components/layout/PageLayout';
 import NuevoRolloModal from "./NuevoRollo.tsx";
+import ConvertirRolloModal from "./ConvertirRollo.tsx";
+import ConvertirPrendaModal from "./ConvertirPrendaModal.tsx";
 
 function Inventario() {
     const navigate = useNavigate();
@@ -18,10 +20,12 @@ function Inventario() {
     const [rollos, setRollos] = useState<RolloDeTela[]>([]);
     const [fabrics, setFabrics] = useState<FabricPiece[]>([]);
     const [prendas, setPrendas] = useState<Prenda[]>([]);
-    const [selectedRollos, setSelectedRollos] = useState<string[]>([]);
-    const [selectedPrendas, setSelectedPrendas] = useState<string[]>([]);
+
+    const [selectedRollos, setSelectedRollos] = useState<RolloDeTela[]>([]);
+    const [selectedPrendas, setSelectedPrendas] = useState<Prenda[]>([]);
 
     const [openModalRollo, setOpenModalRollo] = useState<boolean>(false);
+    const [openConvertirRolloModal, setOpenConvertirRolloModal] = useState<boolean>(false);
 
     const handleOpenModal = () => {
         setOpenModalRollo(true);
@@ -35,12 +39,39 @@ function Inventario() {
         fetchRollos();
     };
 
-    const handleConvert = () => {
-        // Lógica para convertir los rollos seleccionados
-        console.log("Convertir los rollos seleccionados");
+    const [openConvertirPrendaModal, setOpenConvertirPrendaModal] = useState<boolean>(false);
+
+    const handleOpenConvertirPrendaModal = () => {
+        setOpenConvertirPrendaModal(true);
     };
 
-// Traer rollos, prendas y fabrics del back
+    const handleCloseConvertirPrendaModal = () => {
+        setOpenConvertirPrendaModal(false);
+    };
+
+    const handleConversionRollosSuccess = () => {
+        fetchRollos();
+        fetchFabrics();
+    }
+
+    const handleConversionPrendasSuccess = () => {
+        fetchFabrics();
+        fetchPrendas();
+    }
+
+    const handleOpenConvertirModal = () => {
+        const rollosSeleccionadosData = rollos.filter((rollo) =>
+            selectedRollos.map((r) => r.fabricRollId).includes(rollo.fabricRollId)
+        );
+        setSelectedRollos(rollosSeleccionadosData);
+        console.log(rollosSeleccionadosData);
+        setOpenConvertirRolloModal(true);
+    };
+
+    const handleCloseConvertirModal = () => {
+        setOpenConvertirRolloModal(false);
+    };
+
     useEffect(() => {
         fetchRollos();
         fetchPrendas();
@@ -62,7 +93,7 @@ function Inventario() {
 
     const fetchFabrics = async () => {
         try {
-            const response = await getFabrics(); // Not implemented
+            const response = await getFabrics();
             if (response.status === "success") {
                 setFabrics(response.data);
             } else {
@@ -86,7 +117,6 @@ function Inventario() {
         }
     };
 
-// Definir columnas a mostrar. Deben ser atributos de las clases definidas en utils/types.tsx
 
     const rolloColumns: GridColDef[] = [
         {field: 'name', headerName: 'Nombre', editable: false, flex: 1},
@@ -111,13 +141,11 @@ function Inventario() {
         },
         {field: 'color', headerName: 'Color', editable: false, valueGetter: (_, row) => row.color.name, flex: 0.75},
         {field: 'stock', headerName: 'Stock', editable: false, flex: 0, minWidth: 125}
-        // Otras columnas para la tabla de moldes cortados
     ];
 
     const prendaColumns: GridColDef[] = [
         {field: 'name', headerName: 'Nombre', editable: false, flex: 1},
         {field: 'stock', headerName: 'Stock', editable: false, flex: 0, minWidth: 125},
-        // Otras columnas para la tabla de prendas
     ];
 
 
@@ -133,7 +161,7 @@ function Inventario() {
                     <Button
                         variant="contained"
                         color="secondary"
-                        onClick={handleConvert}
+                        onClick={handleOpenConvertirModal}
                         sx={{marginRight: 2, mb: 2}}
                         disabled={selectedRollos.length === 0}
                     >
@@ -160,9 +188,12 @@ function Inventario() {
                     }}
                     pageSizeOptions={[5]}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    checkboxSelection={true}
+                    checkboxSelection
                     onRowSelectionModelChange={(newSelection) => {
-                        setSelectedRollos(newSelection as string[]);
+                        const selectedRollosData = rollos.filter((rollo) =>
+                            newSelection.includes(rollo.fabricRollId)
+                        );
+                        setSelectedRollos(selectedRollosData);
                     }}
                 />
             </Box>
@@ -198,7 +229,7 @@ function Inventario() {
                     <Button
                         variant="contained"
                         color="secondary"
-                        onClick={handleConvert}
+                        onClick={handleOpenConvertirPrendaModal}
                         sx={{marginRight: 2, mb: 2}}
                         disabled={selectedPrendas.length === 0}
                     >
@@ -224,10 +255,14 @@ function Inventario() {
                         },
                     }}
                     pageSizeOptions={[5]}
-                    checkboxSelection={true}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    onRowSelectionModelChange={(newSelection) => {
-                        setSelectedPrendas(newSelection as string[]);
+                    onRowClick={(params) => {
+                        const prendaSeleccionada = prendas.find((prenda) => prenda.garmentId === params.row.garmentId);
+                        if (selectedPrendas.length > 0 && selectedPrendas[0].garmentId === prendaSeleccionada?.garmentId) {
+                            setSelectedPrendas([]);
+                        } else {
+                            setSelectedPrendas(prendaSeleccionada ? [prendaSeleccionada] : []);
+                        }
                     }}
                 />
             </Box>
@@ -235,6 +270,20 @@ function Inventario() {
                 open={openModalRollo}
                 onClose={handleCloseModal}
                 onSave={handleSaveRollo}
+            />
+
+            <ConvertirRolloModal
+                open={openConvertirRolloModal}
+                onClose={handleCloseConvertirModal}
+                selectedRollos={selectedRollos}
+                onConversionSuccess={handleConversionRollosSuccess}
+            />
+
+            <ConvertirPrendaModal
+                open={openConvertirPrendaModal}
+                onClose={handleCloseConvertirPrendaModal}
+                selectedPrenda={selectedPrendas[0]}
+                onConversionSuccess={handleConversionPrendasSuccess}
             />
         </PageLayout>
     );

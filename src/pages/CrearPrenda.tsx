@@ -122,10 +122,7 @@ function CrearPrenda() {
             return;
         }
         try {
-            const response = await createPrenda({
-                name: prendaFormData.name,
-                garmentComponents: prendaFormData.garmentComponents,
-            });
+            const response = await createPrenda(prendaFormData);
 
             if (response.status === "success") {
                 setIsSuccess(true);
@@ -135,7 +132,7 @@ function CrearPrenda() {
                     setIsSuccess(false);
                     setSuccessMessage("");
                     navigate(`/inventario`)
-                }, 2500);
+                }, 1500);
             } else {
                 console.error('Error al guardar la prenda:', response.data.message);
                 setIsSaving(false);
