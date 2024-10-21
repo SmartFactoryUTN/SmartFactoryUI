@@ -109,8 +109,11 @@ export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promis
 
 export const deleteTizada = async (uuid: string): Promise<ApiResponse<void>> => {
   try {
-    const response = await fetch(`${BASE_API_URL}/tizada/${uuid}`, {
-      method: 'DELETE',
+    const url = new URL(`${BASE_API_URL}/tizada/${uuid}`);
+    url.searchParams.append('id', uuid);
+    
+    const response = await fetch(url.toString(), {
+      method: 'DELETE', 
     });
     
     if (!response.ok) {
@@ -133,7 +136,7 @@ export const deleteTizadas = async (uuids: string[]): Promise<ApiResponse<void>>
       return { status: "ERROR", data: undefined };
     }
     
-    return { status: "OK", data: undefined };
+    return { status: "success", data: undefined };
   } catch (error) {
     console.error("Error deleting tizadas:", error);
     return { status: "ERROR", data: undefined };
