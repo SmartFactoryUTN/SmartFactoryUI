@@ -7,7 +7,9 @@ import {
     Box, 
     Button, 
     IconButton,
-    TextField
+    TextField,  
+    Snackbar,
+    Alert, 
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -50,7 +52,7 @@ const SubirMolde: React.FC = () => {
           file: selectedFile,
         });
 
-        if (response.status === 'OK') {
+        if (response.status === 'success') {
           setSuccess(true);
           setTimeout(() => navigate('/moldes'), 2000);
         } else {
@@ -139,6 +141,16 @@ const SubirMolde: React.FC = () => {
             </Button>
           </Box>
         )}
+        <Snackbar open={error !== null} autoHideDuration={6000} onClose={() => setError(null)}>
+          <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+            Hubo un error al crear tu molde
+          </Alert>
+        </Snackbar>
+        <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+        <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+          ¡Nuevo molde cargado!
+        </Alert>
+      </Snackbar>
       </PageLayout>
   );
 };
