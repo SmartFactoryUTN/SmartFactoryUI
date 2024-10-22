@@ -6,7 +6,10 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import LogoutButton from "./Login/LogoutButton.tsx";
 import LoginButton from "./Login/LoginButton.tsx";
 
-const Navigation: React.FC = (props) => {
+interface INavigation {
+    isAuthenticated: boolean
+}
+const Navigation: React.FC<INavigation> = (props) => {
 
     const {isAuthenticated} = props;
 

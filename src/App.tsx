@@ -29,7 +29,7 @@ function App() {
                 <Navigation isAuthenticated={isAuthenticated}/>
                 <Routes>
                     <Route path="/" element={<Navigate to="/tizadas" replace/>}/> // Redirect "/" to "/tizadas"
-                    <Route path="/login" element={<LoginButton>LOGIN</LoginButton>}/>
+                    <Route path="/login" element={<LoginButton/>}/>
                     {isAuthenticated &&
                         (
                             <React.Fragment>
