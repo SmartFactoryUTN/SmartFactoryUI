@@ -1,5 +1,6 @@
-import {BASE_API_URL} from '../utils/constants';
-import { ApiResponse, Tizada, Molde, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
+import { BASE_API_URL } from '../utils/constants';
+
+import { ApiResponse, Tizada, Molde, CreateMoldePayload, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
 
 const useAccessToken = () => {
     const token = localStorage.getItem('access_token');
@@ -55,6 +56,41 @@ export const getMoldes = async (): Promise<ApiResponse<Molde[]>> => {
     }
 };
 
+export const createMolde = async (payload: CreateMoldePayload): Promise<ApiResponse<any>> => {
+
+    const token = useAccessToken();
+    const queryParams = new URLSearchParams({
+        name: payload.name,
+        description: payload.description,
+        userUUID: payload.userUUID
+    });
+
+    const url = `${BASE_API_URL}/molde/create?${queryParams.toString()}`;
+
+    try {
+        const formData = new FormData();
+        formData.append('svg', payload.file);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+    if (!response.ok) {
+      throw new Error('Failed to create mold');
+    }
+
+    const data: ApiResponse<any> = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error creating mold:", error);
+    throw error;
+  }
+};
+
 export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>> => {
     try {
         const token = useAccessToken();
@@ -77,7 +113,7 @@ export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>
     }
 };
 
-export const invokeTizada = async (tizadaUUID: string, user: string): Promise<ApiResponse<any>> => {
+export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promise<ApiResponse<any>> => {
     try {
         const token = useAccessToken();
         const response = await fetch(`${BASE_API_URL}/tizada/invoke`, {
@@ -88,7 +124,7 @@ export const invokeTizada = async (tizadaUUID: string, user: string): Promise<Ap
             },
             body: JSON.stringify({
                 tizadaUUID,
-                user,
+                userUUID,
             }),
         });
 
@@ -106,12 +142,15 @@ export const invokeTizada = async (tizadaUUID: string, user: string): Promise<Ap
 
 export const deleteTizada = async (uuid: string): Promise<ApiResponse<void>> => {
   try {
-    const token = useAccessToken();
-    const response = await fetch(`${BASE_API_URL}/tizada/${uuid}`, {
-      method: 'DELETE',
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+      const token = useAccessToken();
+      const url = new URL(`${BASE_API_URL}/tizada/${uuid}`);
+      url.searchParams.append('id', uuid);
+
+      const response = await fetch(url.toString(), {
+          method: 'DELETE',
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
     });
 
     if (!response.ok) {
@@ -133,8 +172,8 @@ export const deleteTizadas = async (uuids: string[]): Promise<ApiResponse<void>>
     if (hasError) {
       return { status: "ERROR", data: undefined };
     }
-
-    return { status: "OK", data: undefined };
+    
+    return { status: "success", data: undefined };
   } catch (error) {
     console.error("Error deleting tizadas:", error);
     return { status: "ERROR", data: undefined };
