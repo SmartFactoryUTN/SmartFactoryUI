@@ -5,4 +5,4 @@ export const REACT_APP_AUTH0_CALLBACK_URL: string = process.env.REACT_APP_AUTH0_
 export const REACT_APP_AUTH0_AUDIENCE: string= process.env.REACT_APP_AUTH0_AUDIENCE || 'https://smartfactory-api/'
 export const REACT_APP_AUTH0_SCOPES: string= process.env.REACT_APP_AUTH0_SCOPES || 'read:tizada read:molde create:tizada create:molde'
 export const BASE_API_URL: string = process.env.BASE_API_URL || REACT_APP_API_SERVER_URL;
-export const TEST_USER_ID = '';
+export const TEST_USER_ID = '14bd6578-0436-420d-9c64-2beda866fcf0';
