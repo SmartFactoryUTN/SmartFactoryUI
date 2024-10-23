@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getTizadaById, invokeTizada } from '../api/methods';
 import { Tizada } from '../utils/types';
-import { formatDate } from '../utils/helpers';
+import { formatDate, getStatusDisplay } from '../utils/helpers';
 import { TEST_USER_ID } from '../utils/constants';
-import PageLayout from '../components/layout/PageLayout';
 
 import { DataGrid, GridColDef} from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
@@ -58,15 +57,30 @@ function VerTizada() {
 
     const tizadaInfoColumns: GridColDef[] = [
         { field: 'property', headerName: 'Propiedad', width: 150 },
-        { field: 'value', headerName: 'Valor', width: 150 },
+        { 
+            field: 'value', 
+            headerName: 'Valor', 
+            width: 150,
+            renderCell: (params) => {
+                if (params.row.property === 'Estado') {
+                    return getStatusDisplay(tizada?.state || 'CREATED');
+                } else if (params.row.property === 'Fecha de Creación') {
+                    return params.value || 'Ninguna';
+
+                } else if (params.row.property === 'Última Actualización') {
+                    return params.value || 'Sin cambios';
+                } 
+                return params.value;
+            }
+        },
     ];
 
     const tizadaInfoRows = tizada
         ? [
             { id: 1, property: 'Nombre', value: tizada.name },
-            { id: 2, property: 'Estado', value: tizada.state },
-            { id: 3, property: 'Fecha de Creación', value: tizada.createdAt, valueFormatter: formatDate, },
-            { id: 4, property: 'Última Actualización', value: tizada.updatedAt, valueFormatter: formatDate, },
+            { id: 2, property: 'Estado', value: tizada.state},
+            { id: 3, property: 'Fecha de Creación', value: formatDate(tizada.createdAt) },
+            { id: 4, property: 'Última Actualización', value: formatDate(tizada.updatedAt)},
             { id: 5, property: 'Total de moldes', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
         ]: [];
 
@@ -91,9 +105,8 @@ function VerTizada() {
     })) || [];
 
     return (
-        <PageLayout>
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '90vh', marginTop:2}}>
-        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)'}}>
+        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width:'100%', padding:'8px 0'}}>
             {/* Main content area */}
             <Box sx={{ 
                 flex: 1, 
@@ -122,12 +135,18 @@ function VerTizada() {
                     <CircularProgress />
                 ) :
                 tizada?.state === 'FINISHED' && svgUrl ? (
-                        <object
-                            type="image/svg+xml"
-                            data={svgUrl}
-                            height="100%"
-                            style={{paddingTop: "200px", margin: '100px 80px', border: '1px solid #ccc', borderRadius: '4px' }}
-                        >
+                    <object
+                         type="image/svg+xml"
+                         data={svgUrl}
+                         style={{
+                             width: '100%',
+                             height: '100%',
+                             margin: '20px',
+                             border: '1px solid #ccc',
+                             borderRadius: '8px',
+                             objectFit: 'contain'
+                         }}
+                     >
                             Su navegador no soporta SVGs
                         </object>
                 ): (
@@ -139,8 +158,14 @@ function VerTizada() {
             </Box>
             
             {/* Right sidebar with information */}
-            <Box sx={{ width: 300, borderLeft: '1px solid #ccc', p: 2, overflowY: 'auto' }}>
-                <Typography variant="h6" gutterBottom>Información de Tizada</Typography>
+                <Box sx={{ 
+                    width: '350px',
+                    borderLeft: '1px solid #e0e0e0',
+                    p: 3,
+                    overflowY: 'auto',
+                    backgroundColor: '#fafafa'
+                }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>Información de Tizada</Typography>
                 <DataGrid
                     rows={tizadaInfoRows}
                     columns={tizadaInfoColumns}
@@ -168,7 +193,6 @@ function VerTizada() {
             </Button>
         </Box>
     </Box>
-    </PageLayout>
     );
 };
 

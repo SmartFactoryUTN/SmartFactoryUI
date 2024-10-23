@@ -15,13 +15,15 @@ export interface TizadaPart {
     quantity: number;
 }
 
+export type TizadaStatus = 'CREATED' | 'IN_PROGRESS' | 'FINISHED' | 'ERROR';
+
 export interface Tizada {
     uuid: string;
     name: string;
     parts: TizadaPart[];
     bin: string | null;
     results: any[];
-    state: 'CREATED' | 'IN_PROGRESS' | 'FINISHED' | 'ERROR';
+    state: TizadaStatus;
     active: boolean;
     createdAt: string;
     updatedAt: string;
