@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTizadas, deleteTizadas } from '../api/methods';
-import {Tizada} from '../utils/types';
-import { formatDate } from '../utils/helpers';
+import { getTizadas, deleteTizadas } from '../api/methods'
+import { Tizada } from '../utils/types'
+import { formatDate } from '../utils/helpers'
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 
-{/* UI Components */}
+
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
@@ -16,8 +16,8 @@ import Button from '@mui/material/Button';
 function MisTizadas() {
       const navigate = useNavigate();
       const [tizadas, setTizadas] = useState<Tizada[]>([]);
-    
-      useEffect(() => {
+
+    useEffect(() => {
         fetchTizadas();
       }, []);
     
