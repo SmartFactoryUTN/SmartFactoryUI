@@ -46,13 +46,13 @@ function MisTizadas() {
           field: 'createdAt', 
           headerName: 'Fecha de Creación', 
           width: 180,
-          valueFormatter: formatDate,
+          renderCell: (params) => formatDate(params.value as string),
         },
         { 
             field: 'updatedAt', 
             headerName: 'Ultima Actualización', 
             width: 180,
-            renderCell: (params) => params.value ? new Date(params.value).toLocaleString() : 'Sin cambios',
+            renderCell: (params) => formatDate(params.value as string),
           },
       ];
     

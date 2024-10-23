@@ -64,9 +64,12 @@ function VerTizada() {
             renderCell: (params) => {
                 if (params.row.property === 'Estado') {
                     return getStatusDisplay(tizada?.state || 'CREATED');
+                } else if (params.row.property === 'Fecha de Creación') {
+                    return params.value || 'Ninguna';
+
                 } else if (params.row.property === 'Última Actualización') {
                     return params.value || 'Sin cambios';
-                }
+                } 
                 return params.value;
             }
         },
@@ -76,8 +79,8 @@ function VerTizada() {
         ? [
             { id: 1, property: 'Nombre', value: tizada.name },
             { id: 2, property: 'Estado', value: tizada.state},
-            { id: 3, property: 'Fecha de Creación', value: tizada.createdAt, valueFormatter: formatDate, },
-            { id: 4, property: 'Última Actualización', value: tizada.updatedAt ? new Date(tizada.updatedAt).toLocaleString() : 'Sin cambios' },
+            { id: 3, property: 'Fecha de Creación', value: formatDate(tizada.createdAt) },
+            { id: 4, property: 'Última Actualización', value: formatDate(tizada.updatedAt)},
             { id: 5, property: 'Total de moldes', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
         ]: [];
 

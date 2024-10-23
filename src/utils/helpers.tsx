@@ -32,12 +32,13 @@ export const getStatusDisplay = (status: TizadaStatus) => {
   );
 };
 
-export const formatDate: GridValueFormatter = (value: string | null) => {
-  if (value == null) return 'N/A';
+export const formatDate = (value: string | null) => {
+  if (!value) return 'Sin cambios';
   try {
-    return new Date(value).toLocaleString();
+    const date = new Date(value);
+    date.setHours(date.getHours() - 3);
+    return date.toLocaleString();
   } catch (error) {
-    console.error("Error formatting date:", error);
     return 'Sin cambios';
   }
 };
