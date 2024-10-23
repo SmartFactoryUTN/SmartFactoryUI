@@ -31,10 +31,13 @@ export interface Tizada {
 }
 
 export interface RolloDeTela {
-    uuid: string;
+    fabricRollId: string;
     name: string; 
-    color: string; // verificar y completar los atributos
-    // TODO: atributos de los rollos de tela
+    color: FabricColor;
+    stock: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string;
 }
 
 export interface FabricPiece {
@@ -45,20 +48,41 @@ export interface FabricPiece {
 }
 
 export interface Prenda {
-    uuid: string;
+    garmentId: string;
     name: string;
     stock: number; //verificar que este bien
-    color: string; //verificar que este bien
-    garmentParts: GarmentPart[]; //verificar que este bien
-    // TODO: atributos de la prenda
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string;
+}
+
+export interface PrendaDetallada {
+    name: string;
+    stock: number;
+    fabricPieces: GarmentPart[]
+}
+
+export interface MoldeCortado {
+    fabricPieceId: string;
+    color: FabricColor;
+    molde: Molde;
+    name: string;
+    stock: number;
 }
 
 export interface GarmentPart {
-    uuid: string;
-    cantidad: string;
+    fabricPieceId: string;
+    name: string;
     color: string;
-    moldeUUID: string; // ver que este bien
-    //TODO: Atributos de las partes de prenda
+    colorId: string;
+    moldeId: string;
+    url: string;
+    quantity: number;
+}
+
+export interface FabricColor {
+    fabricColorId: string;
+    name: string;
 }
 
 export interface ApiResponse<T> {

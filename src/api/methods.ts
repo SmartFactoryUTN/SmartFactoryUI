@@ -1,6 +1,15 @@
 import { BASE_API_URL } from '../utils/constants';
 
-import { ApiResponse, Tizada, Molde, CreateMoldePayload, RolloDeTela, FabricPiece, Prenda } from '../utils/types';
+import {
+    ApiResponse,
+    CreateMoldePayload,
+    FabricColor,
+    FabricPiece,
+    Molde,
+    Prenda,
+    RolloDeTela,
+    Tizada
+} from '../utils/types';
 
 const useAccessToken = () => {
     const token = localStorage.getItem('access_token');
@@ -83,8 +92,7 @@ export const createMolde = async (payload: CreateMoldePayload): Promise<ApiRespo
       throw new Error('Failed to create mold');
     }
 
-    const data: ApiResponse<any> = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error("Error creating mold:", error);
     throw error;
@@ -105,8 +113,7 @@ export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data: ApiResponse<Tizada> = await response.json();
-        return data;
+        return await response.json();
     } catch (error) {
         console.error("Error creating tizada:", error);
         throw error;
@@ -132,8 +139,7 @@ export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promis
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data: ApiResponse<any> = await response.json();
-        return data;
+        return await response.json();
     } catch (error) {
         console.error("Error invoking tizada:", error);
         throw error;
@@ -182,7 +188,7 @@ export const deleteTizadas = async (uuids: string[]): Promise<ApiResponse<void>>
 
 export const getRollos = async (): Promise<ApiResponse<RolloDeTela[]>> => {
     const token = useAccessToken();
-    const response = await fetch(`${BASE_API_URL}/rollos`,
+    const response = await fetch(`${BASE_API_URL}/inventario/rollo`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -193,7 +199,7 @@ export const getRollos = async (): Promise<ApiResponse<RolloDeTela[]>> => {
 
 export const getFabrics = async (): Promise<ApiResponse<FabricPiece[]>> => {
     const token = useAccessToken();
-    const response = await fetch(`${BASE_API_URL}/fabricPiece`,
+    const response = await fetch(`${BASE_API_URL}/inventario/fabricPiece`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -204,7 +210,7 @@ export const getFabrics = async (): Promise<ApiResponse<FabricPiece[]>> => {
 
 export const getPrendas = async (): Promise<ApiResponse<Prenda[]>> => {
     const token = useAccessToken();
-    const response = await fetch(`${BASE_API_URL}/prendas`,
+    const response = await fetch(`${BASE_API_URL}/inventario/prenda`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -213,38 +219,142 @@ export const getPrendas = async (): Promise<ApiResponse<Prenda[]>> => {
     return await response.json();
 };
 
-export const deleteMolde = async (uuid: string): Promise<ApiResponse<void>> => {
-  try {
-    const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
-    url.searchParams.append('id', uuid);
-    
-    const response = await fetch(url.toString(), {
-      method: 'DELETE', 
+export const getFabricColors = async (): Promise<ApiResponse<FabricColor[]>> => {
+    const token = useAccessToken();
+    const response = await fetch(`${BASE_API_URL}/inventario/color`,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
     });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+}
+
+export const createRollo = async (rolloData: any): Promise<ApiResponse<any>> => {
+    try {
+        const token = useAccessToken();
+        const response = await fetch(`${BASE_API_URL}/inventario/rollo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(rolloData),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error creating roll:", error);
+        throw error;
     }
-    
-    return { status: "OK", data: undefined };
-  } catch (error) {
-    console.error(`Error deleting molde ${uuid}:`, error);
-    return { status: "ERROR", data: undefined };
-  }
+};
+
+export const createPrenda = async (prendaData: any): Promise<ApiResponse<any>> => {
+    try {
+        const token = useAccessToken();
+        const response = await fetch(`${BASE_API_URL}/inventario/prenda`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(prendaData),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error creating garmnet:", error);
+        throw error;
+    }
+};
+
+export const convertRollos = async (convertRollosData: any): Promise<ApiResponse<any>> => {
+    try {
+        const token = useAccessToken();
+        const response = await fetch(`${BASE_API_URL}/inventario/rollo/convert`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(convertRollosData),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error converting rolls:", error);
+        throw error;
+    }
+}
+
+export const getTizadasFinalizadas = async (): Promise<ApiResponse<Tizada[]>> => {
+    const token = useAccessToken();
+    const response = await fetch(`${BASE_API_URL}/tizada?finalizadas=true`,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return await response.json();
+};
+
+export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse<any>> => {
+    try {
+        const token = useAccessToken();
+        const response = await fetch(`${BASE_API_URL}/inventario/fabricPiece/convert`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(convertPrendaData),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error converting roll:", error);
+        throw error;
+    }
+}
+
+export const deleteMolde = async (uuid: string): Promise<ApiResponse<void>> => {
+    try {
+        const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
+        url.searchParams.append('id', uuid);
+
+        const response = await fetch(url.toString(), {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { status: "OK", data: undefined };
+    } catch (error) {
+        console.error(`Error deleting molde ${uuid}:`, error);
+        return { status: "ERROR", data: undefined };
+    }
 };
 
 export const deleteMoldes = async (uuids: string[]): Promise<ApiResponse<void>> => {
-  try {
-    const results = await Promise.all(uuids.map(uuid => deleteMolde(uuid)));
-    const hasError = results.some(result => result.status === "ERROR");
-    
-    if (hasError) {
-      return { status: "ERROR", data: undefined };
+    try {
+        const results = await Promise.all(uuids.map(uuid => deleteMolde(uuid)));
+        const hasError = results.some(result => result.status === "ERROR");
+
+        if (hasError) {
+            return { status: "ERROR", data: undefined };
+        }
+
+        return { status: "success", data: undefined };
+    } catch (error) {
+        console.error("Error deleting moldes:", error);
+        return { status: "ERROR", data: undefined };
     }
-    
-    return { status: "success", data: undefined };
-  } catch (error) {
-    console.error("Error deleting moldes:", error);
-    return { status: "ERROR", data: undefined };
-  }
 };
