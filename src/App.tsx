@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import React from "react";
 import './App.css';
 import CrearTizada from './pages/CrearTizada.tsx';
@@ -9,6 +9,7 @@ import SubirMolde from './pages/SubirMolde';
 import Tutorial from './pages/Tutorial';
 import Inventario from './pages/Inventario';
 import Callback from "./pages/Callback";
+import CrearPrenda from "./pages/CrearPrenda";
 
 import Navigation from './components/AppBar';
 
@@ -41,6 +42,7 @@ function App() {
                                 <Route path="/moldes/crear" element={<Tutorial />} />
                                 <Route path="/inventario" element={<Inventario />} />
                                 <Route path="/callback" element={<Callback/>}/>
+                                <Route path="/inventario/prenda/crear" element = {<CrearPrenda />}/>
                             </React.Fragment>
                         )
                     }
