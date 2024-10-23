@@ -61,7 +61,7 @@ function MisMoldes() {
             field: 'updatedAt', 
             headerName: 'Ultima Actualización', 
             width: 180,
-            valueFormatter: formatDate,
+            renderCell: (params) => params.value ? new Date(params.value).toLocaleString() : 'Sin cambios',
         }
       ];
     

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTizadas, deleteTizadas } from '../api/methods'
 import { Tizada } from '../utils/types'
-import { formatDate } from '../utils/helpers'
+import { formatDate, getStatusDisplay } from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 
@@ -36,7 +36,12 @@ function MisTizadas() {
     
       const columns: GridColDef[] = [
         { field: 'name', headerName: 'Nombre', width: 200, editable: true },
-        { field: 'state', headerName: 'Estado', width: 120 },
+        { 
+          field: 'state', 
+          headerName: 'Estado', 
+          width: 120,
+          renderCell: (params) => getStatusDisplay(params.value)
+        },
         { 
           field: 'createdAt', 
           headerName: 'Fecha de Creación', 
@@ -47,8 +52,8 @@ function MisTizadas() {
             field: 'updatedAt', 
             headerName: 'Ultima Actualización', 
             width: 180,
-            valueFormatter: formatDate,
-        },
+            renderCell: (params) => params.value ? new Date(params.value).toLocaleString() : 'Sin cambios',
+          },
       ];
     
       const handleRowClick = (params: GridRowParams) => {

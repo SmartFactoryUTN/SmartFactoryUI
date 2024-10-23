@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getTizadaById, invokeTizada } from '../api/methods';
 import { Tizada } from '../utils/types';
-import { formatDate } from '../utils/helpers';
+import { formatDate, getStatusDisplay } from '../utils/helpers';
 import { TEST_USER_ID } from '../utils/constants';
-import PageLayout from '../components/layout/PageLayout';
 
 import { DataGrid, GridColDef} from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
@@ -58,15 +57,27 @@ function VerTizada() {
 
     const tizadaInfoColumns: GridColDef[] = [
         { field: 'property', headerName: 'Propiedad', width: 150 },
-        { field: 'value', headerName: 'Valor', width: 150 },
+        { 
+            field: 'value', 
+            headerName: 'Valor', 
+            width: 150,
+            renderCell: (params) => {
+                if (params.row.property === 'Estado') {
+                    return getStatusDisplay(tizada?.state || 'CREATED');
+                } else if (params.row.property === 'Última Actualización') {
+                    return params.value || 'Sin cambios';
+                }
+                return params.value;
+            }
+        },
     ];
 
     const tizadaInfoRows = tizada
         ? [
             { id: 1, property: 'Nombre', value: tizada.name },
-            { id: 2, property: 'Estado', value: tizada.state },
+            { id: 2, property: 'Estado', value: tizada.state},
             { id: 3, property: 'Fecha de Creación', value: tizada.createdAt, valueFormatter: formatDate, },
-            { id: 4, property: 'Última Actualización', value: tizada.updatedAt, valueFormatter: formatDate, },
+            { id: 4, property: 'Última Actualización', value: tizada.updatedAt ? new Date(tizada.updatedAt).toLocaleString() : 'Sin cambios' },
             { id: 5, property: 'Total de moldes', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
         ]: [];
 
