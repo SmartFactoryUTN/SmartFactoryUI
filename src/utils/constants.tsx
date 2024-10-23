@@ -1,4 +1,4 @@
-export const REACT_APP_API_SERVER_URL: string = /*import.meta.env.VITE_API_SERVER_URL ||*/ 'https://smartfactoryapi.sa-east-1.elasticbeanstalk.com/api'
+export const REACT_APP_API_SERVER_URL: string = import.meta.env.VITE_API_SERVER_URL || 'https://localhost:8080/api'
 export const REACT_APP_AUTH0_DOMAIN: string = import.meta.env.VITE_AUTH0_DOMAIN || 'https://dev-palh3gsscosfpppk.us.auth0.com'
 export const REACT_APP_AUTH0_CLIENT_ID: string = import.meta.env.VITE_AUTH0_CLIENT_ID || 'u9EbOfCWWYTDarJN8VxblpBFabtANScD'
 export const REACT_APP_AUTH0_CALLBACK_URL: string = import.meta.env.VITE_AUTH0_CALLBACK_URL || 'https://smartfactoryar.netlify.app/callback'
