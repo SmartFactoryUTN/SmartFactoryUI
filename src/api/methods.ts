@@ -212,3 +212,39 @@ export const getPrendas = async (): Promise<ApiResponse<Prenda[]>> => {
         }); //TODO : ajustar el url del endpoint
     return await response.json();
 };
+
+export const deleteMolde = async (uuid: string): Promise<ApiResponse<void>> => {
+  try {
+    const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
+    url.searchParams.append('id', uuid);
+    
+    const response = await fetch(url.toString(), {
+      method: 'DELETE', 
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return { status: "OK", data: undefined };
+  } catch (error) {
+    console.error(`Error deleting molde ${uuid}:`, error);
+    return { status: "ERROR", data: undefined };
+  }
+};
+
+export const deleteMoldes = async (uuids: string[]): Promise<ApiResponse<void>> => {
+  try {
+    const results = await Promise.all(uuids.map(uuid => deleteMolde(uuid)));
+    const hasError = results.some(result => result.status === "ERROR");
+    
+    if (hasError) {
+      return { status: "ERROR", data: undefined };
+    }
+    
+    return { status: "success", data: undefined };
+  } catch (error) {
+    console.error("Error deleting moldes:", error);
+    return { status: "ERROR", data: undefined };
+  }
+};

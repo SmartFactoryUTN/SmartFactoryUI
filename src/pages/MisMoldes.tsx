@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMoldes } from '../api/methods'
+import { getMoldes, deleteMoldes } from '../api/methods'
 import { Molde } from '../utils/types'
 import { formatDate } from '../utils/helpers'
+import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 
 {/* UI Components */}
@@ -33,7 +34,20 @@ function MisMoldes() {
           console.error("Error fetching user moldes:", error);
         }
       };
-
+    
+      const handleDelete = async (selectedIds: string[]) => {
+        try {
+          const response = await deleteMoldes(selectedIds);
+          if (response.status === "success") {
+            fetchMoldes();
+          } else {
+            console.error("Failed to delete some or all moldes");
+          }
+        } catch (error) {
+          console.error("Error deleting moldes:", error);
+        }
+      };
+      
       const columns: GridColDef[] = [
         { field: 'name', headerName: 'Nombre', width: 100, editable: true },
         { field: 'description', headerName: 'Descripción', width: 150, editable: true },
@@ -83,10 +97,18 @@ function MisMoldes() {
                         },
                     }}
                     pageSizeOptions={[5]}
-                    checkboxSelection={false}
+                    checkboxSelection={true}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                     disableRowSelectionOnClick
                     onRowClick={handleRowClick}
+                    slots={{
+                      toolbar: CustomToolbar,
+                    }}
+                    slotProps={{
+                      toolbar: {
+                        onDelete: handleDelete,
+                      },
+                    }}
                     sx={{
                         '& .MuiDataGrid-row': {
                             cursor: 'pointer',
