@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React from "react";
 import './App.css';
 import CrearTizada from './pages/CrearTizada.tsx';
@@ -28,7 +28,6 @@ function App() {
             <div className="App">
                 <Navigation isAuthenticated={isAuthenticated}/>
                 <Routes>
-                    <Route path="/" element={<Navigate to="/" replace/>}/> // Redirect "/" to "/tizadas"
                     {isAuthenticated &&
                         (
                             <React.Fragment>
