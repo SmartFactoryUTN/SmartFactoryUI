@@ -18,7 +18,6 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import {useAuth0} from "@auth0/auth0-react";
-import LoginButton from "./components/Login/LoginButton.tsx";
 
 function App() {
 
@@ -29,8 +28,7 @@ function App() {
             <div className="App">
                 <Navigation isAuthenticated={isAuthenticated}/>
                 <Routes>
-                    <Route path="/" element={<Navigate to="/tizadas" replace/>}/> // Redirect "/" to "/tizadas"
-                    <Route path="/login" element={<LoginButton/>}/>
+                    <Route path="/" element={<Navigate to="/" replace/>}/> // Redirect "/" to "/tizadas"
                     {isAuthenticated &&
                         (
                             <React.Fragment>
