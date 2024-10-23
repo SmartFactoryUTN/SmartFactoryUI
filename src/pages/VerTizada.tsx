@@ -91,9 +91,8 @@ function VerTizada() {
     })) || [];
 
     return (
-        <PageLayout>
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '90vh', marginTop:2}}>
-        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)'}}>
+        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width:'100%', padding:'8px 0'}}>
             {/* Main content area */}
             <Box sx={{ 
                 flex: 1, 
@@ -122,12 +121,18 @@ function VerTizada() {
                     <CircularProgress />
                 ) :
                 tizada?.state === 'FINISHED' && svgUrl ? (
-                        <object
-                            type="image/svg+xml"
-                            data={svgUrl}
-                            height="100%"
-                            style={{paddingTop: "200px", margin: '100px 80px', border: '1px solid #ccc', borderRadius: '4px' }}
-                        >
+                    <object
+                         type="image/svg+xml"
+                         data={svgUrl}
+                         style={{
+                             width: '100%',
+                             height: '100%',
+                             margin: '20px',
+                             border: '1px solid #ccc',
+                             borderRadius: '8px',
+                             objectFit: 'contain'
+                         }}
+                     >
                             Su navegador no soporta SVGs
                         </object>
                 ): (
@@ -139,8 +144,14 @@ function VerTizada() {
             </Box>
             
             {/* Right sidebar with information */}
-            <Box sx={{ width: 300, borderLeft: '1px solid #ccc', p: 2, overflowY: 'auto' }}>
-                <Typography variant="h6" gutterBottom>Información de Tizada</Typography>
+                <Box sx={{ 
+                    width: '350px',
+                    borderLeft: '1px solid #e0e0e0',
+                    p: 3,
+                    overflowY: 'auto',
+                    backgroundColor: '#fafafa'
+                }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>Información de Tizada</Typography>
                 <DataGrid
                     rows={tizadaInfoRows}
                     columns={tizadaInfoColumns}
@@ -168,7 +179,6 @@ function VerTizada() {
             </Button>
         </Box>
     </Box>
-    </PageLayout>
     );
 };
 
