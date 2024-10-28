@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTizadas, deleteTizadas } from '../api/methods'
 import { Tizada } from '../utils/types'
@@ -12,10 +12,14 @@ import { esES } from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import {UserContext} from "../components/Login/UserProvider.tsx";
 
 function MisTizadas() {
-      const navigate = useNavigate();
-      const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    const navigate = useNavigate();
+    const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    const { userData } = useContext(UserContext);
+    console.log(userData);
+
 
     useEffect(() => {
         fetchTizadas();
@@ -23,9 +27,9 @@ function MisTizadas() {
     
       const fetchTizadas = async () => {
         try {
-          const response = await getTizadas();
+          const response = await getTizadas(userData.data.id);
           if (response.status === "success") {
-            setTizadas(response.data);
+            setTizadas(response.data['tizadas']);
           } else {
             console.error("Failed to fetch tizadas");
           }
@@ -85,7 +89,7 @@ function MisTizadas() {
                 
                 {/* Data Table */}
                 <DataGrid
-                    rows={tizadas}
+                    rows={tizadas || []}
                     columns={columns}
                     getRowId={(row) => row.uuid}
                     initialState={{

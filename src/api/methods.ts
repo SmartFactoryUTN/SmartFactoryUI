@@ -19,9 +19,9 @@ const useAccessToken = () => {
     return null; // Or handle missing token case
 };
 
-export const getTizadas = async (): Promise<ApiResponse<Tizada[]>> => {
+export const getTizadas = async (userUUID: string): Promise<ApiResponse<Tizada[]>> => {
     const token = useAccessToken();
-    const response = await fetch(`${BASE_API_URL}/tizada`,
+    const response = await fetch(`${BASE_API_URL}/users/${userUUID}/tizadas`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -358,3 +358,19 @@ export const deleteMoldes = async (uuids: string[]): Promise<ApiResponse<void>> 
         return { status: "ERROR", data: undefined };
     }
 };
+
+export const getUserInfo = async () => {
+    try{
+        const token = useAccessToken();
+        const response = await fetch(`${BASE_API_URL}/users/info`,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return await response.json();
+    }catch (error){
+        console.error("Error deleting moldes:", error);
+        return { status: "ERROR", data: undefined };
+    }
+}
