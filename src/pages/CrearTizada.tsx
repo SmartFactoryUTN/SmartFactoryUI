@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getMoldes, createTizada } from '../api/methods';
-import { Molde } from '../utils/types';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {createTizada, getMoldes} from '../api/methods';
+import {Molde} from '../utils/types';
 import PageLayout from '../components/layout/PageLayout';
 
 import {
-  Box,
-  Button,
-  Grid,
-  TextField,
-  Typography,
-  Select,
-  MenuItem,
-  IconButton,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Snackbar,
-  Alert,
-  Tooltip
+    Alert,
+    Box,
+    Button,
+    FormControl,
+    Grid,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    Snackbar,
+    TextField,
+    Tooltip,
+    Typography
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';

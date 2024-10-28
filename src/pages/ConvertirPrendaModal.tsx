@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Modal, Box, Typography, Button, TextField, Snackbar } from '@mui/material';
-import { Prenda } from '../utils/types';
-import { convertPrenda } from "../api/methods.ts";
+import React, {useState} from 'react';
+import {Box, Button, Modal, Snackbar, TextField, Typography} from '@mui/material';
+import {Prenda} from '../utils/types';
+import {convertPrenda} from "../api/methods.ts";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 interface ConvertirPrendaModalProps {

@@ -7,12 +7,13 @@ import {
     IconButton,
     InputLabel,
     MenuItem,
-    Select, Snackbar,
+    Select,
+    Snackbar,
     TextField,
     Typography
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
-import { FabricColor, Molde } from "../utils/types.tsx";
+import {useCallback, useEffect, useState} from "react";
+import {FabricColor, Molde} from "../utils/types.tsx";
 import {createPrenda, getFabricColors, getMoldes} from "../api/methods.ts";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";

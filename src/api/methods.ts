@@ -1,4 +1,4 @@
-import { BASE_API_URL } from '../utils/constants';
+import {BASE_API_URL} from '../utils/constants';
 
 import {
     ApiResponse,
@@ -19,7 +19,7 @@ const useAccessToken = () => {
     return null; // Or handle missing token case
 };
 
-export const getTizadas = async (userUUID: string): Promise<ApiResponse<Tizada[]>> => {
+export const getTizadas = async (userUUID: string | undefined): Promise<ApiResponse<Tizada[]>> => {
     const token = useAccessToken();
     const response = await fetch(`${BASE_API_URL}/users/${userUUID}/tizadas`,
         {

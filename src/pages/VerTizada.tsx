@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getTizadaById, invokeTizada } from '../api/methods';
-import { Tizada } from '../utils/types';
-import { formatDate, getStatusDisplay } from '../utils/helpers';
-import { TEST_USER_ID } from '../utils/constants';
+import {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getTizadaById, invokeTizada} from '../api/methods';
+import {Tizada} from '../utils/types';
+import {formatDate, getStatusDisplay} from '../utils/helpers';
+import {TEST_USER_ID} from '../utils/constants';
 
-import { DataGrid, GridColDef} from '@mui/x-data-grid';
-import { esES } from '@mui/x-data-grid/locales';
+import {DataGrid, GridColDef} from '@mui/x-data-grid';
+import {esES} from '@mui/x-data-grid/locales';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-  
+
 function VerTizada() {
     const navigate = useNavigate();
     const { uuid } = useParams<{ uuid: string }>();

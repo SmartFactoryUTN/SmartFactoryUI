@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import TablaDecoComparativa from '../components/TablaDecoComparativa';
 import PageLayout from '../components/layout/PageLayout';
 
@@ -15,20 +15,20 @@ import verticesImage from '../assets/vertices.png';
 import curvasImage from '../assets/curvas.png';
 import guardarImage from '../assets/guardar.png';
 
-import { 
-  Typography, 
-  Box,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Link,
-  List,
-  ListItem,
-  ListItemText
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    Link,
+    List,
+    ListItem,
+    ListItemText,
+    TextField,
+    Typography
 } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';

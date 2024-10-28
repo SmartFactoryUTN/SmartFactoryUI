@@ -1,12 +1,12 @@
-import {createContext, useState, useEffect, ReactNode} from 'react';
-import { useAuth0 } from "@auth0/auth0-react";
+import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
+import {useAuth0} from "@auth0/auth0-react";
 import {BASE_API_URL} from "../../utils/constants.tsx";
 
 // Define User interface based on the shape of your user data
 interface User {
     name: string;
     email: string;
-    sub: string;  // Auth0 user ID or other identifier
+    id: string | undefined;  // Auth0 user ID or other identifier
 }
 
 // Define the context type with userData and setUserData functions
@@ -19,8 +19,17 @@ interface UserContextType {
 // Create a context to store user data
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
+// Custom hook to use UserContext
+export const useUserContext = () => {
+    const context = useContext(UserContext);
+    if (!context) {
+        throw new Error("useUserContext must be used within a UserProvider");
+    }
+    return context;
+};
+
 export const UserProvider =  ({ children }: { children: ReactNode }) => {
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState<User | null>(null);
     const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
 
     useEffect(() => {
@@ -38,7 +47,7 @@ export const UserProvider =  ({ children }: { children: ReactNode }) => {
                         }
                     });
                     const data = await response.json();
-                    setUserData(data);
+                    setUserData(data.data);
                 } catch (error) {
                     console.error("Error fetching user data:", error);
                 }

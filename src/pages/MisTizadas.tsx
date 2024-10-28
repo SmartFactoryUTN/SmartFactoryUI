@@ -1,35 +1,36 @@
-import {useContext, useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getTizadas, deleteTizadas } from '../api/methods'
-import { Tizada } from '../utils/types'
-import { formatDate, getStatusDisplay } from '../utils/helpers';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {deleteTizadas, getTizadas} from '../api/methods'
+import {Tizada} from '../utils/types'
+import {formatDate, getStatusDisplay} from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 
 
-import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
-import { esES } from '@mui/x-data-grid/locales';
+import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
+import {esES} from '@mui/x-data-grid/locales';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {UserContext} from "../components/Login/UserProvider.tsx";
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 function MisTizadas() {
     const navigate = useNavigate();
     const [tizadas, setTizadas] = useState<Tizada[]>([]);
-    const { userData } = useContext(UserContext);
+    const { userData } = useUserContext();
     console.log(userData);
 
 
     useEffect(() => {
         fetchTizadas();
-      }, []);
+      }, [userData]);
     
       const fetchTizadas = async () => {
         try {
-          const response = await getTizadas(userData.data.id);
+          const response = await getTizadas(userData?.id);
           if (response.status === "success") {
-            setTizadas(response.data['tizadas']);
+            // @ts-expect-error "skipped"
+              setTizadas(response.data["tizadas"]);
           } else {
             console.error("Failed to fetch tizadas");
           }

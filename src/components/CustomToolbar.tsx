@@ -1,4 +1,4 @@
-import { GridToolbarContainer, useGridApiContext, GridToolbarProps } from '@mui/x-data-grid';
+import {GridToolbarContainer, GridToolbarProps, useGridApiContext} from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 
