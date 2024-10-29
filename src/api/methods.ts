@@ -120,7 +120,7 @@ export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>
     }
 };
 
-export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promise<ApiResponse<any>> => {
+export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promise<ApiResponse<void>> => {
     try {
         const token = useAccessToken();
         const response = await fetch(`${BASE_API_URL}/tizada/invoke`, {
@@ -135,14 +135,21 @@ export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promis
             }),
         });
 
+        // Handle both 200 and 204 as success cases
+        if (response.status === 204) {
+            return { status: 'success', data: undefined };
+        }
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return await response.json();
+        // Handle 200 case if API changes in future
+        const data = await response.json();
+        return { status: 'success', data };
     } catch (error) {
         console.error("Error invoking tizada:", error);
-        throw error;
+        return { status: 'error', data: undefined };
     }
 };
 

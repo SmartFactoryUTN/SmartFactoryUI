@@ -4,6 +4,7 @@ import {deleteMoldes, getMoldes} from '../api/methods'
 import {Molde} from '../utils/types'
 import {formatDate} from '../utils/helpers'
 import {useUserContext} from "../components/Login/UserProvider.tsx";
+import { getFontFamily } from '../utils/fonts';
 
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
@@ -78,7 +79,9 @@ function MisMoldes() {
                 <PageLayout>
                 {/* Title and Button */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                    <Typography color="black" variant="h4">Mis Moldes</Typography>
+                    <Typography color="black" variant="h4" sx={{fontFamily: getFontFamily('bodoni')}}>
+                      Mis Moldes
+                    </Typography>
                     <Box>
                     <Button variant="contained" color="primary" onClick={() => navigate('/moldes/crear')} sx={{ marginRight: 1 }}>
                         Digitalizar
