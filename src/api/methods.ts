@@ -1,4 +1,4 @@
-import { BASE_API_URL } from '../utils/constants';
+import {BASE_API_URL} from '../utils/constants';
 
 import {
     ApiResponse,
@@ -19,9 +19,9 @@ const useAccessToken = () => {
     return null; // Or handle missing token case
 };
 
-export const getTizadas = async (): Promise<ApiResponse<Tizada[]>> => {
+export const getTizadas = async (userUUID: string | undefined): Promise<ApiResponse<Tizada[]>> => {
     const token = useAccessToken();
-    const response = await fetch(`${BASE_API_URL}/tizada`,
+    const response = await fetch(`${BASE_API_URL}/users/${userUUID}/tizadas`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -41,11 +41,11 @@ export const getTizadaById = async (uuid: string): Promise<ApiResponse<Tizada>> 
     return await response.json();
 };
 
-export const getMoldes = async (): Promise<ApiResponse<Molde[]>> => {
+export const getMoldes = async (userUUID: string): Promise<ApiResponse<Molde[]>> => {
     console.log('Fetching molds from API...');
     try {
         const token = useAccessToken();
-        const response = await fetch(`${BASE_API_URL}/molde`,
+        const response = await fetch(`${BASE_API_URL}/users/${userUUID}/moldes`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -325,11 +325,16 @@ export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse
 
 export const deleteMolde = async (uuid: string): Promise<ApiResponse<void>> => {
     try {
+        const token = useAccessToken();
         const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
-        url.searchParams.append('id', uuid);
 
         const response = await fetch(url.toString(), {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            
         });
 
         if (!response.ok) {
@@ -358,3 +363,19 @@ export const deleteMoldes = async (uuids: string[]): Promise<ApiResponse<void>> 
         return { status: "ERROR", data: undefined };
     }
 };
+
+export const getUserInfo = async () => {
+    try{
+        const token = useAccessToken();
+        const response = await fetch(`${BASE_API_URL}/users/info`,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return await response.json();
+    }catch (error){
+        console.error("Error deleting moldes:", error);
+        return { status: "ERROR", data: undefined };
+    }
+}

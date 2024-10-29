@@ -1,19 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TEST_USER_ID } from '../utils/constants';
-import { createMolde } from '../api/methods';
-import { 
-    Typography, 
-    Box, 
-    Button, 
-    IconButton,
-    TextField,  
-    Snackbar,
-    Alert, 
-} from '@mui/material';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {createMolde} from '../api/methods';
+import {Alert, Box, Button, IconButton, Snackbar, TextField, Typography,} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PageLayout from '../components/layout/PageLayout';
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 
 const SubirMolde: React.FC = () => {
@@ -24,6 +16,7 @@ const SubirMolde: React.FC = () => {
     const [description, setDescription] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const { userData } = useUserContext();
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
@@ -48,7 +41,8 @@ const SubirMolde: React.FC = () => {
         const response = await createMolde({
           name,
           description,
-          userUUID: TEST_USER_ID,
+          // @ts-expect-error "skipped"
+          userUUID: userData?.id,
           file: selectedFile,
         });
 

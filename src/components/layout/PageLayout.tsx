@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container, useTheme } from '@mui/material';
+import {Box, Container, useTheme} from '@mui/material';
 
 interface PageLayoutProps {
   children: React.ReactNode;

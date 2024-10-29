@@ -7,17 +7,19 @@ import {
     IconButton,
     InputLabel,
     MenuItem,
-    Select, Snackbar,
+    Select,
+    Snackbar,
     TextField,
     Typography
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
-import { FabricColor, Molde } from "../utils/types.tsx";
+import {useCallback, useEffect, useState} from "react";
+import {FabricColor, Molde} from "../utils/types.tsx";
 import {createPrenda, getFabricColors, getMoldes} from "../api/methods.ts";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {useNavigate} from "react-router-dom";
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 interface PrendaFormData {
     name: string;
@@ -32,7 +34,7 @@ interface GarmentComponent {
 
 function CrearPrenda() {
     const navigate = useNavigate();
-
+    const { userData } = useUserContext();
     const [prendaFormData, setPrendaFormData] = useState<PrendaFormData>({
         name: "",
         garmentComponents: [{
@@ -61,8 +63,9 @@ function CrearPrenda() {
     const fetchMolds = useCallback(async () => {
         if (isLoadingMoldes) return; // Prevent multiple simultaneous calls
         setIsLoadingMoldes(true);
-        try {
-            const result = await getMoldes();
+        try {  
+            // @ts-expect-error "skipped"
+            const result = await getMoldes(userData.id);
             if (result.status === 'success') {
                 setAvailableMolds(result.data);
             } else {

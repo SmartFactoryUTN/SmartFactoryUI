@@ -1,24 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getMoldes, createTizada } from '../api/methods';
-import { Molde } from '../utils/types';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {createTizada, getMoldes} from '../api/methods';
+import {Molde} from '../utils/types';
 import PageLayout from '../components/layout/PageLayout';
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 import {
-  Box,
-  Button,
-  Grid,
-  TextField,
-  Typography,
-  Select,
-  MenuItem,
-  IconButton,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Snackbar,
-  Alert,
-  Tooltip
+    Alert,
+    Box,
+    Button,
+    FormControl,
+    Grid,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    Snackbar,
+    TextField,
+    Tooltip,
+    Typography
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -71,7 +72,8 @@ function CrearTizada() {
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-
+  const { userData } = useUserContext();
+    
   {/* Mostrar moldes disponibles del usuario */ }
   const [availableMolds, setAvailableMolds] = useState<Molde[]>([]);
 
@@ -85,10 +87,12 @@ function CrearTizada() {
     if (isLoading) return; // Prevent multiple simultaneous calls
     setIsLoading(true);
     try {
-      const result = await getMoldes();
+      // @ts-expect-error "skipped"
+      const result = await getMoldes(userData?.id);
       console.log('Fetched molds:', result);
       if (result.status === 'success') {
-        setAvailableMolds(result.data);
+        // @ts-expect-error "skipped"
+        setAvailableMolds(result.data.moldes);
       } else {
         console.error('Failed to fetch molds');
         setError('Failed to fetch molds. Please try again.');
