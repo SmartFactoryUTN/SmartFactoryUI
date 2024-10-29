@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import PageLayout from '../components/layout/PageLayout';
-import { FontFamilies, getFontFamily } from '../utils/fonts';
+import { getFontFamily } from '../utils/fonts';
 
 const Login = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);    
@@ -88,13 +88,25 @@ const Login = () => {
                         padding: '12px 48px',
                         borderRadius: '28px',
                         textTransform: 'none',
-                        background: 'linear-gradient(45deg, #8d0801 30%, #bf0603 90%)',
-                        boxShadow: '0 3px 5px 2px rgba(141, 8, 1, 0.3)',  // Updated shadow to match your red
-                        '&:hover': {
-                            background: 'linear-gradient(45deg, #bf0603 30%, #8d0801 90%)',  // Lighter versions of same colors
-                            boxShadow: '0 4px 6px 3px rgba(141, 8, 1, 0.4)',  // Slightly more intense shadow on hover
+                        position: 'relative',
+                        overflow: 'hidden',
+                        boxShadow: '0 3px 5px 2px rgba(141, 8, 1, 0.3)',
+                        fontFamily: getFontFamily('kanit'),
+                        background: 'linear-gradient(45deg, #56002D 20%, #bf0603 95%)',
+                        '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'linear-gradient(45deg, #bf0603 40%, #56002D 60%)',
+                            opacity: 0,
+                            transition: 'opacity 0.3s ease',
                         },
-                        fontFamily: getFontFamily('kanit')
+                        '&:hover': {
+                            boxShadow: '0 4px 6px 3px rgba(141, 8, 1, 0.4)',
+                        },
                     }}
                 >
                     Solicitar una demo
@@ -102,9 +114,11 @@ const Login = () => {
             </Box>
 
             {/*POPUP INGRESAR DATOS USUARIO*/}
-            <Dialog open={isModalOpen} onClose={handleCloseModal}>
+            <Dialog open={isModalOpen} onClose={handleCloseModal} 
+                sx={{padding:'20px'}}
+            >
             <DialogTitle
-                sx={{fontFamily: getFontFamily('mono'),}}
+                sx={{fontFamily: getFontFamily('mono'),padding:'30px'}}
             >
                 Ingresá tus datos y te contactaremos para darte acceso a la aplicaión.
             </DialogTitle>
@@ -134,13 +148,29 @@ const Login = () => {
                 rows={4}
             />
             </DialogContent>
-            <DialogActions>
+            <DialogActions
+                sx={{fontFamily: getFontFamily('mono'),padding:'20px'}}
+            >
             <Button 
                 onClick={handleCloseModal}
+                sx={{color: '#56002D',
+                    '&:hover': {boxShadow: 'inset 9px 9px 16px rgb(163,177,198,0.3), inset -9px -9px 16px rgba(255,255,255, 0.3)'                     
+                    }                 
+                    }}
             >
                 Cancelar
             </Button>
-            <Button onClick={handleCloseModal} variant="contained">Enviar</Button>
+            <Button 
+                onClick={handleCloseModal} variant="contained"
+                sx={{
+                    background: 'linear-gradient(45deg, #7b0044 30%, #A52066 90%)',
+                    boxShadow: '9px 9px 16px rgb(255, 204, 159, 0.69) -9px -9px 16px rgba(0,0,0, 0.2)',
+                    border: 'none',
+                    '&:hover': { boxShadow: 'inset 9px 9px 16px rgb(163,177,198,0.1), inset -9px -9px 16px rgba(255,255,255, 0.1)' }
+                }}
+            >    
+                Enviar
+            </Button>
             </DialogActions>
             </Dialog>
         </PageLayout>
