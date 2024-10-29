@@ -44,6 +44,7 @@ interface FormData {
   maxTime: number;
   //userUUID: string;
   molds: MoldSelection[];
+  maxIterations: number;
 }
 
 interface TimeInput {
@@ -63,12 +64,12 @@ function CrearTizada() {
   // Setear valores default
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    width: 0,
-    height: 0,
+    width: 100,
+    height: 50,
     utilizationPercentage: null,
     maxTime: 12 * 60 * 1000, // 12 minutos en milisegundos
     molds: [{ uuid: '', quantity: 1 }],
-    // TODO: Agregar usuario
+    maxIterations: 10,
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
@@ -255,38 +256,37 @@ function CrearTizada() {
               required
             />
           </Grid>
-          {/* Dimensiones de la mesa de corte */}
-          {/*
-    <Grid item xs={12}>
-      <Typography variant="h6" gutterBottom>
-          Dimensiones de la mesa de corte
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <TextField
-              fullWidth
-              label="Ancho (cm)"
-              name="width"
-              type="number"
-              value={formData.width}
-              onChange={handleInputChange}
-              required
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-              fullWidth
-              label="Alto (cm)"
-              name="height"
-              type="number"
-              value={formData.height}
-              onChange={handleInputChange}
-              required
-          />
-        </Grid>
-      </Grid>
-    </Grid>
-    */}
+          {/* Dimensiones de la mesa de corte */}      
+          <Grid item xs={12}>
+          <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2 }}> 
+            Dimensiones de la mesa de corte
+          </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                    fullWidth
+                    label="Ancho (cm)"
+                    name="width"
+                    type="number"
+                    value={formData.width}
+                    onChange={handleInputChange}
+                    required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                    fullWidth
+                    label="Alto (cm)"
+                    name="height"
+                    type="number"
+                    value={formData.height}
+                    onChange={handleInputChange}
+                    required
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          
 
           {/*Mostrar campos acorde al tipo de tizada*/}
           {/* {formData.tizadaType === 'PERSONALIZADO' && ( */}

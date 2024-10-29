@@ -3,55 +3,59 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {getTizadaById, invokeTizada} from '../api/methods';
 import {Tizada} from '../utils/types';
 import {formatDate, getStatusDisplay} from '../utils/helpers';
-import {TEST_USER_ID} from '../utils/constants';
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 import {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import { Button, Typography, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
 
 function VerTizada() {
     const navigate = useNavigate();
     const { uuid } = useParams<{ uuid: string }>();
     const [tizada, setTizada] = useState<Tizada | null>(null);
-    //const [error, setError] = useState<string | null>(null);
-    //const [success, setSuccess] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<boolean>(false);
     const [svgUrl, setSvgUrl] = useState<string | null>(null);
+    const { userData } = useUserContext();
+
+    const fetchTizadaData = async () => {
+        try {
+            const response = await getTizadaById(uuid!);
+            if (response.status === "success") {
+                setTizada(response.data);
+                if (response.data.state === 'FINISHED' && response.data.results && response.data.results.length > 0) {
+                    setSvgUrl(response.data.results[0].url);
+                }
+            } else {
+                console.error("Failed to fetch tizada");
+            }
+        } catch (error) {
+            console.error('Error fetching tizada data:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchTizadaData = async () => {
-            try {
-                const response = await getTizadaById(uuid!);
-                if (response.status === "success") {
-                    setTizada(response.data);
-                    if (response.data.state === 'FINISHED' && response.data.results && response.data.results.length > 0) {
-                        setSvgUrl(response.data.results[0].url);
-                    }
-                } else {
-                    console.error("Failed to fetch tizada");
-                }
-            } catch (error) {
-                console.error('Error fetching tizada data:', error);
-            }
-        };
-        fetchTizadaData();
-    }, [uuid]);
+        fetchTizadaData();}, [uuid]
+    );
   
     const startTizadaProgress = async () => {
         if (!tizada) return;
         try {
-            const response = await invokeTizada(tizada.uuid, TEST_USER_ID);
-            if (response.status === "success") {
-                // setSuccess(true);
-                //fetchTizadaData(); // TODO: Update current page data
+            // @ts-expect-error "skipped"
+            const response = await invokeTizada(tizada.uuid, userData?.id);
+            if (response.status === 'success') {
+                setSuccess(true);
+                // Wait a brief moment before fetching updated data
+                setTimeout(() => {
+                    fetchTizadaData();
+                    setSuccess(false);
+                }, 1000);
             } else {
-                // setError("Failed to start tizada generation. Please try again.");
+                setError("Failed to start tizada generation. Please try again.");
             }
         } catch (error) {
             console.error('Error starting tizada generation:', error);
-            // setError("An error occurred while starting tizada generation. Please try again.");
+            setError("An error occurred while starting tizada generation. Please try again.");
         }
     };
 
@@ -192,6 +196,17 @@ function VerTizada() {
                 Volver a Mis Tizadas
             </Button>
         </Box>
+        
+      <Snackbar open={error !== null} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+        <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+          ¡Nueva tizada creada!
+        </Alert>
+      </Snackbar>
     </Box>
     );
 };
