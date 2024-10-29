@@ -41,11 +41,11 @@ export const getTizadaById = async (uuid: string): Promise<ApiResponse<Tizada>> 
     return await response.json();
 };
 
-export const getMoldes = async (): Promise<ApiResponse<Molde[]>> => {
+export const getMoldes = async (userUUID: string): Promise<ApiResponse<Molde[]>> => {
     console.log('Fetching molds from API...');
     try {
         const token = useAccessToken();
-        const response = await fetch(`${BASE_API_URL}/molde`,
+        const response = await fetch(`${BASE_API_URL}/users/${userUUID}/moldes`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -325,11 +325,16 @@ export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse
 
 export const deleteMolde = async (uuid: string): Promise<ApiResponse<void>> => {
     try {
+        const token = useAccessToken();
         const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
-        url.searchParams.append('id', uuid);
 
         const response = await fetch(url.toString(), {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            
         });
 
         if (!response.ok) {

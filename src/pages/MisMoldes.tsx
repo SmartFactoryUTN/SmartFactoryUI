@@ -3,6 +3,8 @@ import {useNavigate} from 'react-router-dom';
 import {deleteMoldes, getMoldes} from '../api/methods'
 import {Molde} from '../utils/types'
 import {formatDate} from '../utils/helpers'
+import {useUserContext} from "../components/Login/UserProvider.tsx";
+
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
@@ -16,17 +18,20 @@ import Button from '@mui/material/Button';
 function MisMoldes() {
       const navigate = useNavigate();
       const [moldes, setMoldes] = useState<Molde[]>([]);
+      const { userData } = useUserContext();
     
       useEffect(() => {
         fetchMoldes();
-      }, []);
+      }, [userData]);
     
       {/*API Call*/}
       const fetchMoldes = async () => {
         try {
-          const response = await getMoldes();
+          // @ts-expect-error "skipped"
+          const response = await getMoldes(userData?.id);
           if (response.status === "success") {
-            setMoldes(response.data);
+            // @ts-expect-error "skipped"
+            setMoldes(response.data.moldes);
           } else {
             console.error("Failed to fetch user moldes");
           }
@@ -86,7 +91,7 @@ function MisMoldes() {
                 
                 {/* Data Table */}
                 <DataGrid
-                    rows={moldes}
+                    rows={moldes || []}
                     columns={columns}
                     getRowId={(row) => row.uuid}
                     initialState={{
