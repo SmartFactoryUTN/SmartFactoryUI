@@ -106,10 +106,10 @@ const SubirMolde: React.FC = () => {
           ) : (
             <>
               <input
-                accept="image/*"
                 style={{ display: 'none' }}
                 id="raised-button-file"
                 type="file"
+                accept=".svg"
                 onChange={handleFileChange}
               />
               <label htmlFor="raised-button-file">
