@@ -10,9 +10,7 @@ import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import {Button, Typography, Box, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
 
 {/* UI Components */}
 
@@ -20,6 +18,8 @@ function MisMoldes() {
       const navigate = useNavigate();
       const [moldes, setMoldes] = useState<Molde[]>([]);
       const { userData } = useUserContext();
+      const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+      const [selectedMoldeUrl, setSelectedMoldeUrl] = useState<string | null>(null);
     
       useEffect(() => {
         fetchMoldes();
@@ -72,17 +72,18 @@ function MisMoldes() {
       ];
     
       const handleRowClick = (params: GridRowParams) => {
-        navigate(`/moldes/molde/${params.row.uuid}`);
-      };
+        setSelectedMoldeUrl(params.row.url);
+        setIsPreviewOpen(true);
+      };    
       
        return (
                 <PageLayout>
                 {/* Title and Button */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                     <Typography color="black" variant="h4" sx={{fontFamily: getFontFamily('bodoni')}}>
                       Mis Moldes
                     </Typography>
-                    <Box>
+                  <Box>
                     <Button variant="contained" color="primary" onClick={() => navigate('/moldes/crear')} sx={{ marginRight: 1 }}>
                         Digitalizar
                     </Button>
@@ -138,6 +139,36 @@ function MisMoldes() {
                         },
                     }}
                 />
+                <Dialog 
+                  open={isPreviewOpen}
+                  onClose={() => setIsPreviewOpen(false)}
+                  maxWidth="md"
+                  fullWidth
+                >
+                  <DialogTitle>Vista Previa del Molde</DialogTitle>
+                  <DialogContent>
+                    {selectedMoldeUrl && (
+                      <object
+                        type="image/svg+xml"
+                        data={selectedMoldeUrl}
+                        style={{
+                          width: '100%',
+                          height: '500px',
+                          border: '1px solid #ccc',
+                          borderRadius: '4px',
+                          marginTop: '16px'
+                        }}
+                      >
+                        Su navegador no soporta SVGs
+                      </object>
+                    )}
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setIsPreviewOpen(false)}>
+                      Cerrar
+                    </Button>
+                  </DialogActions>
+                </Dialog>
                 </PageLayout>
        );
    }

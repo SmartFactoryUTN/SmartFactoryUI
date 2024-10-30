@@ -11,6 +11,7 @@ import PageLayout from '../components/layout/PageLayout';
 import NuevoRolloModal from "./NuevoRollo.tsx";
 import ConvertirRolloModal from "./ConvertirRollo.tsx";
 import ConvertirPrendaModal from "./ConvertirPrendaModal.tsx";
+import { getFontFamily } from '../utils/fonts';
 
 {/* UI Components */}
 
@@ -152,7 +153,12 @@ function Inventario() {
     return (
         <PageLayout>
             {/* Title */}
-            <Typography color="black" variant="h4" sx={{mb: 4}}>Inventario</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                <Typography color="black" variant="h4" sx={{fontFamily: getFontFamily('bodoni')}}>
+                    Inventario
+                </Typography>
+            </Box>
+                  
 
             {/* Rollos de Tela Table */}
             <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>

@@ -5,7 +5,7 @@ import {Tizada} from '../utils/types'
 import {formatDate, getStatusDisplay} from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
-
+import { getFontFamily } from '../utils/fonts';
 
 import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
@@ -82,7 +82,9 @@ function MisTizadas() {
                 <PageLayout>
                 {/* Title and Button */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                    <Typography color="black" variant="h4">Mis Tizadas</Typography>
+                    <Typography color="black" variant="h4" sx={{fontFamily: getFontFamily('bodoni')}}>
+                      Mis Tizadas
+                    </Typography>
                     <Button variant="contained" color="primary" onClick={() => navigate('/tizadas/crear')}>
                         Crear Nueva
                     </Button>
