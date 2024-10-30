@@ -20,7 +20,8 @@ function MisMoldes() {
       const { userData } = useUserContext();
       const [isPreviewOpen, setIsPreviewOpen] = useState(false);
       const [selectedMoldeUrl, setSelectedMoldeUrl] = useState<string | null>(null);
-    
+      const [selectedMoldeName, setSelectedMoldeName] = useState<string>('');
+
       useEffect(() => {
         fetchMoldes();
       }, [userData]);
@@ -73,6 +74,7 @@ function MisMoldes() {
     
       const handleRowClick = (params: GridRowParams) => {
         setSelectedMoldeUrl(params.row.url);
+        setSelectedMoldeName(params.row.name);
         setIsPreviewOpen(true);
       };    
       
@@ -145,7 +147,7 @@ function MisMoldes() {
                   maxWidth="md"
                   fullWidth
                 >
-                  <DialogTitle>Vista Previa del Molde</DialogTitle>
+                  <DialogTitle>Vista Previa del Molde {selectedMoldeName}</DialogTitle>
                   <DialogContent>
                     {selectedMoldeUrl && (
                       <object
