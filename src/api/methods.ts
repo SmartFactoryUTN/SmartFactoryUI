@@ -331,6 +331,32 @@ export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse
     }
 }
 
+export const editMoldeName = async (uuid: string, name:string): Promise<ApiResponse<void>> => {
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
+        const response = await fetch(url.toString(), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ name }),
+
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { status: "OK", data: undefined };
+    } catch (error) {
+        console.error(`Error deleting molde ${uuid}:`, error);
+        return { status: "ERROR", data: undefined };
+    }
+};
+
+
 export const deleteMolde = async (uuid: string): Promise<ApiResponse<void>> => {
     try {
         const token = useAccessToken();

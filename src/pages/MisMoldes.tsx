@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {deleteMoldes, getMoldes} from '../api/methods'
+import {deleteMoldes, getMoldes, editMoldeName} from '../api/methods'
 import {Molde} from '../utils/types'
 import {formatDate} from '../utils/helpers'
 import {useUserContext} from "../components/Login/UserProvider.tsx";
@@ -10,7 +10,10 @@ import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import {Button, Typography, Box, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
+import {Button, TextField, IconButton, Alert, Snackbar, Typography, Box, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 {/* UI Components */}
 
@@ -21,6 +24,10 @@ function MisMoldes() {
       const [isPreviewOpen, setIsPreviewOpen] = useState(false);
       const [selectedMoldeUrl, setSelectedMoldeUrl] = useState<string | null>(null);
       const [selectedMoldeName, setSelectedMoldeName] = useState<string>('');
+      const [error, setError] = useState<string | null>(null);
+      const [success, setSuccess] = useState(false);
+      const [editingId, setEditingId] = useState<string | null>(null);
+      const [originalValue, setOriginalValue] = useState<string>('');
 
       useEffect(() => {
         fetchMoldes();
@@ -54,29 +61,164 @@ function MisMoldes() {
           console.error("Error deleting moldes:", error);
         }
       };
+
+      const handleEditCellChange = async (params: any) => {
+        if (params.field === 'name') {
+          try {
+            const response = await editMoldeName(params.id, params.value);
+            if (response.status === "OK") {
+              setSuccess(true);
+              fetchMoldes();
+            } else {
+              setError("Error al actualizar el nombre");
+            }
+          } catch (err) {
+            setError("Error al actualizar el nombre");
+          }
+        }
+      };
+
+      // Add these handler functions
+      const handleStartEdit = (id: string) => {
+        const molde = moldes.find(m => m.uuid === id);
+        if (molde) {
+          setOriginalValue(molde.name);
+          setEditingId(id);
+        }
+      };
+
+      const handleSave = async (id: string, newValue: string) => {
+        const molde = moldes.find(m => m.uuid === id);
+        if (!molde) return;
       
+        try {
+          const response = await editMoldeName(id, molde.name);
+          if (response.status === "OK") {
+            setSuccess(true);
+            setEditingId(null);
+            fetchMoldes();
+          } else {
+            setError("Error al actualizar el nombre");
+          }
+        } catch (err) {
+          setError("Error al actualizar el nombre");
+        }
+      };
+
+      const handleCancel = () => {
+        setEditingId(null);
+        fetchMoldes(); // Refresh to get original values
+      };
+    
       const columns: GridColDef[] = [
-        { field: 'name', headerName: 'Nombre', width: 100, editable: true },
-        { field: 'description', headerName: 'Descripción', width: 150, editable: true },
+        { 
+          field: 'name', 
+          headerName: 'Nombre', 
+          width: 200,
+          editable: false, // Change this to false to prevent double-click editing
+          renderCell: (params) => {
+            const isInEditMode = params.row.isEditing;
+        
+            if (isInEditMode) {
+              return (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+                  <TextField
+                    value={params.value}
+                    size="small"
+                    autoFocus
+                    fullWidth
+                    onChange={(e) => {
+                      const molde = moldes.find(m => m.uuid === params.row.uuid);
+                      if (molde) {
+                        setMoldes(moldes.map(m => 
+                          m.uuid === params.row.uuid 
+                            ? { ...m, name: e.target.value }
+                            : m
+                        ));
+                      }
+                    }}
+                  />
+                  <Box sx={{ ml: 1 }}>
+                    <IconButton 
+                      size="small" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSave(params.row.uuid, params.value);
+                      }}
+                    >
+                      <CheckIcon fontSize="small" color="primary" />
+                    </IconButton>
+                    <IconButton 
+                      size="small" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCancel();
+                      }}
+                    >
+                      <CloseIcon fontSize="small" color="error" />
+                    </IconButton>
+                  </Box>
+                </Box>
+              );
+            }
+        
+            return (
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 1, 
+                  width: '100%',
+                  '& .edit-button': {
+                    opacity: 0,
+                    transition: 'opacity 0.2s'
+                  },
+                  '&:hover .edit-button': {
+                    opacity: 1
+                  }
+                }}
+              >
+                <div>{params.value}</div>
+                <IconButton
+                  className="edit-button"
+                  size="small"
+                  sx={{ ml: 'auto' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStartEdit(params.row.uuid);
+                  }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            );
+          }
+        },
+        { field: 'description', headerName: 'Descripción', width: 150, editable: false }, //FIX: allow edit
         { 
           field: 'createdAt', 
           headerName: 'Fecha de Creación', 
           width: 180,
           valueFormatter: formatDate,
+          editable: false
         },
         { 
             field: 'updatedAt', 
             headerName: 'Ultima Actualización', 
             width: 180,
+            editable: false,
             renderCell: (params) => params.value ? new Date(params.value).toLocaleString() : 'Sin cambios',
         }
       ];
     
+
+      {/*PREVIEW DEL MOLDE*/}
+      {/*
       const handleRowClick = (params: GridRowParams) => {
         setSelectedMoldeUrl(params.row.url);
         setSelectedMoldeName(params.row.name);
         setIsPreviewOpen(true);
-      };    
+      };*/}
       
        return (
                 <PageLayout>
@@ -96,51 +238,57 @@ function MisMoldes() {
                 </Box>
                 
                 {/* Data Table */}
+                
                 <DataGrid
-                    rows={moldes || []}
-                    columns={columns}
-                    getRowId={(row) => row.uuid}
-                    initialState={{
-                        pagination: {
-                        paginationModel: {
-                            pageSize: 5,
-                        },
-                        },
-                    }}
-                    pageSizeOptions={[5]}
-                    checkboxSelection={true}
-                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    disableRowSelectionOnClick
-                    onRowClick={handleRowClick}
-                    slots={{
-                      toolbar: CustomToolbar,
-                    }}
-                    slotProps={{
-                      toolbar: {
-                        onDelete: handleDelete,
+                  rows={moldes?.map(molde => ({
+                    ...molde,
+                    isEditing: molde.uuid === editingId
+                  })) || []}              
+                  columns={columns}
+                  getRowId={(row) => row.uuid}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
                       },
-                    }}
-                    sx={{
-                        '& .MuiDataGrid-row': {
-                            cursor: 'pointer',
-                        },
-                        '& .MuiDataGrid-cell:focus': {
-                            outline: 'none',
-                        },
-                        '& .MuiDataGrid-cell:focus-within': {
-                            outline: 'none',
-                        },
-                        '& .MuiDataGrid-columnHeader:focus': {
-                            outline: 'none',
-                        },
-                        '& .MuiDataGrid-columnHeader:focus-within': {
-                            outline: 'none',
-                        },
-                        '& .MuiDataGrid-scrollbar--horizontal': {
-                            display: 'block',
-                        },
-                    }}
+                    },
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection={true}
+                  localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                  disableRowSelectionOnClick
+                  // onRowClick={handleRowClick}
+                  slots={{
+                    toolbar: CustomToolbar,
+                  }}
+                  slotProps={{
+                    toolbar: {
+                      onDelete: handleDelete,
+                    },
+                  }}
+                  processRowUpdate={handleEditCellChange} // Add this line
+                  sx={{
+                    '& .MuiDataGrid-row': {
+                      cursor: 'pointer',
+                    },
+                    '& .MuiDataGrid-cell:focus': {
+                      outline: 'none',
+                    },
+                    '& .MuiDataGrid-cell:focus-within': {
+                      outline: 'none',
+                    },
+                    '& .MuiDataGrid-columnHeader:focus': {
+                      outline: 'none',
+                    },
+                    '& .MuiDataGrid-columnHeader:focus-within': {
+                      outline: 'none',
+                    },
+                    '& .MuiDataGrid-scrollbar--horizontal': {
+                      display: 'block',
+                    },
+                  }}
                 />
+
                 <Dialog 
                   open={isPreviewOpen}
                   onClose={() => setIsPreviewOpen(false)}
@@ -171,6 +319,25 @@ function MisMoldes() {
                     </Button>
                   </DialogActions>
                 </Dialog>
+                <Snackbar 
+                  open={error !== null} 
+                  autoHideDuration={6000} 
+                  onClose={() => setError(null)}
+                >
+                  <Alert onClose={() => setError(null)} severity="error">
+                    {error}
+                  </Alert>
+                </Snackbar>
+
+                <Snackbar 
+                  open={success} 
+                  autoHideDuration={6000} 
+                  onClose={() => setSuccess(false)}
+                >
+                  <Alert onClose={() => setSuccess(false)} severity="success">
+                    Nombre actualizado exitosamente
+                  </Alert>
+                </Snackbar>
                 </PageLayout>
        );
    }
