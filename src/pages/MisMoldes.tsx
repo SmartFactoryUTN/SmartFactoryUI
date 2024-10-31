@@ -8,9 +8,10 @@ import { getFontFamily } from '../utils/fonts';
 
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
-import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
+import {DataGrid, GridColDef} from '@mui/x-data-grid'; //, GridRowParams
 import {esES} from '@mui/x-data-grid/locales';
-import {Button, TextField, IconButton, Alert, Snackbar, Typography, Box, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
+import {Button, TextField, IconButton, Alert, Snackbar, Typography, Box, } from '@mui/material';
+//Dialog, DialogTitle, DialogActions, DialogContent
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
@@ -21,13 +22,9 @@ function MisMoldes() {
       const navigate = useNavigate();
       const [moldes, setMoldes] = useState<Molde[]>([]);
       const { userData } = useUserContext();
-      const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-      const [selectedMoldeUrl, setSelectedMoldeUrl] = useState<string | null>(null);
-      const [selectedMoldeName, setSelectedMoldeName] = useState<string>('');
       const [error, setError] = useState<string | null>(null);
       const [success, setSuccess] = useState(false);
       const [editingId, setEditingId] = useState<string | null>(null);
-      const [originalValue, setOriginalValue] = useState<string>('');
 
       useEffect(() => {
         fetchMoldes();
@@ -82,12 +79,11 @@ function MisMoldes() {
       const handleStartEdit = (id: string) => {
         const molde = moldes.find(m => m.uuid === id);
         if (molde) {
-          setOriginalValue(molde.name);
           setEditingId(id);
         }
       };
 
-      const handleSave = async (id: string, newValue: string) => {
+      const handleSave = async (id: string) => {
         const molde = moldes.find(m => m.uuid === id);
         if (!molde) return;
       
@@ -139,15 +135,15 @@ function MisMoldes() {
                     }}
                   />
                   <Box sx={{ ml: 1 }}>
-                    <IconButton 
-                      size="small" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSave(params.row.uuid, params.value);
-                      }}
-                    >
-                      <CheckIcon fontSize="small" color="primary" />
-                    </IconButton>
+                  <IconButton 
+                    size="small" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSave(params.row.uuid);
+                    }}
+                  >
+                    <CheckIcon fontSize="small" color="primary" />
+                  </IconButton>
                     <IconButton 
                       size="small" 
                       onClick={(e) => {
@@ -289,12 +285,13 @@ function MisMoldes() {
                   }}
                 />
 
-                <Dialog 
+                {/*<Dialog 
                   open={isPreviewOpen}
                   onClose={() => setIsPreviewOpen(false)}
                   maxWidth="md"
                   fullWidth
                 >
+                  
                   <DialogTitle>Vista Previa del Molde {selectedMoldeName}</DialogTitle>
                   <DialogContent>
                     {selectedMoldeUrl && (
@@ -318,7 +315,7 @@ function MisMoldes() {
                       Cerrar
                     </Button>
                   </DialogActions>
-                </Dialog>
+                </Dialog>*/}
                 <Snackbar 
                   open={error !== null} 
                   autoHideDuration={6000} 
