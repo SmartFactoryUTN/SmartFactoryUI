@@ -299,6 +299,7 @@ export const convertRollos = async (convertRollosData: any): Promise<ApiResponse
     }
 }
 
+{/*
 export const getTizadasFinalizadas = async (): Promise<ApiResponse<Tizada[]>> => {
     const token = useAccessToken();
     const response = await fetch(`${BASE_API_URL}/tizada?finalizadas=true`,{
@@ -307,7 +308,7 @@ export const getTizadasFinalizadas = async (): Promise<ApiResponse<Tizada[]>> =>
         },
     });
     return await response.json();
-};
+};*/}
 
 export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse<any>> => {
     try {

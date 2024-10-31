@@ -12,9 +12,10 @@ import {
     Typography
 } from "@mui/material";
 import {RolloDeTela, Tizada} from "../utils/types";
-import {useCallback, useEffect, useState} from "react";
-import {convertRollos, getTizadasFinalizadas} from "../api/methods.ts";
+import {useEffect, useState} from "react";
+import {convertRollos, getTizadas} from "../api/methods.ts"; // getTizadasFinalizadas ver si vuelve
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 interface ConvertirRolloModalProps {
     open: boolean;
@@ -35,13 +36,15 @@ interface RollQuantity {
 }
 
 const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose, selectedRollos, onConversionSuccess}) => {
-    const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    //const [tizadasFinished, setTizadasFinished] = useState<Tizada[]>([]);
     const [selectedTizada, setSelectedTizada] = useState<Tizada | null>(null);
     const [successMessage, setSuccessMessage] = useState("");
     const [isConverting, setIsConverting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    //const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    const { userData } = useUserContext();
 
     const [convertirRolloData, setConvertirRolloData] = useState<ConvertirRolloModalData>({
         tizadaId: "",
@@ -59,8 +62,13 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
         });
     }, [selectedRollos]);
 
+    {/*
     useEffect(() => {
         fetchTizadasFinalizadas();
+    }, []);    */}
+    
+    useEffect(() => {
+        fetchTizadas();
     }, []);
 
     useEffect(() => {
@@ -69,13 +77,32 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
         }
     }, [open]);
 
+    {/**/}
+    const fetchTizadas = async () => {
+        try {
+          const response = await getTizadas(userData?.id);
+          if (response.status === "success") {
+            // @ts-expect-error "skipped"
+            const finishedTizadas = response.data["tizadas"].filter(
+                (tizada: Tizada) => tizada.state === "FINISHED"
+            );
+            setTizadas(finishedTizadas);
+          } else {
+            console.error("Failed to fetch tizadas");
+          }
+        } catch (error) {
+          console.error("Error fetching tizadas:", error);
+        }
+    };    
+    
+    {/*
     const fetchTizadasFinalizadas = useCallback(async () => {
         if (isLoading) return;
         setIsLoading(true);
         try {
             const result = await getTizadasFinalizadas();
             if (result.status === 'success') {
-                setTizadas(result.data);
+                setTizadasFinished(result.data);
             } else {
                 console.error('Failed to fetch tizadas:', result.data);
                 setError('Failed to fetch tizadas. Please try again.');
@@ -85,7 +112,7 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
         } finally {
             setIsLoading(false);
         }
-    }, [isLoading]);
+    }, [isLoading]);*/}
 
     const handleTizadaChange = (event: any) => {
         const selectedId = event.target.value;
