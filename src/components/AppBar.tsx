@@ -12,6 +12,7 @@ import {AppBar, Button, IconButton, Toolbar, Box,
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LogoutButton from "./Login/LogoutButton.tsx";
 import LoginButton from "./Login/LoginButton.tsx";
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 interface INavigation {
     isAuthenticated: boolean
@@ -19,6 +20,7 @@ interface INavigation {
 
 const Navigation: React.FC<INavigation> = (props) => {
     const {isAuthenticated} = props;
+    const { userData } = useUserContext();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -41,7 +43,7 @@ const Navigation: React.FC<INavigation> = (props) => {
         >
             <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
                 <AccountCircle sx={{ mr: 1 }} />
-                <Typography variant="h6">User Name</Typography>
+                <Typography variant="h6">{userData?.name}</Typography>
             </Box>
             <Divider />
             {isAuthenticated && <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}><LogoutButton/></Box>}
