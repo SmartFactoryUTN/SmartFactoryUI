@@ -6,20 +6,38 @@ import {formatDate, getStatusDisplay} from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 import { getFontFamily } from '../utils/fonts';
+import EditableCell from "../components/EditableCell.tsx";
+import { useEditManager } from '../components/hooks/useEditManager';
 
 import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import {Box, Typography, Button, Snackbar, Alert} from '@mui/material';
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 function MisTizadas() {
     const navigate = useNavigate();
     const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
     const { userData } = useUserContext();
     console.log(userData);
 
+    const { 
+      editingId, 
+      editingField,
+      editedValue,
+      startEdit,
+      saveEdit,
+      cancelEdit,
+      setEditedValue 
+    } = useEditManager({ 
+      entityType: 'tizada',
+      onSuccess: () => {
+        setSuccess(true);
+        fetchTizadas();
+      },
+      onError: (msg: string) => setError(msg)
+    });
 
     useEffect(() => {
         fetchTizadas();
@@ -40,7 +58,26 @@ function MisTizadas() {
       };    
     
       const columns: GridColDef[] = [
-        { field: 'name', headerName: 'Nombre', width: 200, editable: true },
+        { 
+          field: 'name', 
+          headerName: 'Nombre', 
+          width: 200,
+          editable: false,
+          renderCell: (params) => (
+            <EditableCell
+              value={editingId === params.row.uuid && editingField === 'name' 
+                ? editedValue 
+                : params.row.name}  
+              row={params.row}
+              field="name"
+              isEditing={params.row.uuid === editingId && editingField === 'name'}
+              onEdit={(id) => startEdit(id, 'name', params.row.name)} 
+              onSave={(id) => saveEdit(id, 'name')}
+              onCancel={cancelEdit}
+              onChange={setEditedValue}
+            />
+          )
+        },
         { 
           field: 'state', 
           headerName: 'Estado', 
@@ -92,7 +129,10 @@ function MisTizadas() {
                 
                 {/* Data Table */}
                 <DataGrid
-                    rows={tizadas || []}
+                    rows={tizadas?.map(tizada => ({
+                      ...tizada,
+                      isEditing: tizada.uuid === editingId
+                    })) || []}
                     columns={columns}
                     getRowId={(row) => row.uuid}
                     initialState={{
@@ -136,6 +176,24 @@ function MisTizadas() {
                         },
                     }}
                 />
+                <Snackbar 
+                  open={success} 
+                  autoHideDuration={6000} 
+                  onClose={() => setSuccess(false)}
+                  >
+                  <Alert onClose={() => setSuccess(false)} severity="success">
+                    {`${editingField === 'name' ? 'Nombre' : 'Descripción'} actualizado exitosamente`}
+                  </Alert>
+                </Snackbar>
+                <Snackbar 
+                  open={error !== null} 
+                  autoHideDuration={6000} 
+                  onClose={() => setError(null)}
+                >
+                  <Alert onClose={() => setError(null)} severity="error">
+                    {error}
+                  </Alert>
+                </Snackbar>
                 </PageLayout>
        );
    }

@@ -1,20 +1,20 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {deleteMoldes, getMoldes, editMoldeName} from '../api/methods'
+import {deleteMoldes, getMoldes} from '../api/methods'
 import {Molde} from '../utils/types'
 import {formatDate} from '../utils/helpers'
 import {useUserContext} from "../components/Login/UserProvider.tsx";
+import EditableCell from "../components/EditableCell.tsx";
 import { getFontFamily } from '../utils/fonts';
-
+import { useEditManager } from '../components/hooks/useEditManager';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
-import {DataGrid, GridColDef} from '@mui/x-data-grid'; //, GridRowParams
+import {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import {Button, TextField, IconButton, Alert, Snackbar, Typography, Box, } from '@mui/material';
+import {Button, Alert, Snackbar, Typography, Box} from '@mui/material';
+
+//, GridRowParams
 //Dialog, DialogTitle, DialogActions, DialogContent
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
 
 {/* UI Components */}
 
@@ -24,7 +24,23 @@ function MisMoldes() {
       const { userData } = useUserContext();
       const [error, setError] = useState<string | null>(null);
       const [success, setSuccess] = useState(false);
-      const [editingId, setEditingId] = useState<string | null>(null);
+      const { 
+        editingId, 
+        editingField,
+        editedValue,
+        startEdit,
+        saveEdit,
+        cancelEdit,
+        setEditedValue 
+      } = useEditManager({ 
+        entityType: 'molde',
+        onSuccess: () => {
+          setSuccess(true);
+          fetchMoldes();
+        },
+        onError: (msg: string) => setError(msg)
+      });
+    
 
       useEffect(() => {
         fetchMoldes();
@@ -59,138 +75,47 @@ function MisMoldes() {
         }
       };
 
-      const handleEditCellChange = async (params: any) => {
-        if (params.field === 'name') {
-          try {
-            const response = await editMoldeName(params.id, params.value);
-            if (response.status === "OK") {
-              setSuccess(true);
-              fetchMoldes();
-            } else {
-              setError("Error al actualizar el nombre");
-            }
-          } catch (err) {
-            setError("Error al actualizar el nombre");
-          }
-        }
-      };
-
-      // Add these handler functions
-      const handleStartEdit = (id: string) => {
-        const molde = moldes.find(m => m.uuid === id);
-        if (molde) {
-          setEditingId(id);
-        }
-      };
-
-      const handleSave = async (id: string) => {
-        const molde = moldes.find(m => m.uuid === id);
-        if (!molde) return;
-      
-        try {
-          const response = await editMoldeName(id, molde.name);
-          if (response.status === "OK") {
-            setSuccess(true);
-            setEditingId(null);
-            fetchMoldes();
-          } else {
-            setError("Error al actualizar el nombre");
-          }
-        } catch (err) {
-          setError("Error al actualizar el nombre");
-        }
-      };
-
-      const handleCancel = () => {
-        setEditingId(null);
-        fetchMoldes(); // Refresh to get original values
-      };
-    
       const columns: GridColDef[] = [
         { 
           field: 'name', 
           headerName: 'Nombre', 
           width: 200,
-          editable: false, // Change this to false to prevent double-click editing
-          renderCell: (params) => {
-            const isInEditMode = params.row.isEditing;
-        
-            if (isInEditMode) {
-              return (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-                  <TextField
-                    value={params.value}
-                    size="small"
-                    autoFocus
-                    fullWidth
-                    onChange={(e) => {
-                      const molde = moldes.find(m => m.uuid === params.row.uuid);
-                      if (molde) {
-                        setMoldes(moldes.map(m => 
-                          m.uuid === params.row.uuid 
-                            ? { ...m, name: e.target.value }
-                            : m
-                        ));
-                      }
-                    }}
-                  />
-                  <Box sx={{ ml: 1 }}>
-                  <IconButton 
-                    size="small" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSave(params.row.uuid);
-                    }}
-                  >
-                    <CheckIcon fontSize="small" color="primary" />
-                  </IconButton>
-                    <IconButton 
-                      size="small" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCancel();
-                      }}
-                    >
-                      <CloseIcon fontSize="small" color="error" />
-                    </IconButton>
-                  </Box>
-                </Box>
-              );
-            }
-        
-            return (
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 1, 
-                  width: '100%',
-                  '& .edit-button': {
-                    opacity: 0,
-                    transition: 'opacity 0.2s'
-                  },
-                  '&:hover .edit-button': {
-                    opacity: 1
-                  }
-                }}
-              >
-                <div>{params.value}</div>
-                <IconButton
-                  className="edit-button"
-                  size="small"
-                  sx={{ ml: 'auto' }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleStartEdit(params.row.uuid);
-                  }}
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            );
-          }
+          editable: false,
+          renderCell: (params) => (
+            <EditableCell
+              value={editingId === params.row.uuid && editingField === 'name' 
+                ? editedValue 
+                : params.row.name}  
+              row={params.row}
+              field="name"
+              isEditing={params.row.uuid === editingId && editingField === 'name'}
+              onEdit={(id) => startEdit(id, 'name', params.row.name)} 
+              onSave={(id) => saveEdit(id, 'name')}
+              onCancel={cancelEdit}
+              onChange={setEditedValue}
+            />
+          )
         },
-        { field: 'description', headerName: 'Descripción', width: 150, editable: false }, //FIX: allow edit
+        { 
+          field: 'description', 
+          headerName: 'Descripción', 
+          width: 200,
+          editable: false,
+          renderCell: (params) => (
+            <EditableCell
+              value={editingId === params.row.uuid && editingField === 'description' 
+                ? editedValue 
+                : params.row.description} 
+              row={params.row}
+              field="description"
+              isEditing={params.row.uuid === editingId && editingField === 'description'}
+              onEdit={(id) => startEdit(id, 'description', params.row.description)}  
+              onSave={(id) => saveEdit(id, 'description')}
+              onCancel={cancelEdit}
+              onChange={setEditedValue}
+            />
+          )
+        },
         { 
           field: 'createdAt', 
           headerName: 'Fecha de Creación', 
@@ -262,7 +187,6 @@ function MisMoldes() {
                       onDelete: handleDelete,
                     },
                   }}
-                  processRowUpdate={handleEditCellChange} // Add this line
                   sx={{
                     '& .MuiDataGrid-row': {
                       cursor: 'pointer',
@@ -317,22 +241,21 @@ function MisMoldes() {
                   </DialogActions>
                 </Dialog>*/}
                 <Snackbar 
+                  open={success} 
+                  autoHideDuration={6000} 
+                  onClose={() => setSuccess(false)}
+                  >
+                  <Alert onClose={() => setSuccess(false)} severity="success">
+                    {`${editingField === 'name' ? 'Nombre' : 'Descripción'} actualizado exitosamente`}
+                  </Alert>
+                </Snackbar>
+                <Snackbar 
                   open={error !== null} 
                   autoHideDuration={6000} 
                   onClose={() => setError(null)}
                 >
                   <Alert onClose={() => setError(null)} severity="error">
                     {error}
-                  </Alert>
-                </Snackbar>
-
-                <Snackbar 
-                  open={success} 
-                  autoHideDuration={6000} 
-                  onClose={() => setSuccess(false)}
-                >
-                  <Alert onClose={() => setSuccess(false)} severity="success">
-                    Nombre actualizado exitosamente
                   </Alert>
                 </Snackbar>
                 </PageLayout>

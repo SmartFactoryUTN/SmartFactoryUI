@@ -153,6 +153,31 @@ export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promis
     }
 };
 
+export const editTizada = async (uuid: string, name:string): Promise<ApiResponse<void>> => {
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/tizada/${uuid}`);
+        const response = await fetch(url.toString(), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ name }),
+
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { status: "OK", data: undefined };
+    } catch (error) {
+        console.error(`Error al editar tizada ${uuid}:`, error);
+        return { status: "ERROR", data: undefined };
+    }
+};
+
 export const deleteTizada = async (uuid: string): Promise<ApiResponse<void>> => {
   try {
       const token = useAccessToken();
@@ -331,7 +356,7 @@ export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse
     }
 }
 
-export const editMoldeName = async (uuid: string, name:string): Promise<ApiResponse<void>> => {
+export const editMolde = async (uuid: string, field:'name' | 'description', value: string): Promise<ApiResponse<void>> => {
     try {
         const token = useAccessToken();
         const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
@@ -341,8 +366,7 @@ export const editMoldeName = async (uuid: string, name:string): Promise<ApiRespo
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ name }),
-
+            body: JSON.stringify({ [field]: value }), // This will be { name: value } or { description: value }
         });
 
         if (!response.ok) {
@@ -351,7 +375,7 @@ export const editMoldeName = async (uuid: string, name:string): Promise<ApiRespo
 
         return { status: "OK", data: undefined };
     } catch (error) {
-        console.error(`Error deleting molde ${uuid}:`, error);
+        console.error(`Error updating molde ${uuid}:`, error);
         return { status: "ERROR", data: undefined };
     }
 };
