@@ -65,9 +65,11 @@ function CrearPrenda() {
         setIsLoadingMoldes(true);
         try {  
             // @ts-expect-error "skipped"
-            const result = await getMoldes(userData.id);
+            const result = await getMoldes(userData?.id); // fix anotation: "implicitly type any"
             if (result.status === 'success') {
-                setAvailableMolds(result.data);
+                console.log(result.data);
+                // @ts-expect-error "skipped"
+                setAvailableMolds(result.data["moldes"]); // fix anotation: "implicitly type any"
             } else {
                 console.error('Failed to fetch molds');
                 setError('Failed to fetch molds. Please try again.');
