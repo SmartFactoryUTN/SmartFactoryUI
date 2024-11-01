@@ -1,5 +1,9 @@
-import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, IconButton } from '@mui/material';
 import { Tizada } from '../utils/types';
+import { useState, useCallback, useRef } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 interface TizadaDisplayProps {
   tizada: Tizada | null;
@@ -7,7 +11,103 @@ interface TizadaDisplayProps {
   onStartProgress: () => void;
 }
 
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 4;
+const ZOOM_STEP = 0.1;
+
 const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) => {
+  const [zoom, setZoom] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
+  };
+
+  const handleReset = () => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * ZOOM_STEP;
+      setZoom(prev => Math.min(Math.max(prev + delta, MIN_ZOOM), MAX_ZOOM));
+    }
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isDragging) return;
+    setPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const ZoomControls = () => (
+    <Box
+      sx={{
+        position: 'absolute',
+        bottom: 20,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        padding: 1,
+        borderRadius: 1,
+        boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
+        zIndex: 1000,
+      }}
+    >
+      <IconButton 
+        onClick={handleZoomOut} 
+        disabled={zoom <= MIN_ZOOM}
+        sx={{ backgroundColor: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } }}
+      >
+        <RemoveIcon />
+      </IconButton>
+      <Typography sx={{ minWidth: 60, textAlign: 'center', lineHeight: '40px' }}>
+        {Math.round(zoom * 100)}%
+      </Typography>
+      <IconButton 
+        onClick={handleZoomIn} 
+        disabled={zoom >= MAX_ZOOM}
+        sx={{ backgroundColor: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } }}
+      >
+        <AddIcon />
+      </IconButton>
+      <IconButton 
+        onClick={handleReset} 
+        disabled={zoom === 1 && position.x === 0 && position.y === 0}
+        sx={{ backgroundColor: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } }}
+      >
+        <RestartAltIcon />
+      </IconButton>
+    </Box>
+  );
+
   const getContent = () => {
     if (!tizada) return null;
 
@@ -35,20 +135,45 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
       case 'FINISHED':
         if (svgUrl) {
           return (
-            <object
-              type="image/svg+xml"
-              data={svgUrl}
-              style={{
+            <Box
+              ref={containerRef}
+              onWheel={handleWheel}
+              sx={{
+                position: 'relative',
                 width: '100%',
                 height: '100%',
-                margin: '20px',
-                border: '1px solid #ccc',
+                overflow: 'hidden',
+                cursor: isDragging ? 'grabbing' : 'grab',
+                backgroundColor: '#f5f5f5',
                 borderRadius: '8px',
-                objectFit: 'contain'
               }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
             >
-              Su navegador no soporta SVGs
-            </object>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+                  transformOrigin: 'center',
+                  transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                }}
+              >
+                <iframe
+                  src={svgUrl}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    pointerEvents: 'none', // This prevents iframe from capturing events
+                  }}
+                  title="Tizada SVG"
+                />
+              </Box>
+              <ZoomControls />
+            </Box>
           );
         }
         return null;
@@ -76,7 +201,8 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
       flexDirection: 'column', 
       justifyContent: 'center', 
       alignItems: 'center', 
-      p: 2 
+      p: 2,
+      position: 'relative',
     }}>
       {getContent()}
     </Box>

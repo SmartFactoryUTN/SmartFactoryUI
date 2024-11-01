@@ -4,11 +4,11 @@ import { getTizadaById, invokeTizada } from '../api/methods';
 import { Tizada } from '../utils/types';
 import { formatDate, getStatusDisplay } from '../utils/helpers';
 import { useUserContext } from "../components/Login/UserProvider.tsx";
-import TizadaDisplay from '../components/TizadaDisplay';
+import TizadaDisplay from '../components/TizadaDisplay.tsx';
+import TizadaInfoSidebar from '../components/TizadaInfoSidebar.tsx';
 
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { esES } from '@mui/x-data-grid/locales';
-import { Button, Typography, Box, Snackbar, Alert } from '@mui/material';
+import { GridColDef } from '@mui/x-data-grid';
+import { Button, Box, Snackbar, Alert } from '@mui/material';
 
 function VerTizada() {
     const navigate = useNavigate();
@@ -69,7 +69,6 @@ function VerTizada() {
                     return getStatusDisplay(tizada?.state || 'CREATED');
                 } else if (params.row.property === 'Fecha de Creación') {
                     return params.value || 'Ninguna';
-
                 } else if (params.row.property === 'Última Actualización') {
                     return params.value || 'Sin cambios';
                 } 
@@ -85,16 +84,10 @@ function VerTizada() {
             { id: 3, property: 'Fecha de Creación', value: formatDate(tizada.createdAt) },
             { id: 4, property: 'Última Actualización', value: formatDate(tizada.updatedAt)},
             { id: 5, property: 'Total de moldes', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
-        ]: [];
+        ] : [];
 
     const moldColumns: GridColDef[] = [
         { field: 'name', headerName: 'Molde', width: 120 },
-        //{ 
-        //    field: 'area', 
-        //    headerName: 'Área', 
-        //    width: 80, 
-        //    valueFormatter: formatArea 
-        //},        
         { field: 'description', headerName: 'Descripción', width: 150 },
         { field: 'quantity', headerName: 'Cantidad', width: 80 },
     ];
@@ -109,57 +102,47 @@ function VerTizada() {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)'}}>
-            <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width:'100%', padding:'8px 0'}}>
-                {/* Main display area */}
+            <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width: '100%', padding: '8px 0'}}>
                 <TizadaDisplay 
                     tizada={tizada}
                     svgUrl={svgUrl}
                     onStartProgress={startTizadaProgress}
                 />
                 
-                {/* Right sidebar with information */}
-                <Box sx={{ 
-                    width: '350px',
-                    borderLeft: '1px solid #e0e0e0',
-                    p: 3,
-                    overflowY: 'auto',
-                    backgroundColor: '#fafafa'
-                }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>Información de Tizada</Typography>
-                    <DataGrid
-                        rows={tizadaInfoRows}
-                        columns={tizadaInfoColumns}
-                        hideFooter={true}
-                        disableColumnMenu
-                        autoHeight
-                        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    />
-                    <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Moldes</Typography>
-                    <DataGrid
-                        rows={moldRows}
-                        columns={moldColumns}
-                        hideFooter={true}
-                        disableColumnMenu
-                        autoHeight
-                        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    />
-                </Box>
+                <TizadaInfoSidebar 
+                    tizadaInfoRows={tizadaInfoRows}
+                    tizadaInfoColumns={tizadaInfoColumns}
+                    moldRows={moldRows}
+                    moldColumns={moldColumns}
+                />
             </Box>
             
             {/* Footer with back button */}
             <Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/tizadas')}>
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => navigate('/tizadas')}
+                >
                     Volver a Mis Tizadas
                 </Button>
             </Box>
             
-            <Snackbar open={error !== null} autoHideDuration={6000} onClose={() => setError(null)}>
-                <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+            <Snackbar 
+                open={error !== null} 
+                autoHideDuration={6000} 
+                onClose={() => setError(null)}
+            >
+                <Alert onClose={() => setError(null)} severity="error">
                     {error}
                 </Alert>
             </Snackbar>
-            <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
-                <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+            <Snackbar 
+                open={success} 
+                autoHideDuration={6000} 
+                onClose={() => setSuccess(false)}
+            >
+                <Alert onClose={() => setSuccess(false)} severity="success">
                     ¡Nueva tizada creada!
                 </Alert>
             </Snackbar>
