@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getTizadaById, invokeTizada } from '../api/methods';
 import { Tizada } from '../utils/types';
@@ -19,6 +19,29 @@ function VerTizada() {
     const [svgUrl, setSvgUrl] = useState<string | null>(null);
     const { userData } = useUserContext();
 
+     // Prevent browser zoom
+     const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '0')) {
+            e.preventDefault();
+        }
+    }, []);
+
+    const handleWheel = useCallback((e: WheelEvent) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('wheel', handleWheel, { passive: false });
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('wheel', handleWheel);
+        };
+    }, [handleKeyDown, handleWheel]);
+    
     const fetchTizadaData = async () => {
         try {
             const response = await getTizadaById(uuid!);
@@ -101,7 +124,7 @@ function VerTizada() {
     })) || [];
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)'}}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)', touchAction: 'none'}}>
             <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width: '100%', padding: '8px 0'}}>
                 <TizadaDisplay 
                     tizada={tizada}
