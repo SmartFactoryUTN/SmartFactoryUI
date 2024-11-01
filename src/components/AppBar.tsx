@@ -99,8 +99,8 @@ const Navigation: React.FC<INavigation> = (props) => {
 
             {isAuthenticated && (
                 <div>
-                    <Button color="inherit" component={Link} to="/tizadas">Tizada</Button>
-                    <Button color="inherit" component={Link} to="/moldes">Escaneo de Moldes</Button>
+                    <Button color="inherit" component={Link} to="/tizadas">Mis Tizadas</Button>
+                    <Button color="inherit" component={Link} to="/moldes">Mis Moldes</Button>
                     <Button color="inherit" component={Link} to="/inventario">Inventario</Button>
                 </div>
             )}
