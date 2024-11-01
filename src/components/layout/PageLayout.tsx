@@ -16,11 +16,11 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 
   return (
     <Box sx={{ 
-      paddingTop: theme.spacing(11),
-      paddingBottom: theme.spacing(4),
+      pt: { xs: 12, sm: 13 }, // Adjustable top padding for different breakpoints 
+      pb: 3,
       backgroundColor: theme.palette.background.default,
-      minHeight: '100vh',
       color: theme.palette.text.primary,
+      minHeight: '90vh'
     }}>
       <Container 
         maxWidth={maxWidth}
