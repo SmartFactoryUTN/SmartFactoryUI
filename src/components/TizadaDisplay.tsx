@@ -22,18 +22,27 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
-  };
-
-  const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
-  };
-
-  const handleReset = () => {
+  // Replace the current handler definitions with these:
+const handleZoomIn = useCallback(() => {
+    setZoom(prev => {
+      const newZoom = Math.min(prev + ZOOM_STEP, MAX_ZOOM);
+      console.log('Zooming in to:', newZoom); // For debugging
+      return newZoom;
+    });
+  }, []);
+  
+  const handleZoomOut = useCallback(() => {
+    setZoom(prev => {
+      const newZoom = Math.max(prev - ZOOM_STEP, MIN_ZOOM);
+      console.log('Zooming out to:', newZoom); // For debugging
+      return newZoom;
+    });
+  }, []);
+  
+  const handleReset = useCallback(() => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
-  };
+  }, []);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey) {
@@ -65,7 +74,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
     setIsDragging(false);
   };
 
-  const ZoomControls = () => (
+  const ZoomControls = useCallback(() => (
     <Box
       sx={{
         position: 'absolute',
@@ -106,8 +115,9 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
         <RestartAltIcon />
       </IconButton>
     </Box>
-  );
+  ), [zoom, position, handleZoomIn, handleZoomOut, handleReset]);
 
+  
   const getContent = () => {
     if (!tizada) return null;
 
