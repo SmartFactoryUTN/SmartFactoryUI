@@ -21,7 +21,10 @@ export interface Tizada {
     uuid: string;
     name: string;
     parts: TizadaPart[];
-    bin: string | null;
+    bin: {
+        width: number;
+        height: number;
+    } | null;
     results: any[];
     state: TizadaStatus;
     active: boolean;

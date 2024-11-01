@@ -47,6 +47,7 @@ function VerTizada() {
             const response = await getTizadaById(uuid!);
             if (response.status === "success") {
                 setTizada(response.data);
+                console.log(response.data);
                 if (response.data.state === 'FINISHED' && response.data.results && response.data.results.length > 0) {
                     setSvgUrl(response.data.results[0].url);
                 }
@@ -70,7 +71,6 @@ function VerTizada() {
                 setSuccess(true);
                 setTimeout(() => {
                     fetchTizadaData();
-                    setSuccess(false);
                 }, 1000);
             } else {
                 setError("Failed to start tizada generation. Please try again.");
@@ -104,13 +104,16 @@ function VerTizada() {
         ? [
             { id: 1, property: 'Nombre', value: tizada.name },
             { id: 2, property: 'Estado', value: tizada.state},
-            { id: 3, property: 'Fecha de Creación', value: formatDate(tizada.createdAt) },
-            { id: 4, property: 'Última Actualización', value: formatDate(tizada.updatedAt)},
-            { id: 5, property: 'Total de moldes', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
+            { id: 3, property: 'Dimensiones (Ancho x Alto)', 
+                value: tizada.bin ? `${tizada.bin.width} cm × ${tizada.bin.height} cm`
+                : 'No especificadas' },
+            { id: 4, property: 'Fecha de Creación', value: formatDate(tizada.createdAt) },
+            { id: 5, property: 'Última Actualización', value: formatDate(tizada.updatedAt)},
+            { id: 6, property: 'Total de moldes', value: tizada.parts.reduce((sum, part) => sum + part.quantity, 0).toString() },
         ] : [];
 
     const moldColumns: GridColDef[] = [
-        { field: 'name', headerName: 'Molde', width: 120 },
+        { field: 'name', headerName: 'Molde', width: 250 },
         { field: 'description', headerName: 'Descripción', width: 150 },
         { field: 'quantity', headerName: 'Cantidad', width: 80 },
     ];
@@ -166,7 +169,7 @@ function VerTizada() {
                 onClose={() => setSuccess(false)}
             >
                 <Alert onClose={() => setSuccess(false)} severity="success">
-                    ¡Nueva tizada creada!
+                    ¡Optimizando la tizada!
                 </Alert>
             </Snackbar>
         </Box>
