@@ -9,10 +9,11 @@ import { getFontFamily } from '../utils/fonts';
 import EditableCell from "../components/EditableCell.tsx";
 import { useEditManager } from '../components/hooks/useEditManager';
 
-import {DataGrid, GridColDef, GridRowParams} from '@mui/x-data-grid';
+import {DataGrid, GridColDef} from '@mui/x-data-grid'; //GridRowParams ? Maybe needed to fetch and download a tizada by ID
 import {esES} from '@mui/x-data-grid/locales';
-import {Box, Typography, Button, Snackbar, Alert} from '@mui/material';
+import {Box, Typography, Button, Snackbar, Alert, IconButton} from '@mui/material';
 import {useUserContext} from "../components/Login/UserProvider.tsx";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function MisTizadas() {
     const navigate = useNavigate();
@@ -96,11 +97,26 @@ function MisTizadas() {
             width: 180,
             renderCell: (params) => formatDate(params.value as string),
           },
+          {
+            field: 'actions',
+            headerName: '',
+            width: 100,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => (
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent row selection
+                  navigate(`/tizadas/tizada/${params.row.uuid}`);
+                }}
+                size="small"
+                //color="primary"
+              >
+                <VisibilityIcon />
+              </IconButton> 
+            ),
+          }
       ];
-    
-      const handleRowClick = (params: GridRowParams) => {
-        navigate(`/tizadas/tizada/${params.row.uuid}`);
-      };
 
       const handleDelete = async (selectedIds: string[]) => {
         try {
@@ -146,7 +162,6 @@ function MisTizadas() {
                     checkboxSelection={true}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                     disableRowSelectionOnClick
-                    onRowClick={handleRowClick}
                     slots={{
                       toolbar: CustomToolbar,
                     }}
@@ -156,9 +171,6 @@ function MisTizadas() {
                       },
                     }}
                     sx={{
-                        '& .MuiDataGrid-row': {
-                            cursor: 'pointer',
-                        },
                         '& .MuiDataGrid-cell:focus': {
                             outline: 'none',
                         },

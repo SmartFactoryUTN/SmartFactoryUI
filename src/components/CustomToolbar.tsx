@@ -1,6 +1,7 @@
 import {GridToolbarContainer, GridToolbarProps, useGridApiContext} from '@mui/x-data-grid';
-import Button from '@mui/material/Button';
+import {Button, Tooltip, Box} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
 
 interface CustomToolbarProps extends GridToolbarProps {
   onDelete?: (selectedIds: string[]) => void;
@@ -9,7 +10,7 @@ interface CustomToolbarProps extends GridToolbarProps {
 function CustomToolbar(props: CustomToolbarProps) {
   const { onDelete, ...other } = props;
   const apiRef = useGridApiContext();
-  
+  const help = "Seleccione una o varias tizadas";
   const handleDelete = () => {
     if (onDelete) {
       const selectedRows = apiRef.current.getSelectedRows();
@@ -20,6 +21,8 @@ function CustomToolbar(props: CustomToolbarProps) {
 
   return (
     <GridToolbarContainer {...other}>
+      <Tooltip title={help} placement="left">
+      <Box>      
       <Button
         startIcon={<DeleteIcon />}
         onClick={handleDelete}
@@ -27,6 +30,15 @@ function CustomToolbar(props: CustomToolbarProps) {
       >
         Eliminar
       </Button>
+      <Button
+        startIcon={<DownloadIcon />}
+        //onClick={handleDelete}
+        disabled={apiRef.current.getSelectedRows().size === 0}
+      >
+        Descargar
+      </Button>
+      </Box>
+      </Tooltip>
     </GridToolbarContainer>
   );
 }
