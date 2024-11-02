@@ -8,15 +8,12 @@ const LoginButton = () => {
             appState: {
                 returnTo: "/callback",
             },
-            authorizationParams: {
-                screen_hint: "signup",
-            },
         });
     };
 
     return (
         <button className="button__login" onClick={handleLogin}>
-            Log In
+            Iniciar Sesión
         </button>
     );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
-import Logo from "../assets/main_logo.svg"
+import Logo from "../assets/azulito.svg"
 
 import {AppBar, Button, IconButton, Toolbar, Box, 
     Drawer,
