@@ -1,12 +1,12 @@
 import { Box, Typography, Button, CircularProgress, IconButton } from '@mui/material';
-import { Tizada } from '../utils/types';
+import { TizadaResult } from '../utils/types';
 import { useState, useCallback, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 interface TizadaDisplayProps {
-  tizada: Tizada | null;
+  tizada: TizadaResult | null;
   svgUrl: string | null;
   onStartProgress: () => void;
 }

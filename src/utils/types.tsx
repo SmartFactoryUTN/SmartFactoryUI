@@ -15,22 +15,41 @@ export interface TizadaPart {
     quantity: number;
 }
 
+// CREATE NEW TIZADA: Form-specific tizada type
+export interface CreateTizadaFormData {
+    name: string;
+    width: number;
+    height: number;
+    utilizationPercentage: number | null;
+    maxTime: number;
+    maxIterations?: number;
+    molds: {
+        uuid: string;
+        quantity: number;
+    }[];
+}
+
+// GET DATA: API Response types
 export type TizadaStatus = 'CREATED' | 'IN_PROGRESS' | 'FINISHED' | 'ERROR';
 
-export interface Tizada {
+export interface TizadaBin {
+    width: number;
+    height: number;
+}
+
+export interface TizadaResult {
     uuid: string;
     name: string;
     parts: TizadaPart[];
-    bin: {
-        width: number;
-        height: number;
-    } | null;
-    results: any[];
+    bin: TizadaBin | null;
+    results: TizadaResult[];
     state: TizadaStatus;
     active: boolean;
     createdAt: string;
     updatedAt: string;
     deletedAt: string | null;
+    url: string;
+    utilizationPercentage?: number;
 }
 
 export interface RolloDeTela {

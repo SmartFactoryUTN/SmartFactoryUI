@@ -8,7 +8,8 @@ import {
     Molde,
     Prenda,
     RolloDeTela,
-    Tizada
+    CreateTizadaFormData,
+    TizadaResult
 } from '../utils/types';
 
 const useAccessToken = () => {
@@ -19,7 +20,7 @@ const useAccessToken = () => {
     return null; // Or handle missing token case
 };
 
-export const getTizadas = async (userUUID: string | undefined): Promise<ApiResponse<Tizada[]>> => {
+export const getTizadas = async (userUUID: string | undefined): Promise<ApiResponse<TizadaResult[]>> => {
     const token = useAccessToken();
     const response = await fetch(`${BASE_API_URL}/users/${userUUID}/tizadas`,
         {
@@ -30,7 +31,7 @@ export const getTizadas = async (userUUID: string | undefined): Promise<ApiRespo
     return await response.json();
 };
 
-export const getTizadaById = async (uuid: string): Promise<ApiResponse<Tizada>> => {
+export const getTizadaById = async (uuid: string): Promise<ApiResponse<TizadaResult>> => {
     const token = useAccessToken();
     const response = await fetch(`${BASE_API_URL}/tizada/${uuid}`,
         {
@@ -99,7 +100,7 @@ export const createMolde = async (payload: CreateMoldePayload): Promise<ApiRespo
   }
 };
 
-export const createTizada = async (tizadaData: any): Promise<ApiResponse<Tizada>> => {
+export const createTizada = async (tizadaData: any): Promise<ApiResponse<CreateTizadaFormData>> => {
     try {
         const token = useAccessToken();
         const response = await fetch(`${BASE_API_URL}/tizada`, {

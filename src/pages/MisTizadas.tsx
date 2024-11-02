@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {deleteTizadas, getTizadas} from '../api/methods'
-import {Tizada} from '../utils/types'
+import {TizadaResult} from '../utils/types'
 import {formatDate, getStatusDisplay} from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
@@ -17,7 +17,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function MisTizadas() {
     const navigate = useNavigate();
-    const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    const [tizadas, setTizadas] = useState<TizadaResult[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const { userData } = useUserContext();

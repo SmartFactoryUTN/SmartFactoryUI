@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getTizadaById, invokeTizada } from '../api/methods';
-import { Tizada } from '../utils/types';
+import { TizadaResult } from '../utils/types';
 import { formatDate, getStatusDisplay } from '../utils/helpers';
 import { useUserContext } from "../components/Login/UserProvider.tsx";
 import TizadaDisplay from '../components/TizadaDisplay.tsx';
@@ -13,7 +13,7 @@ import { Button, Box, Snackbar, Alert } from '@mui/material';
 function VerTizada() {
     const navigate = useNavigate();
     const { uuid } = useParams<{ uuid: string }>();
-    const [tizada, setTizada] = useState<Tizada | null>(null);
+    const [tizada, setTizada] = useState<TizadaResult | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
     const [svgUrl, setSvgUrl] = useState<string | null>(null);
