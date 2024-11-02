@@ -11,7 +11,7 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {RolloDeTela, Tizada} from "../utils/types";
+import {RolloDeTela, TizadaResult} from "../utils/types";
 import {useEffect, useState} from "react";
 import {convertRollos, getTizadas} from "../api/methods.ts"; // getTizadasFinalizadas ver si vuelve
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -37,13 +37,13 @@ interface RollQuantity {
 
 const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose, selectedRollos, onConversionSuccess}) => {
     //const [tizadasFinished, setTizadasFinished] = useState<Tizada[]>([]);
-    const [selectedTizada, setSelectedTizada] = useState<Tizada | null>(null);
+    const [selectedTizada, setSelectedTizada] = useState<TizadaResult | null>(null);
     const [successMessage, setSuccessMessage] = useState("");
     const [isConverting, setIsConverting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     //const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [tizadas, setTizadas] = useState<Tizada[]>([]);
+    const [tizadas, setTizadas] = useState<TizadaResult[]>([]);
     const { userData } = useUserContext();
 
     const [convertirRolloData, setConvertirRolloData] = useState<ConvertirRolloModalData>({
@@ -84,7 +84,7 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
           if (response.status === "success") {
             // @ts-expect-error "skipped"
             const finishedTizadas = response.data["tizadas"].filter(
-                (tizada: Tizada) => tizada.state === "FINISHED"
+                (tizada: TizadaResult) => tizada.state === "FINISHED"
             );
             setTizadas(finishedTizadas);
           } else {
