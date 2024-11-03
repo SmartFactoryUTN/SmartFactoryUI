@@ -167,9 +167,9 @@ function MisMoldes() {
                       Mis Moldes
                     </Typography>
                   <Box>
-                    <Button variant="contained" color="primary" onClick={() => navigate('/moldes/crear')} sx={{ marginRight: 1 }}>
+                    {/*<Button variant="contained" color="primary" onClick={() => navigate('/moldes/crear')} sx={{ marginRight: 1 }}>
                         Digitalizar
-                    </Button>
+                    </Button>*/}
                     <Button variant="contained" color="primary" onClick={() => navigate('/moldes/subir')}>
                         Subir
                     </Button>

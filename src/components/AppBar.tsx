@@ -8,11 +8,12 @@ import {AppBar, Button, IconButton, Toolbar, Box,
     //ListItem,
     //ListItemIcon,
     //ListItemText,
-    Divider, Typography} from '@mui/material';
+    Divider, Typography, Tooltip} from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LogoutButton from "./Login/LogoutButton.tsx";
 import LoginButton from "./Login/LoginButton.tsx";
 import {useUserContext} from "../components/Login/UserProvider.tsx";
+import { getFontFamily } from '../utils/fonts';
 
 interface INavigation {
     isAuthenticated: boolean
@@ -93,7 +94,15 @@ const Navigation: React.FC<INavigation> = (props) => {
                         filter: 'brightness(0)', // This will make the logo black
                     }}
                 />
+
             </Box>
+            
+            <Button 
+                color="inherit"
+                sx={{
+                    fontFamily: getFontFamily('kanit')}} // Add this line  bodoni
+                component={Link} to="/tutorial">Digitalizar moldes
+            </Button>
             <Box sx={{ flexGrow: 1 }} /> {/* This empty box pushes everything after it to the right */}
 
 
@@ -104,13 +113,17 @@ const Navigation: React.FC<INavigation> = (props) => {
                     <Button color="inherit" component={Link} to="/inventario">Inventario</Button>
                 </div>
             )}
+
             {!isAuthenticated && <LoginButton/>}
 
             {isAuthenticated && (
+                <Tooltip title="Cuenta">
                 <IconButton color="inherit" onClick={toggleDrawer(true)}>
                     <AccountCircle/>
-                </IconButton>
-            )}
+
+                </IconButton>   
+                </Tooltip>             
+                )}
             <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
                 {drawerContent}
             </Drawer>
