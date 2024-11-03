@@ -11,10 +11,10 @@ import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 import {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import {Button, Alert, Snackbar, Typography, Box} from '@mui/material';
+import {Button, Alert, Snackbar, Typography, Box, IconButton, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 //, GridRowParams
-//Dialog, DialogTitle, DialogActions, DialogContent
 
 {/* UI Components */}
 
@@ -40,6 +40,9 @@ function MisMoldes() {
         },
         onError: (msg: string) => setError(msg)
       });
+      const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+      const [selectedMoldeUrl, setSelectedMoldeUrl] = useState<string | null>(null);
+      const [selectedMoldeName, setSelectedMoldeName] = useState<string | null>(null);
     
 
       useEffect(() => {
@@ -79,7 +82,7 @@ function MisMoldes() {
         { 
           field: 'name', 
           headerName: 'Artículo', 
-          width: 200,
+          width: 170,
           editable: false,
           renderCell: (params) => (
             <EditableCell
@@ -129,17 +132,32 @@ function MisMoldes() {
             width: 180,
             editable: false,
             renderCell: (params) => params.value ? new Date(params.value).toLocaleString() : 'Sin cambios',
+        },
+        {
+          field: 'actions',
+          headerName: '',
+          width: 70,
+          sortable: false,
+          filterable: false,
+          renderCell: (params) => (
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent row selection
+                {/*PREVIEW DEL MOLDE*/}
+                setSelectedMoldeUrl(params.row.url);
+                setSelectedMoldeName(params.row.name);
+                setIsPreviewOpen(true);
+              }}
+              size="small"
+              //color="primary"
+            >
+              <VisibilityIcon />
+            </IconButton> 
+          ),
         }
       ];
     
 
-      {/*PREVIEW DEL MOLDE*/}
-      {/*
-      const handleRowClick = (params: GridRowParams) => {
-        setSelectedMoldeUrl(params.row.url);
-        setSelectedMoldeName(params.row.name);
-        setIsPreviewOpen(true);
-      };*/}
       
        return (
                 <PageLayout>
@@ -188,9 +206,6 @@ function MisMoldes() {
                     },
                   }}
                   sx={{
-                    '& .MuiDataGrid-row': {
-                      cursor: 'pointer',
-                    },
                     '& .MuiDataGrid-cell:focus': {
                       outline: 'none',
                     },
@@ -209,7 +224,7 @@ function MisMoldes() {
                   }}
                 />
 
-                {/*<Dialog 
+                <Dialog 
                   open={isPreviewOpen}
                   onClose={() => setIsPreviewOpen(false)}
                   maxWidth="md"
@@ -239,7 +254,7 @@ function MisMoldes() {
                       Cerrar
                     </Button>
                   </DialogActions>
-                </Dialog>*/}
+                </Dialog>
                 <Snackbar 
                   open={success} 
                   autoHideDuration={6000} 
