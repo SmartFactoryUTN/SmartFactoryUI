@@ -78,7 +78,7 @@ function MisMoldes() {
       const columns: GridColDef[] = [
         { 
           field: 'name', 
-          headerName: 'Nombre', 
+          headerName: 'Artículo', 
           width: 200,
           editable: false,
           renderCell: (params) => (

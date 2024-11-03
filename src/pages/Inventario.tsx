@@ -120,7 +120,7 @@ function Inventario() {
 
 
     const rolloColumns: GridColDef[] = [
-        {field: 'name', headerName: 'Nombre', editable: false, flex: 1},
+        {field: 'name', headerName: 'Artículo', editable: false, flex: 1},
         {
             field: 'color',
             headerName: 'Color',
