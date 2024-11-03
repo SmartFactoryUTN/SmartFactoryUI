@@ -109,8 +109,8 @@ const Navigation: React.FC<INavigation> = (props) => {
 
             )}
 
-            {!isAuthenticated && <LoginButton/>}
             <Box sx={{ flexGrow: 1 }} />
+            {!isAuthenticated && <LoginButton/>}
 
             {isAuthenticated && (
                 <Box>
