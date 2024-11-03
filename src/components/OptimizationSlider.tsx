@@ -68,17 +68,11 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
             </Typography>
 
         {/* New layout with number field + shorter slider */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
+         </Box>
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      <TextField
-        value={value}
-        disabled
-        size="small"
-        InputProps={{
-          endAdornment: <InputAdornment position="end">minutos</InputAdornment>,
-          readOnly: true,
-          sx: { width: '120px' } // Fixed width for the text field
-        }}
-      />
+      
       <Slider
         value={value}
         onChange={(_, newValue) => onChange(newValue as number)}
@@ -94,6 +88,16 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
             fontSize: '0.875rem',
           },
           width: '50%' // Make slider shorter
+        }}
+      />
+      <TextField
+        value={value}
+        disabled
+        size="small"
+        InputProps={{
+          endAdornment: <InputAdornment position="end">minutos</InputAdornment>,
+          readOnly: true,
+          sx: { width: '120px' } // Fixed width for the text field
         }}
       />
     </Box>
