@@ -3,6 +3,8 @@ import {useNavigate} from 'react-router-dom';
 import {createTizada, getMoldes} from '../api/methods';
 import {Molde} from '../utils/types';
 import PageLayout from '../components/layout/PageLayout';
+import OptimizationSlider from '../components/OptimizationSlider';
+
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 import {
@@ -12,20 +14,18 @@ import {
     FormControl,
     Grid,
     IconButton,
-    InputAdornment,
     InputLabel,
     MenuItem,
     Select,
     Snackbar,
     TextField,
-    Tooltip,
     Typography
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
+
+const AVAILABLE_CREDITS = 20; // Hardcoded for testing
 
 // type TizadaType = 'RAPIDA' | 'EFICIENTE' | 'PERSONALIZADO';
 
@@ -46,19 +46,21 @@ interface FormData {
   molds: MoldSelection[];
   maxIterations: number;
 }
-
+{/*
 interface TimeInput {
   minutes: number | null;
   seconds: number | null;
-}
+}*/}
 
 function CrearTizada() {
-  const tooltipTiempoMax = "Ingrese un tiempo de ejecución máximo para obtener una tizada rápidamente. Se guardarán los resultados aunque no se haya alcanzado el porcentaje de aprovechamiento deseado.";
-  const tooltipPorcen = "Obtener la mejor tizada posible toma 12 minutos. Si desea terminar antes, ingrese el porcentaje de aprovechamiento buscado.";
-  const [timeInput, setTimeInput] = useState<TimeInput>({
+  //const tooltipTiempoMax = "." //Se guardarán los resultados aunque no se haya alcanzado el porcentaje de aprovechamiento deseado.";
+  //const tooltipPorcen = "Obtener la mejor tizada posible toma 12 minutos. Si desea terminar antes, ingrese el porcentaje de aprovechamiento buscado.";
+  {/*const [timeInput, setTimeInput] = useState<TimeInput>({
     minutes: 12,
     seconds: 0
-  });
+  });*/}
+  const [optimizationTime, setOptimizationTime] = useState(7); // Default to a moderate value
+
 
   const navigate = useNavigate();
   // Setear valores default
@@ -148,7 +150,7 @@ function CrearTizada() {
     */}
 
   {/* Deshabilitar incrementar tiempo: maximo de 12 minutos */ }
-  const handleTimeChange = (field: keyof TimeInput, amount: number) => {
+  {/*const handleTimeChange = (field: keyof TimeInput, amount: number) => {
     setTimeInput(prev => {
       const currentValue = prev[field] ?? 0;
       const maxValue = field === 'minutes' ? 12 : 59;
@@ -171,15 +173,15 @@ function CrearTizada() {
         [field]: null
       }));
     }
-  };
-  {/* Lo mismo pero para porcentaje */ }
+  }; */ }
+  {/* Lo mismo pero para porcentaje 
   const handlePercentageChange = (amount: number) => {
     setFormData((prev) => {
       const currentValue = prev.utilizationPercentage ?? 0;
       const newValue = Math.max(0, Math.min(100, currentValue + amount));
       return { ...prev, utilizationPercentage: Number(newValue.toFixed(1)) };
     });
-  };
+  };*/ }
 
   {/* Logica de carga de moldes */ }
   const handleMoldChange = (index: number, field: 'uuid' | 'quantity', value: string | number) => {
@@ -203,12 +205,14 @@ function CrearTizada() {
     e.preventDefault();
     setError(null);
     setSuccess(false);
-    const minutes = timeInput.minutes ?? 0;
-    const seconds = timeInput.seconds ?? 0;
-    const totalMilliseconds = (minutes * 60 + seconds) * 1000;
+    //const minutes = timeInput.minutes ?? 0;
+    //const seconds = timeInput.seconds ?? 0;
+    //const totalMilliseconds = (minutes * 60 + seconds) * 1000;
 
     // Use 12 minutes (720000 milliseconds) if both values are null
-    const maxTime = (minutes === 0 && seconds === 0) ? 720000 : totalMilliseconds;
+    //const maxTime = (minutes === 0 && seconds === 0) ? 720000 : totalMilliseconds;
+
+    const maxTime = optimizationTime * 60 * 1000;
 
     // Validate form data
     if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
@@ -247,9 +251,13 @@ function CrearTizada() {
       <form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
+          <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}> 
+            Nombre
+          </Typography>
+          
             <TextField
               fullWidth
-              label="Nombre"
+              label="Ingrese un nombre para su tizada"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
@@ -258,7 +266,7 @@ function CrearTizada() {
           </Grid>
           {/* Dimensiones de la mesa de corte */}      
           <Grid item xs={12}>
-          <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2 }}> 
+          <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}> 
             Dimensiones de la mesa de corte
           </Typography>
             <Grid container spacing={2}>
@@ -293,7 +301,7 @@ function CrearTizada() {
           {/*Campos de tizada personalizada*/}
           {/*)}*/}
 
-          {/*Porcentaje de aprovechamiento*/}
+          {/*Porcentaje de aprovechamiento
           <Grid item xs={12} sx={{ mb: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Typography sx={{ flexGrow: 1, textAlign: 'left' }}> Porcentaje de aprovechamiento
@@ -352,126 +360,28 @@ function CrearTizada() {
                 },
               }}
             />
-          </Grid>
+          </Grid>*/}
 
           {/*Tiempo: minutos*/}
+            {/* Optimización */}
+            {/* Optimización */}
           <Grid item xs={12}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Typography sx={{ flexGrow: 1, textAlign: 'left' }}>Tiempo máximo de ejecución
-                <Tooltip title={tooltipTiempoMax}>
-                  <IconButton size="small" sx={{ "& .MuiInputBase-input": { fontSize: 10, height: 4, padding: 1 } }}      >
-                    <HelpOutlineIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Typography>
-            </Box>
-            <Grid container spacing={2} sx={{ mb: 1 }} alignItems="center">
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Tiempo máximo"
-                  name="minutes"
-                  type="number"
-                  value={timeInput.minutes}
-                  onChange={(e) => handleTimeInputChange('minutes', parseInt(e.target.value))}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Typography sx={{ mr: 1 }}>minutos</Typography>
-                        <IconButton
-                          onClick={() => handleTimeChange('minutes', 1)}
-                          edge="end"
-                          disabled={(timeInput.minutes ?? 0) >= 12}
-                        >
-                          <AddCircleOutlineIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <IconButton
-                          onClick={() => handleTimeChange('minutes', -1)}
-                          edge="start"
-                          disabled={(timeInput.minutes ?? 0) <= 0}
-                        >
-                          <RemoveCircleOutlineIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    inputProps: {
-                      min: 0,
-                      max: 12,
-                      style: { textAlign: 'center' }
-                    }
-                  }}
-                  InputLabelProps={{ shrink: true }}
-                  sx={{
-                    '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                      display: 'none',
-                    },
-                    '& input[type=number]': {
-                      MozAppearance: 'textfield',
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/*Segundos*/}
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  name="seconds"
-                  type="number"
-                  value={timeInput.seconds}
-                  onChange={(e) => handleTimeInputChange('seconds', e.target.value)}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Typography sx={{ mr: 1 }}>segundos</Typography>
-                        <IconButton
-                          onClick={() => handleTimeChange('seconds', 1)}
-                          edge="end"
-                          disabled={(timeInput.seconds ?? 0) >= 59}
-                        >
-                          <AddCircleOutlineIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <IconButton
-                          onClick={() => handleTimeChange('seconds', -1)}
-                          edge="start"
-                          disabled={(timeInput.seconds ?? 0) <= 0}
-                        >
-                          <RemoveCircleOutlineIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    inputProps: {
-                      min: 0,
-                      max: 59,
-                      style: { textAlign: 'center' }
-                    }
-                  }}
-                  InputLabelProps={{ shrink: true }}
-                  sx={{
-                    '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                      display: 'none',
-                    },
-                    '& input[type=number]': {
-                      MozAppearance: 'textfield',
-                    },
-                  }}
-                />
-              </Grid>
-            </Grid>
+            <OptimizationSlider
+              value={optimizationTime}
+              onChange={(newValue) => {
+                setOptimizationTime(newValue);
+                setFormData(prev => ({
+                  ...prev,
+                  maxTime: newValue * 60 * 1000 // Convertir a milisegundos
+                }));
+              }}
+              availableCredits={AVAILABLE_CREDITS}
+            />
           </Grid>
-
-
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Typography sx={{ flexGrow: 1, textAlign: 'left' }}> Moldes
+              <Typography sx={{ flexGrow: 1, textAlign: 'left', fontWeight: 'bold' }}> 
+                Moldes
                 {/*<Tooltip title={tooltipMoldes}>
       <IconButton size="small" sx={{ "& .MuiInputBase-input": { fontSize: 10, height: 4, padding: 1 } }}      >
         <HelpOutlineIcon fontSize="small" />
