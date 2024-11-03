@@ -5,17 +5,27 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 interface CustomToolbarProps extends GridToolbarProps {
   onDelete?: (selectedIds: string[]) => void;
+  onDownload?: (selectedIds: string[]) => void;
 }
 
 function CustomToolbar(props: CustomToolbarProps) {
-  const { onDelete, ...other } = props;
+  const { onDelete, onDownload, ...other } = props;
+  
   const apiRef = useGridApiContext();
   const help = "Seleccione una o varias tizadas";
+
   const handleDelete = () => {
     if (onDelete) {
       const selectedRows = apiRef.current.getSelectedRows();
       const selectedIds = Array.from(selectedRows.keys()) as string[];
       onDelete(selectedIds);
+    }
+  };
+  const handleDownload = () => {
+    if (onDownload) {
+      const selectedRows = apiRef.current.getSelectedRows();
+      const selectedIds = Array.from(selectedRows.keys()) as string[];
+      onDownload(selectedIds);
     }
   };
 
@@ -32,7 +42,7 @@ function CustomToolbar(props: CustomToolbarProps) {
       </Button>
       <Button
         startIcon={<DownloadIcon />}
-        //onClick={handleDelete}
+        onClick={handleDownload}
         disabled={apiRef.current.getSelectedRows().size === 0}
       >
         Descargar

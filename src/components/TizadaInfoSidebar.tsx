@@ -11,12 +11,15 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
 import InfoIcon from '@mui/icons-material/Info';
 import CloseIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/Download';
 
 interface TizadaInfoSidebarProps {
   tizadaInfoRows: any[];
   tizadaInfoColumns: GridColDef[];
   moldRows: any[];
   moldColumns: GridColDef[];
+  onDownload?: () => void;  // Add this prop
+  canDownload?: boolean;    // Add this to control button state
 }
 
 const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
@@ -24,6 +27,8 @@ const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
   tizadaInfoColumns,
   moldRows,
   moldColumns,
+  onDownload,
+  canDownload = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useTheme();
@@ -36,22 +41,47 @@ const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
   return (
     <>
       {/* Info Icon Button */}
-      <IconButton
-        onClick={toggleDrawer}
-        sx={{
-          position: 'fixed',
-          right: '20px',
-          top: '80px',
-          backgroundColor: 'white',
-          boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
-          '&:hover': {
-            backgroundColor: 'rgba(255,255,255,0.9)',
-          },
-          zIndex: 1200,
-        }}
-      >
-        <InfoIcon />
-      </IconButton>
+      <Box sx={{ 
+        position: 'fixed',
+        right: '20px',
+        top: '80px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+        zIndex: 1200,
+      }}>
+        {/* Info Icon Button */}
+        <IconButton
+          onClick={toggleDrawer}
+          sx={{
+            backgroundColor: 'white',
+            boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
+            '&:hover': {
+              backgroundColor: 'rgba(255,255,255,0.9)',
+            },
+          }}
+        >
+          <InfoIcon />
+        </IconButton>
+
+        {/* Download Icon Button */}
+        <IconButton
+          onClick={onDownload}
+          disabled={!canDownload}
+          sx={{
+            backgroundColor: 'white',
+            boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
+            '&:hover': {
+              backgroundColor: 'rgba(255,255,255,0.9)',
+            },
+            '&.Mui-disabled': {
+              backgroundColor: 'rgba(255,255,255,0.5)',
+            },
+          }}
+        >
+          <DownloadIcon />
+        </IconButton>
+      </Box>
 
       {/* Drawer */}
       <Drawer

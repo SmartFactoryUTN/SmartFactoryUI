@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getTizadaById, invokeTizada } from '../api/methods';
+import { getTizadaById, invokeTizada, downloadTizadaSvg } from '../api/methods';
 import { TizadaResult } from '../utils/types';
 import { formatDate, getStatusDisplay } from '../utils/helpers';
 import { useUserContext } from "../components/Login/UserProvider.tsx";
@@ -81,6 +81,18 @@ function VerTizada() {
         }
     };
 
+    const handleDownload = useCallback(async () => {
+        if (!svgUrl || !tizada) return;
+        
+        try {
+            await downloadTizadaSvg(svgUrl, tizada.name || 'tizada');
+        } catch (error) {
+            setError("Error al descargar la tizada. Por favor intente nuevamente.");
+        }
+    }, [svgUrl, tizada]);
+
+    const canDownload = Boolean(tizada?.state === 'FINISHED' && svgUrl);
+
     const tizadaInfoColumns: GridColDef[] = [
         { field: 'property', headerName: 'Propiedad', width: 150 },
         { 
@@ -126,33 +138,7 @@ function VerTizada() {
         quantity: part.quantity,
     })) || [];
 
-    const downloadFile = async (url: string | null) => {
-        try {
-            const response = await fetch(url || "", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/octet-stream",
-                }
-            });
-            if (!response.ok) {
-                throw new Error("Failed to download file");
-            }
-
-            const blob = await response.blob();
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", "tizada.svg"); // Customize filename here
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Clean up the object URL to avoid memory leaks
-            URL.revokeObjectURL(link.href);
-        } catch (error) {
-            console.error("Download failed:", error);
-        }
-    };
-
+ 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)', touchAction: 'none'}}>
             <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width: '100%', padding: '8px 0'}}>
@@ -167,19 +153,11 @@ function VerTizada() {
                     tizadaInfoColumns={tizadaInfoColumns}
                     moldRows={moldRows}
                     moldColumns={moldColumns}
+                    onDownload={handleDownload}
+                    canDownload={canDownload}
                 />
             </Box>
             
-            {/* Footer with back button */}
-            (svgUrl && (<Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => downloadFile(svgUrl)}
-                >
-                    Descargar Tizada
-                </Button>
-            </Box>))
             <Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
                 <Button 
                     variant="contained" 

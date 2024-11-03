@@ -226,7 +226,8 @@ export const getRollos = async (): Promise<ApiResponse<RolloDeTela[]>> => {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
-        }); //TODO : ajustar el url del endpoint
+        }); 
+        console.log("Rollos: ", response);
     return await response.json();
 };
 
@@ -237,7 +238,8 @@ export const getFabrics = async (): Promise<ApiResponse<FabricPiece[]>> => {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
-        }); //TODO : ajustar el url del endpoint
+        });
+        console.log("Fabric: ", response);
     return await response.json();
 };
 
@@ -248,7 +250,8 @@ export const getPrendas = async (): Promise<ApiResponse<Prenda[]>> => {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
-        }); //TODO : ajustar el url del endpoint
+        }); 
+        console.log("Prendas: ", response);
     return await response.json();
 };
 
@@ -259,6 +262,7 @@ export const getFabricColors = async (): Promise<ApiResponse<FabricColor[]>> => 
             Authorization: `Bearer ${token}`,
         }
     });
+    console.log("Colors: ", response.json());
     return await response.json();
 }
 
@@ -438,3 +442,71 @@ export const getUserInfo = async () => {
         return { status: "ERROR", data: undefined };
     }
 }
+
+
+export const downloadFile = async (url: string | null) => {
+    try {
+        const response = await fetch(url || "", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/octet-stream",
+            }
+        });
+        if (!response.ok) {
+            throw new Error("Failed to download file");
+        }
+
+        const blob = await response.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", "tizada.svg"); // Customize filename here
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Clean up the object URL to avoid memory leaks
+        URL.revokeObjectURL(link.href);
+    } catch (error) {
+        console.error("Download failed:", error);
+    }
+};
+
+
+export const downloadTizadaSvg = async (url: string, fileName: string) => {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'image/svg+xml',  // Specify we want SVG
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Get the blob from response
+        const blob = await response.blob();
+        
+        // Create object URL from blob
+        const objectUrl = window.URL.createObjectURL(blob);
+        
+        // Create temporary link element
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = `${fileName}.svg`; // Set suggested filename
+        
+        // Add to document, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the object URL
+        window.URL.revokeObjectURL(objectUrl);
+        
+        return true;
+    } catch (error) {
+        console.error('Download failed:', error);
+        throw error;
+    }
+};

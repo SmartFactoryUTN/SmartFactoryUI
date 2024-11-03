@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {deleteTizadas, getTizadas} from '../api/methods'
+import {deleteTizadas, getTizadas, downloadFile} from '../api/methods'
 import {TizadaResult} from '../utils/types'
 import {formatDate, getStatusDisplay} from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
@@ -131,6 +131,25 @@ function MisTizadas() {
         }
       };
 
+      const handleDownload = async (selectedIds: string[]) => {
+        try {
+          // Assuming each tizada has a url property where the SVG is stored
+          const selectedTizadas = tizadas.filter(tizada => 
+            selectedIds.includes(tizada.uuid)
+          );
+          
+          // Download each selected tizada
+          for (const tizada of selectedTizadas) {
+            if (tizada.results && tizada.results[0]?.url) {
+              await downloadFile(tizada.results[0].url);
+            }
+          }
+        } catch (error) {
+          console.error("Error downloading tizadas:", error);
+          setError("Failed to download some or all tizadas");
+        }
+      };
+
        return (
                 <PageLayout>
                 {/* Title and Button */}
@@ -168,6 +187,7 @@ function MisTizadas() {
                     slotProps={{
                       toolbar: {
                         onDelete: handleDelete,
+                        onDownload: handleDownload,
                       },
                     }}
                     sx={{
