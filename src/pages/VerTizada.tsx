@@ -126,6 +126,15 @@ function VerTizada() {
         quantity: part.quantity,
     })) || [];
 
+    const downloadFile = (url: string | null) => {
+        const link = document.createElement("a");
+        link.href = url || "";
+        link.download = "tizada.svg"; // Set the default download filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)', touchAction: 'none'}}>
             <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width: '100%', padding: '8px 0'}}>
@@ -144,6 +153,15 @@ function VerTizada() {
             </Box>
             
             {/* Footer with back button */}
+            (svgUrl && (<Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => downloadFile(svgUrl)}
+                >
+                    Descargar Tizada
+                </Button>
+            </Box>))
             <Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
                 <Button 
                     variant="contained" 
