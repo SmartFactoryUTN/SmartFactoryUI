@@ -73,7 +73,7 @@ function App() {
                                 <SubirMolde/>
                             </PrivateRoute>
                         }/>
-                        <Route path="/moldes/crear" element={
+                        <Route path="/tutorial-digitalizacion" element={
                             <PrivateRoute>
                                 <Tutorial />
                             </PrivateRoute>
