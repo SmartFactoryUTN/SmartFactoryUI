@@ -126,13 +126,31 @@ function VerTizada() {
         quantity: part.quantity,
     })) || [];
 
-    const downloadFile = (url: string | null) => {
-        const link = document.createElement("a");
-        link.href = url || "";
-        link.download = "tizada.svg"; // Set the default download filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const downloadFile = async (url: string | null) => {
+        try {
+            const response = await fetch(url || "", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/octet-stream",
+                }
+            });
+            if (!response.ok) {
+                throw new Error("Failed to download file");
+            }
+
+            const blob = await response.blob();
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", "tizada.svg"); // Customize filename here
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up the object URL to avoid memory leaks
+            URL.revokeObjectURL(link.href);
+        } catch (error) {
+            console.error("Download failed:", error);
+        }
     };
 
     return (
