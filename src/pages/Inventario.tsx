@@ -140,12 +140,12 @@ function Inventario() {
             valueGetter: (_, row) => row.molde.name,
             flex: 1
         },
-        {field: 'color', headerName: 'Color', editable: false, valueGetter: (_, row) => row.color.name, flex: 0.75},
+        {field: 'rollo', headerName: 'Rollo', editable: false, valueGetter: (_, row) => row.fabricRoll.name, flex: 0.75},
         {field: 'stock', headerName: 'Stock', editable: false, flex: 0, minWidth: 125}
     ];
 
     const prendaColumns: GridColDef[] = [
-        {field: 'name', headerName: 'Nombre', editable: false, flex: 1},
+        {field: 'article', headerName: 'Artículo', editable: false, flex: 1},
         {field: 'stock', headerName: 'Stock', editable: false, flex: 0, minWidth: 125},
     ];
 
