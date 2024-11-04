@@ -13,8 +13,8 @@ import {
     Typography
 } from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
-import {FabricColor, Molde} from "../utils/types.tsx";
-import {createPrenda, getFabricColors, getMoldes} from "../api/methods.ts";
+import {Molde, RolloDeTela} from "../utils/types.tsx";
+import {createPrenda, getMoldes, getRollos} from "../api/methods.ts";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -22,30 +22,32 @@ import {useNavigate} from "react-router-dom";
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 interface PrendaFormData {
-    name: string;
+    article: string;
+    description: string;
     garmentComponents: GarmentComponent[];
 }
 
 interface GarmentComponent {
     moldeId: string;
     quantity: number;
-    fabricColorId: string;
+    fabricRollId: string;
 }
 
 function CrearPrenda() {
     const navigate = useNavigate();
     const { userData } = useUserContext();
     const [prendaFormData, setPrendaFormData] = useState<PrendaFormData>({
-        name: "",
+        article: "",
+        description: "",
         garmentComponents: [{
             moldeId: '',
             quantity: 1,
-            fabricColorId: ''
+            fabricRollId: ''
         }]
     });
 
     const [availableMolds, setAvailableMolds] = useState<Molde[]>([]);
-    const [colors, setColors] = useState<FabricColor[]>([]);
+    const [fabricRolls, setFabricRolls] = useState<RolloDeTela[]>([]);
     const [isLoadingMoldes, setIsLoadingMoldes] = useState<boolean>(false);
     const [isLoadingColors, setIsLoadingColors] = useState<boolean>(false);
 
@@ -86,9 +88,9 @@ function CrearPrenda() {
         if (isLoadingColors) return;
         setIsLoadingColors(true);
         try {
-            const result = await getFabricColors();
+            const result = await getRollos();
             if (result.status === 'success') {
-                setColors(result.data);
+                setFabricRolls(result.data);
             } else {
                 console.error('Failed to fetch colors:', result.data);
                 setError('Failed to fetch colors. Please try again.');
@@ -100,7 +102,7 @@ function CrearPrenda() {
         }
     }, [isLoadingColors]);
 
-    const handleMoldChange = (index: number, field: 'moldeId' | 'quantity' | 'fabricColorId', value: string | number) => {
+    const handleMoldChange = (index: number, field: 'moldeId' | 'quantity' | 'fabricRollId', value: string | number) => {
         const newMolds = [...prendaFormData.garmentComponents];
         newMolds[index] = { ...newMolds[index], [field]: value };
         setPrendaFormData((prev) => ({ ...prev, garmentComponents: newMolds }));
@@ -109,7 +111,7 @@ function CrearPrenda() {
     const addMold = () => {
         setPrendaFormData((prev) => ({
             ...prev,
-            garmentComponents: [...prev.garmentComponents, { moldeId: '', quantity: 1, fabricColorId: '' }],
+            garmentComponents: [...prev.garmentComponents, { moldeId: '', quantity: 1, fabricRollId: '' }],
         }));
     };
 
@@ -122,7 +124,7 @@ function CrearPrenda() {
         setIsSaving(true);
         setIsSuccess(false);
 
-        if (!prendaFormData.name) {
+        if (!prendaFormData.article) {
             setError("Por favor, ingresar el artículo de la prenda");
             setIsSaving(false);
             return;
@@ -167,9 +169,18 @@ function CrearPrenda() {
                             fullWidth
                             label="Artículo"
                             name="name"
-                            value={prendaFormData.name}
-                            onChange={(e) => setPrendaFormData({ ...prendaFormData, name: e.target.value })}
+                            value={prendaFormData.article}
+                            onChange={(e) => setPrendaFormData({ ...prendaFormData, article: e.target.value })}
                             variant="outlined"
+                        />
+                        <TextField
+                            fullWidth
+                            label="Descripción"
+                            value={prendaFormData.description}
+                            onChange={(e) => setPrendaFormData({...prendaFormData, description: e.target.value })}
+                            margin="normal"
+                            multiline
+                            rows={3}
                         />
                     </Grid>
                 </Grid>
@@ -206,21 +217,21 @@ function CrearPrenda() {
                         </Grid>
                         <Grid item xs={4}>
                             <FormControl fullWidth>
-                                <InputLabel>Seleccionar color</InputLabel>
+                                <InputLabel>Seleccionar rollo</InputLabel>
                                 <Select
-                                    value={mold.fabricColorId}
-                                    onChange={(e) => handleMoldChange(index, 'fabricColorId', e.target.value as string)}
-                                    label="Seleccionar color"
+                                    value={mold.fabricRollId}
+                                    onChange={(e) => handleMoldChange(index, 'fabricRollId', e.target.value as string)}
+                                    label="Seleccionar rollo"
                                     sx={{
                                         "& .MuiSelect-select": {
                                             display: 'flex',
-                                            justifyContent: 'flex-start', // Alinear texto hacia la izquierda
+                                            justifyContent: 'flex-start',
                                         },
                                     }}
                                 >
-                                    {colors.map((color) => (
-                                        <MenuItem key={color.fabricColorId} value={color.fabricColorId}>
-                                            {color.name}
+                                    {fabricRolls.map((fabricRoll) => (
+                                        <MenuItem key={fabricRoll.fabricRollId} value={fabricRoll.fabricRollId}>
+                                            {fabricRoll.name}
                                         </MenuItem>
                                     ))}
                                 </Select>
