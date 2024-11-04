@@ -239,7 +239,7 @@ function Inventario() {
                         sx={{marginRight: 2, mb: 2}}
                         disabled={selectedPrendas.length === 0}
                     >
-                        Convertir
+                        Coser Prenda
                     </Button>
                     <Button variant="contained" color="primary" onClick={() => navigate(`/inventario/prenda/crear`)}
                             sx={{mb: 2, minWidth: "20px", minHeight: "20px"}}>
