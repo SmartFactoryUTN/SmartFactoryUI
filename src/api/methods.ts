@@ -262,7 +262,6 @@ export const getFabricColors = async (): Promise<ApiResponse<FabricColor[]>> => 
             Authorization: `Bearer ${token}`,
         }
     });
-    console.log("Colors: ", response.json());
     return await response.json();
 }
 
