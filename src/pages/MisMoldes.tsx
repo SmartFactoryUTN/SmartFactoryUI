@@ -202,6 +202,8 @@ function MisMoldes() {
                   }}
                   slotProps={{
                     toolbar: {
+                      actions: ['delete'],
+                      tooltipText: "Seleccione uno o varios moldes",
                       onDelete: handleDelete,
                     },
                   }}

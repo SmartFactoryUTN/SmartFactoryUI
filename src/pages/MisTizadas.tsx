@@ -186,6 +186,8 @@ function MisTizadas() {
                     }}
                     slotProps={{
                       toolbar: {
+                        actions: ['delete', 'download'],
+                        tooltipText: "Seleccione una o varias tizadas",
                         onDelete: handleDelete,
                         onDownload: handleDownload,
                       },
