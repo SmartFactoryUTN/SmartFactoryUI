@@ -5,13 +5,23 @@ import {
   IconButton, 
   Drawer,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Chip,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper
 } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { esES } from '@mui/x-data-grid/locales';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
+import CircleIcon from '@mui/icons-material/Circle';
+import {GridColDef} from '@mui/x-data-grid'; //GridRowParams ? Maybe needed to fetch and download a tizada by ID
+
 
 interface TizadaInfoSidebarProps {
   tizadaInfoRows: any[];
@@ -22,19 +32,25 @@ interface TizadaInfoSidebarProps {
   canDownload?: boolean;
 }
 
-
-
 const MIN_DRAWER_WIDTH = 300;
 const MAX_DRAWER_WIDTH = 600;
 const DEFAULT_DRAWER_WIDTH = 350;
 const CONTROL_BAR_WIDTH = 60;
-const NAVBAR_HEIGHT = 64; // Adjust this value to match your navbar height
+const NAVBAR_HEIGHT = 64;
+
+const getStatusConfig = (status: string) => {
+  const config = {
+    CREATED: { color: 'warning', label: 'Creada' },
+    IN_PROGRESS: { color: 'info', label: 'En curso' },
+    FINISHED: { color: 'success', label: 'Finalizada' },
+    ERROR: { color: 'error', label: 'Error' }
+  };
+  return config[status as keyof typeof config] || config.CREATED;
+};
 
 export default function TizadaInfoSidebar({
   tizadaInfoRows,
-  tizadaInfoColumns,
   moldRows,
-  moldColumns,
   onDownload,
   canDownload = false,
 }: TizadaInfoSidebarProps) {
@@ -68,6 +84,16 @@ export default function TizadaInfoSidebar({
     document.addEventListener('mouseup', handleMouseUp);
   }, [drawerWidth]);
 
+  // Extract info from tizadaInfoRows
+  const tizadaName = tizadaInfoRows.find(row => row.property === 'Nombre')?.value || '';
+  const tizadaStatus = tizadaInfoRows.find(row => row.property === 'Estado')?.value || 'CREATED';
+  const dimensions = tizadaInfoRows.find(row => row.property === 'Dimensiones (Ancho x Alto)')?.value || '';
+  const createdAt = tizadaInfoRows.find(row => row.property === 'Fecha de Creación')?.value || '';
+  const updatedAt = tizadaInfoRows.find(row => row.property === 'Última Actualización')?.value || '';
+  const totalMolds = tizadaInfoRows.find(row => row.property === 'Total de moldes')?.value || '0';
+
+  const statusConfig = getStatusConfig(tizadaStatus);
+
   return (
     <>
       {/* Fixed Control Bar */}
@@ -86,7 +112,7 @@ export default function TizadaInfoSidebar({
           alignItems: 'center',
           pt: 2,
           gap: 2,
-          zIndex: theme.zIndex.drawer - 1, // Ensure it's below the navbar
+          zIndex: theme.zIndex.drawer - 1,
           transition: isResizing ? 'none' : 'right 0.2s',
         }}
       >
@@ -97,7 +123,7 @@ export default function TizadaInfoSidebar({
             transition: 'transform 0.2s',
           }}
         >
-          {isOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowLeftIcon />}
+          <KeyboardArrowLeftIcon />
         </IconButton>
 
         <IconButton
@@ -127,11 +153,13 @@ export default function TizadaInfoSidebar({
           '& .MuiDrawer-paper': {
             width: isSmallScreen ? '100%' : drawerWidth,
             boxSizing: 'border-box',
-            p: 3,
             backgroundColor: '#fafafa',
             transition: isResizing ? 'none' : 'width 0.2s',
-            marginTop: `${NAVBAR_HEIGHT}px`, // Add margin to start below navbar
-            height: `calc(100% - ${NAVBAR_HEIGHT}px)`, // Adjust height to account for navbar
+            marginTop: `${NAVBAR_HEIGHT}px`,
+            height: `calc(100% - ${NAVBAR_HEIGHT}px)`,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden', // Prevent double scrollbars
           },
         }}
       >
@@ -158,41 +186,130 @@ export default function TizadaInfoSidebar({
         )}
 
         {/* Drawer Content */}
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          mb: 2 
-        }}>
-          <Typography variant="h6" sx={{ fontWeight: 500 }}>
-            Información de Tizada
-          </Typography>
-          <IconButton onClick={toggleDrawer} size="small">
-            <CloseIcon />
-          </IconButton>
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'auto',
+            p: 3,
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: 'rgba(0,0,0,0.05)',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(0,0,0,0.2)',
+              borderRadius: '4px',
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.3)',
+              },
+            },
+          }}
+        >
+          {/* Header Section */}
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'flex-start',
+            mb: 3,
+          }}>
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
+                {tizadaName}
+              </Typography>
+              <Chip
+                icon={<CircleIcon sx={{ fontSize: '12px !important' }} />}
+                label={statusConfig.label}
+                color={statusConfig.color as any}
+                size="small"
+                variant="outlined"
+              />
+            </Box>
+            <IconButton onClick={toggleDrawer} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          <Divider sx={{ mb: 3 }} />
+
+          {/* Details Section */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Dimensiones de la mesa de corte
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {dimensions}
+            </Typography>
+
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Fecha de creación
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {createdAt}
+            </Typography>
+
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Última actualización
+            </Typography>
+            <Typography variant="body1">
+              {updatedAt}
+            </Typography>
+          </Box>
+
+          <Divider sx={{ mb: 3 }} />
+
+          {/* Molds Section */}
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Moldes
+            </Typography>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Total de moldes: {totalMolds}
+            </Typography>
+
+            <TableContainer 
+              component={Paper} 
+              elevation={0} 
+              sx={{ 
+                backgroundColor: 'transparent',
+                mt: 2
+              }}
+            >
+              <Table size="small" sx={{ 
+                '& th': { 
+                  fontWeight: 600,
+                  backgroundColor: 'rgba(0, 0, 0, 0.03)',
+                  borderBottom: '2px solid rgba(224, 224, 224, 1)'
+                },
+                '& td, & th': {
+                  fontSize: '0.875rem',
+                  py: 1.5,
+                  px: 2,
+                }
+              }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Art.</TableCell>
+                    <TableCell>Desc.</TableCell>
+                    <TableCell align="right">Cant.</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {moldRows.map((row) => (
+                    <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell component="th" scope="row">
+                        {row.name}
+                      </TableCell>
+                      <TableCell>{row.description}</TableCell>
+                      <TableCell align="right">{row.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </Box>
-
-        <DataGrid
-          rows={tizadaInfoRows}
-          columns={tizadaInfoColumns}
-          hideFooter={true}
-          disableColumnMenu
-          autoHeight
-          localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-          sx={{ mb: 4 }}
-        />
-
-        <Typography variant="h6" gutterBottom>
-          Moldes
-        </Typography>
-        <DataGrid
-          rows={moldRows}
-          columns={moldColumns}
-          hideFooter={true}
-          disableColumnMenu
-          autoHeight
-          localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-        />
       </Drawer>
     </>
   );
