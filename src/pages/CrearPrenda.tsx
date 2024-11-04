@@ -12,7 +12,7 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import React, {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Molde, RolloDeTela} from "../utils/types.tsx";
 import {createPrenda, getMoldes, getRollos} from "../api/methods.ts";
 import DeleteIcon from "@mui/icons-material/Delete";
