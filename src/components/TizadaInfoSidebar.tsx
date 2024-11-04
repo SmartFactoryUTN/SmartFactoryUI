@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Box, 
   Typography, 
@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { esES } from '@mui/x-data-grid/locales';
-import InfoIcon from '@mui/icons-material/Info';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 
@@ -18,64 +18,98 @@ interface TizadaInfoSidebarProps {
   tizadaInfoColumns: GridColDef[];
   moldRows: any[];
   moldColumns: GridColDef[];
-  onDownload?: () => void;  // Add this prop
-  canDownload?: boolean;    // Add this to control button state
+  onDownload?: () => void;
+  canDownload?: boolean;
 }
 
-const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
+
+
+const MIN_DRAWER_WIDTH = 300;
+const MAX_DRAWER_WIDTH = 600;
+const DEFAULT_DRAWER_WIDTH = 350;
+const CONTROL_BAR_WIDTH = 60;
+const NAVBAR_HEIGHT = 64; // Adjust this value to match your navbar height
+
+export default function TizadaInfoSidebar({
   tizadaInfoRows,
   tizadaInfoColumns,
   moldRows,
   moldColumns,
   onDownload,
   canDownload = false,
-}) => {
+}: TizadaInfoSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [drawerWidth, setDrawerWidth] = useState(DEFAULT_DRAWER_WIDTH);
+  const [isResizing, setIsResizing] = useState(false);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const toggleDrawer = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleDrawer = () => setIsOpen(!isOpen);
+
+  const startResize = useCallback((e: React.MouseEvent) => {
+    setIsResizing(true);
+    const startX = e.pageX;
+    const startWidth = drawerWidth;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newWidth = startWidth + (startX - e.pageX);
+      if (newWidth >= MIN_DRAWER_WIDTH && newWidth <= MAX_DRAWER_WIDTH) {
+        setDrawerWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [drawerWidth]);
 
   return (
     <>
-      {/* Info Icon Button */}
-      <Box sx={{ 
-        position: 'fixed',
-        right: '20px',
-        top: '80px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1,
-        zIndex: 1200,
-      }}>
-        {/* Info Icon Button */}
+      {/* Fixed Control Bar */}
+      <Box
+        sx={{
+          position: 'fixed',
+          right: isOpen ? drawerWidth : 0,
+          top: NAVBAR_HEIGHT,
+          bottom: 0,
+          width: CONTROL_BAR_WIDTH,
+          backgroundColor: 'white',
+          borderLeft: '1px solid',
+          borderColor: 'divider',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          pt: 2,
+          gap: 2,
+          zIndex: theme.zIndex.drawer - 1, // Ensure it's below the navbar
+          transition: isResizing ? 'none' : 'right 0.2s',
+        }}
+      >
         <IconButton
           onClick={toggleDrawer}
           sx={{
-            backgroundColor: 'white',
-            boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
-            '&:hover': {
-              backgroundColor: 'rgba(255,255,255,0.9)',
-            },
+            transform: isOpen ? 'rotate(180deg)' : 'none',
+            transition: 'transform 0.2s',
           }}
         >
-          <InfoIcon />
+          {isOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowLeftIcon />}
         </IconButton>
 
-        {/* Download Icon Button */}
         <IconButton
           onClick={onDownload}
           disabled={!canDownload}
           sx={{
             backgroundColor: 'white',
-            boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
             '&:hover': {
-              backgroundColor: 'rgba(255,255,255,0.9)',
+              backgroundColor: 'rgba(0,0,0,0.04)',
             },
             '&.Mui-disabled': {
-              backgroundColor: 'rgba(255,255,255,0.5)',
+              backgroundColor: 'rgba(0,0,0,0.12)',
             },
           }}
         >
@@ -83,22 +117,47 @@ const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
         </IconButton>
       </Box>
 
-      {/* Drawer */}
+      {/* Resizable Drawer */}
       <Drawer
         anchor="right"
         open={isOpen}
         onClose={toggleDrawer}
-        variant="temporary"
+        variant="persistent"
         sx={{
           '& .MuiDrawer-paper': {
-            width: isSmallScreen ? '100%' : '350px',
+            width: isSmallScreen ? '100%' : drawerWidth,
             boxSizing: 'border-box',
             p: 3,
             backgroundColor: '#fafafa',
+            transition: isResizing ? 'none' : 'width 0.2s',
+            marginTop: `${NAVBAR_HEIGHT}px`, // Add margin to start below navbar
+            height: `calc(100% - ${NAVBAR_HEIGHT}px)`, // Adjust height to account for navbar
           },
         }}
       >
-        {/* Drawer Header */}
+        {/* Resize Handle */}
+        {!isSmallScreen && (
+          <Box
+            onMouseDown={startResize}
+            sx={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: '4px',
+              backgroundColor: 'transparent',
+              cursor: 'ew-resize',
+              '&:hover': {
+                backgroundColor: theme.palette.primary.main,
+              },
+              '&:active': {
+                backgroundColor: theme.palette.primary.dark,
+              },
+            }}
+          />
+        )}
+
+        {/* Drawer Content */}
         <Box sx={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
@@ -113,7 +172,6 @@ const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
           </IconButton>
         </Box>
 
-        {/* Tizada Info Grid */}
         <DataGrid
           rows={tizadaInfoRows}
           columns={tizadaInfoColumns}
@@ -124,7 +182,6 @@ const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
           sx={{ mb: 4 }}
         />
 
-        {/* Molds Section */}
         <Typography variant="h6" gutterBottom>
           Moldes
         </Typography>
@@ -139,6 +196,4 @@ const TizadaInfoSidebar: React.FC<TizadaInfoSidebarProps> = ({
       </Drawer>
     </>
   );
-};
-
-export default TizadaInfoSidebar;
+}
