@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-
+// EditableCell.tsx
+import { useState, useEffect, KeyboardEvent } from 'react';
 import { Box, IconButton, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
@@ -27,10 +27,24 @@ const EditableCell = ({
 }: EditableCellProps) => {
   const [inputValue, setInputValue] = useState(value);
 
-  // Update local state when prop value changes
   useEffect(() => {
     setInputValue(value);
   }, [value]);
+
+  // Add this handler
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // Stop propagation for all keys when editing
+    e.stopPropagation();
+    
+    // Handle Enter key to save
+    if (e.key === 'Enter') {
+      onSave(row.uuid);
+    }
+    // Handle Escape key to cancel
+    if (e.key === 'Escape') {
+      onCancel();
+    }
+  };
 
   if (isEditing) {
     return (
@@ -43,7 +57,17 @@ const EditableCell = ({
           onChange={(e) => {
             const newValue = e.target.value;
             setInputValue(newValue);
-            onChange(newValue);  // Just pass the new value
+            onChange(newValue);
+          }}
+          onKeyDown={handleKeyDown} // Add the keyDown handler
+          onClick={(e) => e.stopPropagation()} // Prevent row selection
+          InputProps={{
+            sx: { 
+              padding: '0px',
+              '& input': {
+                padding: '8px'
+              }
+            }
           }}
         />
         <Box sx={{ ml: 1 }}>
