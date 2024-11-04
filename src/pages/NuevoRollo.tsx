@@ -107,7 +107,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Nombre del Rollo"
+                        label="Artículo"
                         fullWidth
                         variant="outlined"
                         value={rolloName}

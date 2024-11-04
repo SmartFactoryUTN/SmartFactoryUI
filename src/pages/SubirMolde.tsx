@@ -72,7 +72,7 @@ const SubirMolde: React.FC = () => {
         <Box sx={{ mb: 3 }}>
           <TextField
             fullWidth
-            label="Nombre del Molde"
+            label="Artículo"
             value={name}
             onChange={(e) => setName(e.target.value)}
             margin="normal"

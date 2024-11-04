@@ -123,7 +123,7 @@ function CrearPrenda() {
         setIsSuccess(false);
 
         if (!prendaFormData.name) {
-            setError("Por favor, ingresar un nombre para la prenda");
+            setError("Por favor, ingresar el artículo de la prenda");
             setIsSaving(false);
             return;
         }
@@ -165,7 +165,7 @@ function CrearPrenda() {
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
-                            label="Nombre"
+                            label="Artículo"
                             name="name"
                             value={prendaFormData.name}
                             onChange={(e) => setPrendaFormData({ ...prendaFormData, name: e.target.value })}
