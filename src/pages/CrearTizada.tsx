@@ -46,19 +46,9 @@ interface FormData {
   molds: MoldSelection[];
   maxIterations: number;
 }
-{/*
-interface TimeInput {
-  minutes: number | null;
-  seconds: number | null;
-}*/}
 
 function CrearTizada() {
-  //const tooltipTiempoMax = "." //Se guardarán los resultados aunque no se haya alcanzado el porcentaje de aprovechamiento deseado.";
-  //const tooltipPorcen = "Obtener la mejor tizada posible toma 12 minutos. Si desea terminar antes, ingrese el porcentaje de aprovechamiento buscado.";
-  {/*const [timeInput, setTimeInput] = useState<TimeInput>({
-    minutes: 12,
-    seconds: 0
-  });*/}
+
   const [optimizationTime, setOptimizationTime] = useState(7); // Default to a moderate value
 
 
@@ -112,16 +102,7 @@ function CrearTizada() {
   {/* Actualizar los valores en el formulario */ }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    //if (name === 'maxTime') {
-    //  if (value === '') {
-    //    setFormData(prev => ({ ...prev, [name]: 0 }));
-    //  } else {
-    //    const numValue = parseInt(value);
-    //    if (!isNaN(numValue) && numValue >= 1 && numValue <= 12) {
-    //      setFormData(prev => ({ ...prev, [name]: numValue }));
-    //    }
-    //  }
-    //} else 
+
     if (name === 'utilizationPercentage') {
       if (value === '') {
         setFormData(prev => ({ ...prev, [name]: 0 }));
@@ -135,53 +116,6 @@ function CrearTizada() {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
-
-
-  {/* Si la tizada es tipo custom, mostrar campos adicionales */ }
-  {/*
-    const handleTizadaTypeChange = (
-        _event: React.MouseEvent<HTMLElement>,
-        newType: TizadaType,
-    ) => {
-        if (newType !== null) {
-        setFormData((prev) => ({ ...prev, tizadaType: newType }));
-        }
-    };
-    */}
-
-  {/* Deshabilitar incrementar tiempo: maximo de 12 minutos */ }
-  {/*const handleTimeChange = (field: keyof TimeInput, amount: number) => {
-    setTimeInput(prev => {
-      const currentValue = prev[field] ?? 0;
-      const maxValue = field === 'minutes' ? 12 : 59;
-      const newValue = Math.max(0, Math.min(maxValue, currentValue + amount));
-      return { ...prev, [field]: newValue };
-    });
-  };
-  const handleTimeInputChange = (field: keyof TimeInput, value: string | number | null) => {
-    const numValue = value === '' ? null : typeof value === 'string' ? parseInt(value) : value;
-    if (numValue !== null) {
-      const maxValue = field === 'minutes' ? 12 : 59;
-      const clampedValue = Math.max(0, Math.min(maxValue, numValue));
-      setTimeInput(prev => ({
-        ...prev,
-        [field]: clampedValue
-      }));
-    } else {
-      setTimeInput(prev => ({
-        ...prev,
-        [field]: null
-      }));
-    }
-  }; */ }
-  {/* Lo mismo pero para porcentaje 
-  const handlePercentageChange = (amount: number) => {
-    setFormData((prev) => {
-      const currentValue = prev.utilizationPercentage ?? 0;
-      const newValue = Math.max(0, Math.min(100, currentValue + amount));
-      return { ...prev, utilizationPercentage: Number(newValue.toFixed(1)) };
-    });
-  };*/ }
 
   {/* Logica de carga de moldes */ }
   const handleMoldChange = (index: number, field: 'uuid' | 'quantity', value: string | number) => {
@@ -289,77 +223,7 @@ function CrearTizada() {
               </Grid>
             </Grid>
           </Grid>
-          
 
-          {/*Mostrar campos acorde al tipo de tizada*/}
-          {/* {formData.tizadaType === 'PERSONALIZADO' && ( */}
-          {/*Campos de tizada personalizada*/}
-          {/*)}*/}
-
-          {/*Porcentaje de aprovechamiento
-          <Grid item xs={12} sx={{ mb: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Typography sx={{ flexGrow: 1, textAlign: 'left' }}> Porcentaje de aprovechamiento
-                <Tooltip title={tooltipPorcen}>
-                  <IconButton size="small" sx={{ "& .MuiInputBase-input": { fontSize: 10, height: 4, padding: 1 } }}      >
-                    <HelpOutlineIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Typography>
-            </Box>
-            <TextField
-              fullWidth
-              label="Porcentaje de aprovechamiento deseado"
-              name="utilizationPercentage"
-              type="number"
-              value={formData.utilizationPercentage}
-              onChange={handleInputChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconButton
-                      onClick={() => handlePercentageChange(-0.1)}
-                      edge="start"
-                      disabled={formData.utilizationPercentage === null || formData.utilizationPercentage <= 0}
-                    >
-                      <RemoveCircleOutlineIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Typography sx={{ mr: 1 }}>%</Typography>
-                    <IconButton
-                      onClick={() => handlePercentageChange(0.1)}
-                      edge="end"
-                      disabled={formData.utilizationPercentage !== null && formData.utilizationPercentage >= 100}
-                    >
-                      <AddCircleOutlineIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                inputProps: {
-                  min: 0,
-                  max: 100,
-                  step: 0.1,
-                  style: { textAlign: 'center' },
-                }
-              }}
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                  display: 'none',
-                },
-                '& input[type=number]': {
-                  MozAppearance: 'textfield',
-                },
-              }}
-            />
-          </Grid>*/}
-
-          {/*Tiempo: minutos*/}
-            {/* Optimización */}
-            {/* Optimización */}
           <Grid item xs={12}>
             <OptimizationSlider
               value={optimizationTime}
@@ -377,12 +241,6 @@ function CrearTizada() {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Typography sx={{ flexGrow: 1, textAlign: 'left', fontWeight: 'bold' }}> 
                 Moldes
-                {/*<Tooltip title={tooltipMoldes}>
-      <IconButton size="small" sx={{ "& .MuiInputBase-input": { fontSize: 10, height: 4, padding: 1 } }}      >
-        <HelpOutlineIcon fontSize="small" />
-      </IconButton>
-    </Tooltip>
-    */}
               </Typography>
             </Box>
             {formData.molds.map((mold, index) => (
