@@ -100,7 +100,7 @@ export const createMolde = async (payload: CreateMoldePayload): Promise<ApiRespo
   }
 };
 
-export const createTizada = async (tizadaData: any): Promise<ApiResponse<CreateTizadaFormData>> => {
+export const createTizada = async (tizadaData: CreateTizadaFormData): Promise<ApiResponse<string>> => {
     try {
         const token = useAccessToken();
         const response = await fetch(`${BASE_API_URL}/tizada`, {

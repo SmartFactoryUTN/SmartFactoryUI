@@ -205,42 +205,37 @@ function CrearTizada() {
     e.preventDefault();
     setError(null);
     setSuccess(false);
-    //const minutes = timeInput.minutes ?? 0;
-    //const seconds = timeInput.seconds ?? 0;
-    //const totalMilliseconds = (minutes * 60 + seconds) * 1000;
-
-    // Use 12 minutes (720000 milliseconds) if both values are null
-    //const maxTime = (minutes === 0 && seconds === 0) ? 720000 : totalMilliseconds;
 
     const maxTime = optimizationTime * 60 * 1000;
 
-    // Validate form data
     if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
-      setError("Por favor, seleccione un molde y especifíque una cantidad.");
-      return;
+        setError("Por favor, seleccione un molde y especifíque una cantidad.");
+        return;
     }
 
     const dataToSend = {
-      ...formData,
-      maxTime
+        ...formData,
+        maxTime
     };
 
     try {
-      const response = await createTizada(dataToSend);
-      if (response.status === 'success') {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate('/tizadas');
-        }, 2000);
-      } else {
-        setError("Error al crear la tizada. Por favor, intentelo nuevamente.");
-      }
+        const response = await createTizada(dataToSend);
+        
+        if (response.status === 'success' && response.data) {
+            setSuccess(true);
+            // response.data is the UUID string directly
+            const uuid = response.data;
+            setTimeout(() => {
+                navigate(`/tizadas/tizada/${uuid}`);
+            }, 2000);
+        } else {
+            setError("Error al crear la tizada. Por favor, intentelo nuevamente.");
+        }
     } catch (error) {
-      console.error('Error creando la tizada:', error);
-      setError("Un error ocurrió al crear la tizada, intentelo de nuevo por favor.");
+        console.error('Error creando la tizada:', error);
+        setError("Un error ocurrió al crear la tizada, intentelo de nuevo por favor.");
     }
   };
-
 
   return (
     <PageLayout>
