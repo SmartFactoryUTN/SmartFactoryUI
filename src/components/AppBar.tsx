@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import Logo from "../../public/azulito.svg"
+import { getFontFamily } from '../utils/fonts';
 
 import {AppBar, Button, IconButton, Toolbar, Box, 
     Drawer,
@@ -93,7 +94,10 @@ const Navigation: React.FC<INavigation> = (props) => {
                         filter: 'brightness(0)', // This will make the logo black
                     }}
                 />
-
+                <Typography color="black" sx={{fontFamily: getFontFamily('bodoni')}}>
+                    SMART FACTORY                
+                </Typography>
+                    
             </Box>
             
             
