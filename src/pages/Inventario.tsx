@@ -76,9 +76,10 @@ function Inventario() {
     const [editingStockId, setEditingStockId] = useState<string | null>(null);
     const [editedStockValue, setEditedStockValue] = useState<number>(0);
 
-    const handleStockEdit = async (id: string, type: 'rollo' | 'fabric' | 'prenda', currentValue: number) => {
+    const handleStockEdit = (id: string, type: 'rollo' | 'fabric' | 'prenda', currentValue: number) => {
         setEditingStockId(id);
         setEditedStockValue(currentValue);
+        console.log('Editing started:', { id, type, currentValue }); // For debugging
     };
 
     const handleStockSave = async (id: string, type: 'rollo' | 'fabric' | 'prenda') => {
@@ -149,13 +150,13 @@ function Inventario() {
         }
     };
 
-
+    {/* Rollos de tela */}
     const rolloColumns: GridColDef[] = [
         {field: 'name', headerName: 'Artículo', editable: false, flex: 1},
         {
             field: 'color',
             headerName: 'Color',
-            width: 200,
+            width: 100,
             editable: false,
             valueGetter: (_, row) => row.color.name,
             flex: 0.75
@@ -163,7 +164,7 @@ function Inventario() {
         {
             field: 'stock',
             headerName: 'Stock',
-            minWidth: 125,
+            width: 200,
             flex: 0,
             align: 'left', // Add this
             headerAlign: 'left', // Add this
@@ -178,9 +179,9 @@ function Inventario() {
                     <EditableNumericCell
                     value={params.row.stock}
                     row={params.row}
-                    isEditing={editingStockId === params.row.rolloId}
+                    isEditing={editingStockId === params.row.fabricRollId}
                     onEdit={(id) => handleStockEdit(id, 'rollo', params.row.stock)}
-                    onSave={(id) => handleStockSave(id, 'rollo')}
+                    onSave={() => handleStockSave(params.row.fabricRollId, 'rollo')}
                     onCancel={() => setEditingStockId(null)}
                     onChange={setEditedStockValue}
                     min={0}
@@ -191,6 +192,7 @@ function Inventario() {
           }    
         ];
 
+    {/* Moldes cortados */}
     const fabricColumns: GridColDef[] = [
         {
             field: 'molde',
@@ -210,8 +212,8 @@ function Inventario() {
                   value={params.row.stock}
                   row={params.row}
                   isEditing={editingStockId === params.row.fabricPieceId}
-                  onEdit={(id) => handleStockEdit(id, 'rollo', params.row.stock)}
-                  onSave={(id) => handleStockSave(id, 'rollo')}
+                  onEdit={(id) => handleStockEdit(id, 'fabric', params.row.stock)}
+                  onSave={() => handleStockSave(params.row.fabricPieceId, 'fabric')}
                   onCancel={() => setEditingStockId(null)}
                   onChange={setEditedStockValue}
                   min={0}
@@ -220,6 +222,7 @@ function Inventario() {
           }
     ];
 
+    {/* Prendas */}
     const prendaColumns: GridColDef[] = [
         {field: 'article', headerName: 'Artículo', editable: false, flex: 1},
         {
@@ -233,7 +236,7 @@ function Inventario() {
                   row={params.row}
                   isEditing={editingStockId === params.row.garmentId}
                   onEdit={(id) => handleStockEdit(id, 'prenda', params.row.stock)}
-                  onSave={(id) => handleStockSave(id, 'prenda')}
+                  onSave={() => handleStockSave(params.row.garmentId, 'fabric')}
                   onCancel={() => setEditingStockId(null)}
                   onChange={setEditedStockValue}
                   min={0}

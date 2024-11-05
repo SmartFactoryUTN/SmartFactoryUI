@@ -1,6 +1,6 @@
 import { useState, useEffect, KeyboardEvent } from 'react';
-import { Box, IconButton, TextField } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+import { Box, IconButton, TextField, Tooltip } from '@mui/material';
+import EditIcon from '@mui/icons-material/EditNote';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,7 +12,7 @@ interface EditableNumericCellProps {
   field?: string; 
   isEditing: boolean;
   onEdit: (id: string) => void;  
-  onSave: (id: string) => void;  
+  onSave: () => void;  
   onCancel: () => void;
   onChange: (value: number) => void;
   min?: number;
@@ -37,7 +37,7 @@ const EditableNumericCell = ({
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (e.key === 'Enter') {
-      onSave(row.uuid);
+      onSave();
     }
     if (e.key === 'Escape') {
       onCancel();
@@ -63,20 +63,22 @@ const EditableNumericCell = ({
       <Box sx={{ 
         display: 'flex', 
         alignItems: 'center',
-        width: '100%',
         gap: 0.5,
-        minWidth: '200px' // Ensure minimum width
+        width: '100%',
+        minWidth: 'min-content'
       }}>
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center',
-          flex: 1,
-          minWidth: 0 // Allow flex shrinking
+          width: 'auto'
         }}>
           <IconButton 
             size="small" 
             onClick={handleDecrement}
-            sx={{ padding: '4px' }}
+            sx={{
+              padding: '2px',
+              '& svg': { fontSize: '12px' }
+            }}
           >
             <RemoveIcon fontSize="small" />
           </IconButton>
@@ -85,13 +87,28 @@ const EditableNumericCell = ({
             value={inputValue}
             size="small"
             autoFocus
-            fullWidth
             type="number"
+            sx={{
+              mx: 0.5, // Reduced margin
+              minWidth: '60px', // Base width for ~5 characters
+              maxWidth: '80px',
+              '& .MuiOutlinedInput-root': {
+                height: '28px'
+              },
+              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                WebkitAppearance: 'none',
+                margin: 0
+              },
+              '& input[type=number]': {
+                MozAppearance: 'textfield',
+                padding: '4px 8px', // Reduced padding
+                fontSize: '0.875rem' // Slightly smaller font
+              }
+            }}
             inputProps={{ 
               min,
               style: { 
-                textAlign: 'center',
-                padding: '4px'
+                textAlign: 'center'
               }
             }}
             onChange={(e) => {
@@ -103,36 +120,35 @@ const EditableNumericCell = ({
             }}
             onKeyDown={handleKeyDown}
             onClick={(e) => e.stopPropagation()}
-            sx={{
-              mx: 1,
-              width: '80px', // Fixed width for number input
-              '& .MuiOutlinedInput-root': {
-                height: '32px'
-              }
-            }}
           />
 
           <IconButton 
             size="small" 
             onClick={handleIncrement}
-            sx={{ padding: '4px' }}
+            sx={{
+              padding: '2px', // Reduced padding
+              '& svg': { fontSize: '16px' } // Smaller icon
+            }}
           >
             <AddIcon fontSize="small" />
           </IconButton>
         </Box>
 
         <Box sx={{ 
-          display: 'flex', 
-          gap: 0.5,
-          ml: 1
+          display: 'flex',
+          gap: 0.25, // Reduced gap
+          marginLeft: 'auto'
         }}>
           <IconButton 
             size="small" 
             onClick={(e) => {
               e.stopPropagation();
-              onSave(row.uuid);
+              onSave(); 
             }}
-            sx={{ padding: '4px' }}
+            sx={{
+              padding: '2px',
+              '& svg': { fontSize: '16px' }
+            }}
           >
             <CheckIcon fontSize="small" color="primary" />
           </IconButton>
@@ -142,40 +158,44 @@ const EditableNumericCell = ({
               e.stopPropagation();
               onCancel();
             }}
-            sx={{ padding: '4px' }}
+            sx={{
+              padding: '2px', // Reduced padding
+              '& svg': { fontSize: '16px' } // Smaller icon
+            }}
           >
             <CloseIcon fontSize="small" color="error" />
           </IconButton>
         </Box>
       </Box>
     );
-  }
+}
   
   return (
     <Box sx={{ 
       display: 'flex', 
       alignItems: 'center', 
       width: '100%',
-      '& .edit-button': {
-        opacity: 0,
-        transition: 'opacity 0.2s'
-      },
-      '&:hover .edit-button': {
-        opacity: 1
-      }
     }}>
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</span>
+      <Tooltip title="Editar Stock">
       <IconButton
         className="edit-button"
         size="small"
         sx={{ ml: 'auto' }}
         onClick={(e) => {
           e.stopPropagation();
-          onEdit(row.uuid);
+          const id = row.fabricRollId || row.fabricPieceId || row.garmentId;
+          console.log('Edit clicked:', { row, id }); // Debug log
+          if (id) {
+            onEdit(id);
+          } else {
+            console.error('No valid ID found in row:', row);
+          }
         }}
       >
-        <EditIcon fontSize="small" />
+        <EditIcon />
       </IconButton>
+      </Tooltip>
     </Box>
   );
 };
