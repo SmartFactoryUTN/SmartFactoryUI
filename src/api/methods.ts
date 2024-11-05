@@ -531,74 +531,74 @@ interface PrendaUpdatePayload {
 }
 
 export const updateRollo = async (uuid: string, payload: RolloUpdatePayload): Promise<ApiResponse<void>> => {
-try {
-    const token = useAccessToken();
-    const url = new URL(`${BASE_API_URL}/inventario/rollo/${uuid}`);
-    const response = await fetch(url.toString(), {
-    method: 'PATCH',
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-    });
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/inventario/rollo/${uuid}`);
+        const response = await fetch(url.toString(), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
 
-    if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { status: "OK", data: undefined };
+    } catch (error) {
+        console.error(`Error updating rollo ${uuid}:`, error);
+        return { status: "ERROR", data: undefined };
     }
-
-    return { status: "OK", data: undefined };
-} catch (error) {
-    console.error(`Error updating rollo ${uuid}:`, error);
-    return { status: "ERROR", data: undefined };
-}
 };
 
 export const updateFabric = async (uuid: string, payload: FabricPieceUpdatePayload): Promise<ApiResponse<void>> => {
-try {
-    const token = useAccessToken();
-    const url = new URL(`${BASE_API_URL}/inventario/fabricPiece/${uuid}`);
-    const response = await fetch(url.toString(), {
-    method: 'PATCH',
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-    });
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/inventario/fabricPiece/${uuid}`);
+        const response = await fetch(url.toString(), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
 
-    if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+           throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { status: "OK", data: undefined };
+    } catch (error) {
+        console.error(`Error updating fabric piece ${uuid}:`, error);
+        return { status: "ERROR", data: undefined };
     }
-
-    return { status: "OK", data: undefined };
-} catch (error) {
-    console.error(`Error updating fabric piece ${uuid}:`, error);
-    return { status: "ERROR", data: undefined };
-}
 };
 
 export const updatePrenda = async (uuid: string, payload: PrendaUpdatePayload): Promise<ApiResponse<void>> => {
-try {
-    const token = useAccessToken();
-    const url = new URL(`${BASE_API_URL}/inventario/prenda/${uuid}`);
-    const response = await fetch(url.toString(), {
-    method: 'PATCH',
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-    });
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/inventario/prenda/${uuid}`);
+        const response = await fetch(url.toString(), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+           body: JSON.stringify(payload),
+        });
 
-    if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-    }
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-    return { status: "OK", data: undefined };
-} catch (error) {
-    console.error(`Error updating prenda ${uuid}:`, error);
-    return { status: "ERROR", data: undefined };
+        return { status: "OK", data: undefined };
+    } catch (error) {
+        console.error(`Error updating prenda ${uuid}:`, error);
+        return { status: "ERROR", data: undefined };
 }
 };
 
