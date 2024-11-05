@@ -288,9 +288,27 @@ function Inventario() {
                             },
                         },
                     }}
+                    sx={{
+                        '& .MuiDataGrid-cell:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-cell:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-scrollbar--horizontal': {
+                            display: 'block',
+                        },
+                    }}
                     pageSizeOptions={[5]}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    checkboxSelection
+                    checkboxSelection={true}
+                    disableRowSelectionOnClick
                     onRowSelectionModelChange={(newSelection) => {
                         const selectedRollosData = rollos.filter((rollo) =>
                             newSelection.includes(rollo.fabricRollId)
@@ -319,8 +337,27 @@ function Inventario() {
                             },
                         },
                     }}
+                    sx={{
+                        '& .MuiDataGrid-cell:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-cell:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-scrollbar--horizontal': {
+                            display: 'block',
+                        },
+                    }}
                     pageSizeOptions={[5]}
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                    disableRowSelectionOnClick
+                    
                 />
             </Box>
 
@@ -356,15 +393,32 @@ function Inventario() {
                             },
                         },
                     }}
+                    sx={{
+                        '& .MuiDataGrid-cell:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-cell:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-columnHeader:focus-within': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-scrollbar--horizontal': {
+                            display: 'block',
+                        },
+                    }}
                     pageSizeOptions={[5]}
+                    checkboxSelection={true}
+                    disableRowSelectionOnClick
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                    onRowClick={(params) => {
-                        const prendaSeleccionada = prendas.find((prenda) => prenda.garmentId === params.row.garmentId);
-                        if (selectedPrendas.length > 0 && selectedPrendas[0].garmentId === prendaSeleccionada?.garmentId) {
-                            setSelectedPrendas([]);
-                        } else {
-                            setSelectedPrendas(prendaSeleccionada ? [prendaSeleccionada] : []);
-                        }
+                    onRowSelectionModelChange={(newSelection) => {
+                        const selectedPrendasData = prendas.filter((prenda) =>
+                            newSelection.includes(prenda.garmentId)
+                        );
+                        setSelectedPrendas(selectedPrendasData);
                     }}
                 />
             </Box>
