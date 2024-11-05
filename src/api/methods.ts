@@ -509,3 +509,123 @@ export const downloadTizadaSvg = async (url: string, fileName: string) => {
         throw error;
     }
 };
+
+
+// methods.tsx
+
+// Define types for patch payloads
+interface RolloUpdatePayload {
+    name?: string;
+    stock?: number;
+}
+
+interface FabricPieceUpdatePayload {
+    name?: string;
+    stock?: number;
+}
+
+interface PrendaUpdatePayload {
+    name?: string;
+    stock?: number;
+    description?: string;
+}
+
+export const updateRollo = async (uuid: string, payload: RolloUpdatePayload): Promise<ApiResponse<void>> => {
+try {
+    const token = useAccessToken();
+    const url = new URL(`${BASE_API_URL}/inventario/rollo/${uuid}`);
+    const response = await fetch(url.toString(), {
+    method: 'PATCH',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return { status: "OK", data: undefined };
+} catch (error) {
+    console.error(`Error updating rollo ${uuid}:`, error);
+    return { status: "ERROR", data: undefined };
+}
+};
+
+export const updateFabric = async (uuid: string, payload: FabricPieceUpdatePayload): Promise<ApiResponse<void>> => {
+try {
+    const token = useAccessToken();
+    const url = new URL(`${BASE_API_URL}/inventario/fabricPiece/${uuid}`);
+    const response = await fetch(url.toString(), {
+    method: 'PATCH',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return { status: "OK", data: undefined };
+} catch (error) {
+    console.error(`Error updating fabric piece ${uuid}:`, error);
+    return { status: "ERROR", data: undefined };
+}
+};
+
+export const updatePrenda = async (uuid: string, payload: PrendaUpdatePayload): Promise<ApiResponse<void>> => {
+try {
+    const token = useAccessToken();
+    const url = new URL(`${BASE_API_URL}/inventario/prenda/${uuid}`);
+    const response = await fetch(url.toString(), {
+    method: 'PATCH',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return { status: "OK", data: undefined };
+} catch (error) {
+    console.error(`Error updating prenda ${uuid}:`, error);
+    return { status: "ERROR", data: undefined };
+}
+};
+
+  
+{/*
+export const deleteRollo = async (uuid: string) => {
+    // Implementation here
+  };
+  
+export const deleteFabric = async (uuid: string) => {
+// Implementation here
+};
+
+export const deletePrenda = async (uuid: string) => {
+// Implementation here
+};
+
+
+export const deleteRollos = async (ids: string[]) => {
+// Implementation here
+};
+
+export const deleteFabrics = async (ids: string[]) => {
+// Implementation here
+};
+
+export const deletePrendas = async (ids: string[]) => {
+// Implementation here
+};
+*/ }

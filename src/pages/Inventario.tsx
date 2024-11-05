@@ -1,17 +1,17 @@
 import {useEffect, useState} from 'react'; //, useCallback
 import {useNavigate} from 'react-router-dom';
-import {getFabrics, getPrendas, getRollos} from '../api/methods'; // Llamadas a la API
+import {getFabrics, getPrendas, getRollos, updateRollo, updatePrenda, updateFabric} from '../api/methods'; // Llamadas a la API
 import {FabricPiece, Prenda, RolloDeTela} from '../utils/types'; // Entidades
-import {DataGrid, GridColDef} from '@mui/x-data-grid'; // , GridRowParams
-import {esES} from '@mui/x-data-grid/locales';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import EditableNumericCell from '../components/EditableNumericCell';
 import PageLayout from '../components/layout/PageLayout';
 import NuevoRolloModal from "./NuevoRollo.tsx";
 import ConvertirRolloModal from "./ConvertirRollo.tsx";
 import ConvertirPrendaModal from "./ConvertirPrendaModal.tsx";
 import { getFontFamily } from '../utils/fonts';
+
+import {DataGrid, GridColDef} from '@mui/x-data-grid'; // , GridRowParams
+import {esES} from '@mui/x-data-grid/locales';
+import {Box, Typography, Button} from '@mui/material';
 
 {/* UI Components */}
 
@@ -73,6 +73,37 @@ function Inventario() {
         setOpenConvertirRolloModal(false);
     };
 
+    const [editingStockId, setEditingStockId] = useState<string | null>(null);
+    const [editedStockValue, setEditedStockValue] = useState<number>(0);
+
+    const handleStockEdit = async (id: string, type: 'rollo' | 'fabric' | 'prenda', currentValue: number) => {
+        setEditingStockId(id);
+        setEditedStockValue(currentValue);
+    };
+
+    const handleStockSave = async (id: string, type: 'rollo' | 'fabric' | 'prenda') => {
+        try {
+          let response;
+          switch (type) {
+            case 'rollo':
+              response = await updateRollo(id, { stock: editedStockValue });
+              if (response.status === "OK") fetchRollos();
+              break;
+            case 'fabric':
+              response = await updateFabric(id, { stock: editedStockValue });
+              if (response.status === "OK") fetchFabrics();
+              break;
+            case 'prenda':
+              response = await updatePrenda(id, { stock: editedStockValue });
+              if (response.status === "OK") fetchPrendas();
+              break;
+          }
+          setEditingStockId(null);
+        } catch (error) {
+          console.error('Error saving stock:', error);
+        }
+      };
+
     useEffect(() => {
         fetchRollos();
         fetchPrendas();
@@ -129,8 +160,36 @@ function Inventario() {
             valueGetter: (_, row) => row.color.name,
             flex: 0.75
         },
-        {field: 'stock', headerName: 'Stock', minWidth: 125, editable: false, flex: 0},
-    ];
+        {
+            field: 'stock',
+            headerName: 'Stock',
+            minWidth: 125,
+            flex: 0,
+            align: 'left', // Add this
+            headerAlign: 'left', // Add this
+            renderCell: (params) => (
+                <Box sx={{ 
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center', // Vertical center
+                    justifyContent: 'flex-start', // Left align
+                }}>
+                    <EditableNumericCell
+                    value={params.row.stock}
+                    row={params.row}
+                    isEditing={editingStockId === params.row.rolloId}
+                    onEdit={(id) => handleStockEdit(id, 'rollo', params.row.stock)}
+                    onSave={(id) => handleStockSave(id, 'rollo')}
+                    onCancel={() => setEditingStockId(null)}
+                    onChange={setEditedStockValue}
+                    min={0}
+                />
+                </Box>
+                
+            )
+          }    
+        ];
 
     const fabricColumns: GridColDef[] = [
         {
@@ -141,12 +200,46 @@ function Inventario() {
             flex: 1
         },
         {field: 'rollo', headerName: 'Rollo', editable: false, valueGetter: (_, row) => row.fabricRoll.name, flex: 0.75},
-        {field: 'stock', headerName: 'Stock', editable: false, flex: 0, minWidth: 125}
+        {
+            field: 'stock',
+            headerName: 'Stock',
+            flex: 0,
+            minWidth: 125,
+            renderCell: (params) => (
+                <EditableNumericCell
+                  value={params.row.stock}
+                  row={params.row}
+                  isEditing={editingStockId === params.row.fabricPieceId}
+                  onEdit={(id) => handleStockEdit(id, 'rollo', params.row.stock)}
+                  onSave={(id) => handleStockSave(id, 'rollo')}
+                  onCancel={() => setEditingStockId(null)}
+                  onChange={setEditedStockValue}
+                  min={0}
+                />
+            )
+          }
     ];
 
     const prendaColumns: GridColDef[] = [
         {field: 'article', headerName: 'Artículo', editable: false, flex: 1},
-        {field: 'stock', headerName: 'Stock', editable: false, flex: 0, minWidth: 125},
+        {
+            field: 'stock',
+            headerName: 'Stock',
+            flex: 0,
+            minWidth: 125,
+            renderCell: (params) => (
+                <EditableNumericCell
+                  value={params.row.stock}
+                  row={params.row}
+                  isEditing={editingStockId === params.row.garmentId}
+                  onEdit={(id) => handleStockEdit(id, 'prenda', params.row.stock)}
+                  onSave={(id) => handleStockSave(id, 'prenda')}
+                  onCancel={() => setEditingStockId(null)}
+                  onChange={setEditedStockValue}
+                  min={0}
+                />
+            )
+          }
     ];
 
 
