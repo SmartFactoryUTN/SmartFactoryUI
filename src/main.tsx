@@ -21,6 +21,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               audience: REACT_APP_AUTH0_AUDIENCE,
               scope: REACT_APP_AUTH0_SCOPES
           }}
+          cacheLocation="localstorage"     // Add this to persist auth state
+          useRefreshTokens={true}          // Add this to enable silent renewal
       >
         <App />
       </Auth0Provider>
