@@ -72,7 +72,7 @@ const Navigation: React.FC<INavigation> = (props) => {
         <Toolbar>
             <Box
                 component={Link}
-                to={isAuthenticated ? "/tizadas" : "/"}
+                to={isAuthenticated ? "/home" : "/"}
                 sx={{
                     display: 'flex',
                     alignItems: 'center',

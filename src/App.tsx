@@ -28,7 +28,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/home" replace />;
     }
 
     return <>{children}</>;
@@ -44,7 +44,7 @@ function App() {
                     <Navigation isAuthenticated={isAuthenticated}/>
                     <Routes>
                         {/* Public routes */}
-                        <Route path="/login" element={<Login />} />
+                        <Route path="/home" element={<Login />} />
                         <Route path="/callback" element={<Callback/>} />
 
                         {/* Private routes */}
@@ -93,7 +93,7 @@ function App() {
                         <Route path="/" element={
                             isAuthenticated ? 
                                 <Navigate to="/tizadas" replace /> : 
-                                <Navigate to="/login" replace />
+                                <Navigate to="/home" replace />
                         }/>
                     </Routes>
                 </div>
