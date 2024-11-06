@@ -206,8 +206,15 @@ function Inventario() {
             field: 'stock',
             headerName: 'Stock',
             flex: 0,
-            minWidth: 125,
+            minWidth: 200,
             renderCell: (params) => (
+                <Box sx={{ 
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center', // Vertical center
+                    justifyContent: 'flex-start', // Left align
+                }}>
                 <EditableNumericCell
                   value={params.row.stock}
                   row={params.row}
@@ -218,6 +225,7 @@ function Inventario() {
                   onChange={setEditedStockValue}
                   min={0}
                 />
+                </Box>
             )
           }
     ];
@@ -229,18 +237,26 @@ function Inventario() {
             field: 'stock',
             headerName: 'Stock',
             flex: 0,
-            minWidth: 125,
+            width: 200,
             renderCell: (params) => (
+                <Box sx={{ 
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center', // Vertical center
+                    justifyContent: 'flex-start', // Left align
+                }}>
                 <EditableNumericCell
                   value={params.row.stock}
                   row={params.row}
                   isEditing={editingStockId === params.row.garmentId}
                   onEdit={(id) => handleStockEdit(id, 'prenda', params.row.stock)}
-                  onSave={() => handleStockSave(params.row.garmentId, 'fabric')}
+                  onSave={() => handleStockSave(params.row.garmentId, 'prenda')}
                   onCancel={() => setEditingStockId(null)}
                   onChange={setEditedStockValue}
                   min={0}
                 />
+                </Box>
             )
           }
     ];
