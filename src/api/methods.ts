@@ -510,6 +510,27 @@ export const downloadTizadaSvg = async (url: string, fileName: string) => {
     }
 };
 
+export const createColor = async (colorData: any): Promise<ApiResponse<FabricColor>> => {
+    try {
+        const token = useAccessToken();
+        const response = await fetch(`${BASE_API_URL}/inventario/color`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(colorData),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error creating color:", error);
+        throw error;
+    }
+};
+
 
 // methods.tsx
 
@@ -602,12 +623,12 @@ export const updatePrenda = async (uuid: string, payload: PrendaUpdatePayload): 
 }
 };
 
-  
+
 {/*
 export const deleteRollo = async (uuid: string) => {
     // Implementation here
   };
-  
+
 export const deleteFabric = async (uuid: string) => {
 // Implementation here
 };

@@ -11,7 +11,7 @@ import {
     Snackbar,
     TextField
 } from "@mui/material";
-import {createRollo, getFabricColors} from "../api/methods.ts"; // Importa la función para crear rollo
+import {createColor, createRollo, getFabricColors} from "../api/methods.ts"; // Importa la función para crear rollo
 import {FabricColor} from "../utils/types.tsx";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -21,6 +21,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
     const [selectedColor, setSelectedColor] = useState<FabricColor | null>(null);
     const [newColorName, setNewColorName] = useState("");
     const [rolloName, setRolloName] = useState("");
+    const [rolloDescription, setRolloDescription] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
@@ -30,15 +31,25 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
         setSelectedColor(selected || null);
     }
 
-    const handleAddColor = () => {
+    const handleAddColor = async () => {
         if (newColorName.trim()) {
             const newColor = {
-                fabricColorId: `color-${Date.now()}`,
                 name: newColorName.trim()
             };
-            setColors((prevColors) => [...prevColors, newColor]);
-            setNewColorName("");
-            setSelectedColor(newColor);
+
+            console.log(newColor);
+
+            try {
+                const result = await createColor(newColor);
+                const persistedNewColor = result.data
+                console.log(persistedNewColor);
+
+                setColors((prevColors) => [...prevColors, persistedNewColor]);
+                setNewColorName("");
+                setSelectedColor(persistedNewColor);
+            } catch (error) {
+                console.log("Error al agregar el color:", error);
+            }
         }
     };
 
@@ -70,7 +81,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
 
     const handleSave = async () => {
         setIsSaving(true);
-        if (!rolloName || !selectedColor) {
+        if (!rolloName || !selectedColor || !rolloDescription) {
             // FIXME: mensajitos lindos en vez de alert todo feo
             alert("Por favor, complete todos los campos.");
             setIsSaving(false);
@@ -80,6 +91,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
         try {
             const response = await createRollo({
                 name: rolloName,
+                description: rolloDescription,
                 fabricColorId: selectedColor.fabricColorId
             });
 
@@ -112,6 +124,16 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
                         variant="outlined"
                         value={rolloName}
                         onChange={(e) => setRolloName(e.target.value)}
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Descripción"
+                        fullWidth
+                        multiline
+                        variant="outlined"
+                        value={rolloDescription}
+                        onChange={(e) => setRolloDescription(e.target.value)}
                     />
                     <Select
                         fullWidth

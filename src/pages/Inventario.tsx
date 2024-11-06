@@ -65,7 +65,6 @@ function Inventario() {
             selectedRollos.map((r) => r.fabricRollId).includes(rollo.fabricRollId)
         );
         setSelectedRollos(rollosSeleccionadosData);
-        console.log(rollosSeleccionadosData);
         setOpenConvertirRolloModal(true);
     };
 
@@ -114,6 +113,7 @@ function Inventario() {
     const fetchRollos = async () => {
         try {
             const response = await getRollos();
+            console.log(response)
             if (response.status === "success") {
                 setRollos(response.data);
             } else {
