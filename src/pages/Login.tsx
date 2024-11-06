@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { Box, Button, Typography, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import PageLayout from '../components/layout/PageLayout';
 import { getFontFamily } from '../utils/fonts';
 import { useUserContext } from "../components/Login/UserProvider";
@@ -10,6 +10,16 @@ const Login = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);    
     const [nombre, setNombre] = useState('');    
     const [email, setEmail] = useState('');    
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Short timeout to ensure we have the auth state
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000); // Adjust this timeout as needed
+
+        return () => clearTimeout(timer);
+    }, [userData]);
 
     const solicitarDemo = async () => {
         setIsModalOpen(true);       
@@ -27,6 +37,28 @@ const Login = () => {
     const handleCloseModal = () => {
       setIsModalOpen(false);
     };
+
+    if (isLoading) {
+        return (
+            <PageLayout>
+                <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        minHeight: '80vh'
+                    }}
+                >
+                    <CircularProgress 
+                        size={60}
+                        sx={{ 
+                            color: '#708d81'  // Using the same green from your gradient
+                        }} 
+                    />
+                </Box>
+            </PageLayout>
+        );
+    }
 
     const AuthenticatedContent = () => (
         <Box sx={{ 
