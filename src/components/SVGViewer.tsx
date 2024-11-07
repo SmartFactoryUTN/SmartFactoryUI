@@ -1,104 +1,100 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SVGViewerProps {
   url: string;
+  containerWidth: number;
+  containerHeight: number;
+  zoom: number;
+  position: { x: number; y: number };
+  isDragging: boolean;
 }
 
-const SVGViewer: React.FC<SVGViewerProps> = ({ url }) => {
-  const [scale, setScale] = useState(1);
+const SVGViewer: React.FC<SVGViewerProps> = ({ 
+  url, 
+  containerWidth,
+  containerHeight,
+  zoom,
+  position,
+  isDragging 
+}) => {
+  const [modifiedSvgUrl, setModifiedSvgUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const svgRef = useRef<HTMLObjectElement | null>(null);
+  const [svgDimensions, setSvgDimensions] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
-    const calculateScale = () => {
-      if (!containerRef.current || !svgRef.current) {
-        console.log('Refs not ready yet');
-        return;
+    const fetchAndModifySvg = async () => {
+      try {
+        const response = await fetch(url);
+        const svgText = await response.text();
+        
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+        const svgElement = svgDoc.querySelector('svg');
+        const binElement = svgDoc.querySelector('.bin');
+        
+        if (svgElement && binElement) {
+          const binWidth = parseFloat(binElement.getAttribute('width') || '0');
+          const binHeight = parseFloat(binElement.getAttribute('height') || '0');
+          
+          if (binWidth && binHeight) {
+            // Store the actual dimensions
+            setSvgDimensions({ width: binWidth, height: binHeight });
+            
+            // Update the SVG attributes
+            svgElement.setAttribute('width', binWidth.toString());
+            svgElement.setAttribute('height', binHeight.toString());
+            svgElement.setAttribute('viewBox', `0 0 ${binWidth} ${binHeight}`);
+            
+            const modifiedSvgText = new XMLSerializer().serializeToString(svgDoc);
+            const blob = new Blob([modifiedSvgText], { type: 'image/svg+xml' });
+            const modifiedUrl = URL.createObjectURL(blob);
+            
+            setModifiedSvgUrl(modifiedUrl);
+          }
+        }
+      } catch (err) {
+        console.error('Error modifying SVG:', err);
+        setError('Error loading SVG');
       }
-
-      const svgElement = (svgRef.current as HTMLObjectElement)
-        .contentDocument?.querySelector('svg') as SVGSVGElement;
-      
-      if (!svgElement) {
-        console.log('SVG element not loaded yet');
-        return;
-      }
-
-      const viewBox = svgElement.getAttribute('viewBox')?.split(' ').map(Number);
-      if (!viewBox) {
-        setError('SVG missing viewBox attribute');
-        return;
-      }
-
-      const [, , svgWidth, svgHeight] = viewBox;
-      const containerWidth = containerRef.current.clientWidth;
-      const containerHeight = containerRef.current.clientHeight;
-
-      console.log('Container dimensions:', { width: containerWidth, height: containerHeight });
-      console.log('SVG dimensions:', { width: svgWidth, height: svgHeight });
-
-      const scaleX = containerWidth / svgWidth;
-      const scaleY = containerHeight / svgHeight;
-      const newScale = Math.min(scaleX, scaleY) * 0.9;
-      
-      console.log('Calculated scale:', newScale);
-      setScale(newScale);
     };
 
-    const resizeObserver = new ResizeObserver(() => {
-      console.log('Container resized');
-      calculateScale();
-    });
-
-    const currentContainer = containerRef.current;
-    const currentSvgRef = svgRef.current;
-
-    if (currentContainer) {
-      resizeObserver.observe(currentContainer);
-    }
-
-    if (currentSvgRef) {
-      currentSvgRef.addEventListener('load', () => {
-        console.log('SVG loaded');
-        calculateScale();
-      });
-    }
-
+    fetchAndModifySvg();
+    
     return () => {
-      resizeObserver.disconnect();
-      if (currentSvgRef) {
-        currentSvgRef.removeEventListener('load', calculateScale);
+      if (modifiedSvgUrl) {
+        URL.revokeObjectURL(modifiedSvgUrl);
       }
     };
   }, [url]);
 
-  if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
-  }
+  if (error) return <div>Error: {error}</div>;
+  if (!svgDimensions) return <div>Loading...</div>;
+
+  // Calculate the scale to fit the container while maintaining aspect ratio
+  const scale = Math.min(
+    containerWidth / svgDimensions.width,
+    containerHeight / svgDimensions.height
+  ) * 0.9; // 90% to leave some margin
 
   return (
-    <div 
-      ref={containerRef}
-      className="w-full h-full relative overflow-hidden bg-gray-50"
-      style={{ minHeight: '500px' }}
+    <object
+      type="image/svg+xml"
+      data={modifiedSvgUrl || url}
+      style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: `translate(-50%, -50%) 
+                   translate(${position.x}px, ${position.y}px) 
+                   scale(${scale * zoom})`,
+        transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+        transformOrigin: 'center',
+        maxWidth: '100%',
+        maxHeight: '100%',
+      }}
     >
-      <object
-        ref={svgRef}
-        type="image/svg+xml"
-        data={url}
-        className="absolute left-1/2 top-1/2 origin-center bg-white"
-        style={{
-          transform: `translate(-50%, -50%) scale(${scale})`,
-          transition: 'transform 0.3s ease-in-out',
-          maxWidth: '100%',
-          maxHeight: '100%',
-          border: '1px solid #eee',
-        }}
-      >
-        Su navegador no soporta SVGs
-      </object>
-    </div>
+      Su navegador no soporta SVGs
+    </object>
   );
 };
 

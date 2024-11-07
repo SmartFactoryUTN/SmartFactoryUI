@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import MaterialUtilizationOverlay from '../components/MaterialUtilizationOverlay.tsx'
+import SVGViewer from './SVGViewer.tsx'
 
 interface TizadaDisplayProps {
   tizada: TizadaResult | null;
@@ -12,19 +13,20 @@ interface TizadaDisplayProps {
   onStartProgress: () => void;
 }
 
-const MIN_ZOOM = 0.5;
-const MAX_ZOOM = 4;
-const ZOOM_STEP = 0.1;
+    // Adjust these constants at the top of TizadaDisplay
+  const MIN_ZOOM = 0.1;  // Was 0.5
+  const MAX_ZOOM = 30;   // Was 4
+  const ZOOM_STEP = 0.1;
+  const DEFAULT_ZOOM = 20; // Add this new constant
 
 const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) => {
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Replace the current handler definitions with these:
-const handleZoomIn = useCallback(() => {
+  const handleZoomIn = useCallback(() => {
     setZoom(prev => {
       const newZoom = Math.min(prev + ZOOM_STEP, MAX_ZOOM);
       console.log('Zooming in to:', newZoom); // For debugging
@@ -40,17 +42,19 @@ const handleZoomIn = useCallback(() => {
     });
   }, []);
   
-  const handleReset = useCallback(() => {
-    setZoom(1);
-    setPosition({ x: 0, y: 0 });
-  }, []);
-
+  // Optionally, modify the zoom step based on current zoom level for smoother control
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey) {
       e.preventDefault();
-      const delta = -Math.sign(e.deltaY) * ZOOM_STEP;
+      const zoomFactor = zoom >= 1 ? 0.2 : 0.1; // Finer control at lower zoom levels
+      const delta = -Math.sign(e.deltaY) * zoomFactor;
       setZoom(prev => Math.min(Math.max(prev + delta, MIN_ZOOM), MAX_ZOOM));
     }
+  }, [zoom]);
+
+  const handleReset = useCallback(() => {
+    setZoom(DEFAULT_ZOOM); // Reset to default zoom instead of 1
+    setPosition({ x: 0, y: 0 });
   }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -143,61 +147,52 @@ const handleZoomIn = useCallback(() => {
       case 'IN_PROGRESS':
         return <CircularProgress />;
 
-        case 'FINISHED':
-          if (svgUrl) {
-            return (
-              <Box
-                ref={containerRef}
-                onWheel={handleWheel}
-                sx={{
-                  position: 'relative', // This is important
-                  width: '100%',
-                  height: '100%',
-                  overflow: 'hidden',
-                  cursor: isDragging ? 'grabbing' : 'grab',
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: '8px',
-                }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-              >
-                {/* SVG Container */}
-                <Box
-                  sx={{
-                    position: 'absolute', // Change to absolute
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
-                    transformOrigin: 'center',
-                    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                  }}
-                >
-                  <iframe
-                    src={svgUrl}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      border: 'none',
-                      pointerEvents: 'none',
-                    }}
-                    title="Tizada SVG"
-                  />
-                </Box>
-        
-                {/* Overlays */}
-                {tizada.results[0]?.materialUtilization !== undefined && (
-                  <MaterialUtilizationOverlay 
-                    utilization={tizada.results[0].materialUtilization} 
-                  />
-                )}
-                <ZoomControls />
-              </Box>
-            );
-          }
+      case 'FINISHED':
+        if (svgUrl) {
+          console.log('TizadaDisplay rendering with URL:', svgUrl);
+          console.log('Current dimensions:', {
+            zoom,
+            position,
+            containerRef: containerRef.current?.getBoundingClientRect()
+          });
+          return (
+            <Box
+        ref={containerRef}
+        onWheel={handleWheel}
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          backgroundColor: '#f5f5f5',
+          borderRadius: '8px',
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        {/* Replace the current Box+iframe structure with SVGViewer */}
+        <SVGViewer 
+          url={svgUrl} 
+          containerWidth={containerRef.current?.clientWidth || 0}
+          containerHeight={containerRef.current?.clientHeight || 0}
+          zoom={zoom}
+          position={position}
+          isDragging={isDragging}
+        />
+              
+              {/* Overlays */}
+              {tizada.results[0]?.materialUtilization !== undefined && (
+                <MaterialUtilizationOverlay 
+                  utilization={tizada.results[0].materialUtilization} 
+                />
+              )}
+              <ZoomControls />
+            </Box>
+          );
+        }
         return null;
 
       case 'ERROR':
