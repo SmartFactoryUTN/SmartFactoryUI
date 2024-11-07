@@ -1,6 +1,6 @@
 import { Box, Typography, Button, CircularProgress, IconButton } from '@mui/material';
 import { TizadaResult } from '../utils/types';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -13,47 +13,70 @@ interface TizadaDisplayProps {
   onStartProgress: () => void;
 }
 
-    // Adjust these constants at the top of TizadaDisplay
-  const MIN_ZOOM = 0.1;  // Was 0.5
-  const MAX_ZOOM = 30;   // Was 4
-  const ZOOM_STEP = 0.1;
-  const DEFAULT_ZOOM = 20; // Add this new constant
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 30;
+const ZOOM_STEP = 0.1;
+const DEFAULT_ZOOM = 20;
 
 const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) => {
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Effect to handle container dimensions
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateDimensions = () => {
+      const { width, height } = containerRef.current?.getBoundingClientRect() || { width: 0, height: 0 };
+      setContainerDimensions({ width, height });
+    };
+
+    // Initial measurement
+    updateDimensions();
+
+    // Set up resize observer
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      if (containerRef.current) {
+        resizeObserver.unobserve(containerRef.current);
+      }
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  // Reset view when SVG URL changes
+  useEffect(() => {
+    if (svgUrl) {
+      setZoom(DEFAULT_ZOOM);
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [svgUrl]);
+
   const handleZoomIn = useCallback(() => {
-    setZoom(prev => {
-      const newZoom = Math.min(prev + ZOOM_STEP, MAX_ZOOM);
-      console.log('Zooming in to:', newZoom); // For debugging
-      return newZoom;
-    });
+    setZoom(prev => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
   }, []);
   
   const handleZoomOut = useCallback(() => {
-    setZoom(prev => {
-      const newZoom = Math.max(prev - ZOOM_STEP, MIN_ZOOM);
-      console.log('Zooming out to:', newZoom); // For debugging
-      return newZoom;
-    });
+    setZoom(prev => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
   }, []);
-  
-  // Optionally, modify the zoom step based on current zoom level for smoother control
+
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey) {
       e.preventDefault();
-      const zoomFactor = zoom >= 1 ? 0.2 : 0.1; // Finer control at lower zoom levels
+      const zoomFactor = zoom >= 1 ? 0.2 : 0.1;
       const delta = -Math.sign(e.deltaY) * zoomFactor;
       setZoom(prev => Math.min(Math.max(prev + delta, MIN_ZOOM), MAX_ZOOM));
     }
   }, [zoom]);
 
   const handleReset = useCallback(() => {
-    setZoom(DEFAULT_ZOOM); // Reset to default zoom instead of 1
+    setZoom(DEFAULT_ZOOM);
     setPosition({ x: 0, y: 0 });
   }, []);
 
@@ -114,7 +137,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
       </IconButton>
       <IconButton 
         onClick={handleReset} 
-        disabled={zoom === 1 && position.x === 0 && position.y === 0}
+        disabled={zoom === DEFAULT_ZOOM && position.x === 0 && position.y === 0}
         sx={{ backgroundColor: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } }}
       >
         <RestartAltIcon />
@@ -122,7 +145,6 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
     </Box>
   ), [zoom, position, handleZoomIn, handleZoomOut, handleReset]);
 
-  
   const getContent = () => {
     if (!tizada) return null;
 
@@ -148,13 +170,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
         return <CircularProgress />;
 
       case 'FINISHED':
-        if (svgUrl) {
-          console.log('TizadaDisplay rendering with URL:', svgUrl);
-          console.log('Current dimensions:', {
-            zoom,
-            position,
-            containerRef: containerRef.current?.getBoundingClientRect()
-          });
+        if (svgUrl && containerDimensions.width > 0 && containerDimensions.height > 0) {
           return (
             <Box
               ref={containerRef}
@@ -169,20 +185,19 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
                 borderRadius: '8px',
               }}
             >
-            <SVGViewer 
-              url={svgUrl} 
-              containerWidth={containerRef.current?.clientWidth || 0}
-              containerHeight={containerRef.current?.clientHeight || 0}
-              zoom={zoom}
-              position={position}
-              isDragging={isDragging}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-            />
+              <SVGViewer 
+                url={svgUrl}
+                containerWidth={containerDimensions.width}
+                containerHeight={containerDimensions.height}
+                zoom={zoom}
+                position={position}
+                isDragging={isDragging}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              />
               
-              {/* Overlays */}
               {tizada.results[0]?.materialUtilization !== undefined && (
                 <MaterialUtilizationOverlay 
                   utilization={tizada.results[0].materialUtilization} 
@@ -192,7 +207,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
             </Box>
           );
         }
-        return null;
+        return <CircularProgress />;
 
       case 'ERROR':
         return (
@@ -211,15 +226,18 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
   };
 
   return (
-    <Box sx={{ 
-      flex: 1, 
-      display: 'flex', 
-      flexDirection: 'column', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      p: 2,
-      position: 'relative',
-    }}>
+    <Box 
+      ref={containerRef}
+      sx={{ 
+        flex: 1, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        p: 2,
+        position: 'relative',
+      }}
+    >
       {getContent()}
     </Box>
   );
