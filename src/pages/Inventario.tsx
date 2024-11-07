@@ -151,7 +151,7 @@ function Inventario() {
 
     {/* Rollos de tela */}
     const rolloColumns: GridColDef[] = [
-        {field: 'name', headerName: 'Artículo', editable: false, width: 150},
+        {field: 'name', headerName: 'Artículo de rollo', editable: false, width: 150},
         {field: 'description', headerName: 'Descripción', editable: false, width: 250},
         {
             field: 'color',
@@ -196,7 +196,7 @@ function Inventario() {
     const fabricColumns: GridColDef[] = [
         {
             field: 'molde',
-            headerName: 'Molde Artículo',
+            headerName: 'Artículo de molde',
             editable: false,
             valueGetter: (_, row) => row.molde.name,
             width:200

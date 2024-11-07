@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import {createColor, createRollo, getFabricColors} from "../api/methods.ts"; // Importa la función para crear rollo
 import {FabricColor} from "../utils/types.tsx";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -24,6 +25,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
     const [rolloDescription, setRolloDescription] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [isSaving, setIsSaving] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const handleChange = (event: any) => {
         const selectedId = event.target.value;
@@ -57,9 +59,14 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
         fetchColors();
     }, []);
 
+    useEffect(() => {
+        if (!open) {
+            resetValues();
+        }
+    }, [open]);
+
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, setError] = useState<string | null>(null); // FIXME: volver a agregar el error
+    const [error, setError] = useState<string | null>(null);
 
     const fetchColors = useCallback(async () => {
         if (isLoading) return;
@@ -81,6 +88,8 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
 
     const handleSave = async () => {
         setIsSaving(true);
+        setIsSuccess(false);
+
         if (!rolloName || !selectedColor || !rolloDescription) {
             // FIXME: mensajitos lindos en vez de alert todo feo
             alert("Por favor, complete todos los campos.");
@@ -96,9 +105,12 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
             });
 
             if (response.status === 'success') {
+                setIsSuccess(true);
+                setIsSaving(false);
                 setSuccessMessage("¡Rollo guardado exitosamente!");
                 onSave();
                 setTimeout(() => {
+                    setIsSuccess(false);
                     setSuccessMessage("");
                     onClose();
                 }, 3000);
@@ -108,7 +120,15 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
             }
         } catch (error) {
             console.error('Error en la llamada a la API:', error);
+            setIsSaving(false);
         }
+    };
+
+    const resetValues = () => {
+        setRolloName("");
+        setRolloDescription("");
+        setSelectedColor(null);
+        setNewColorName("");
     };
 
     return (
@@ -119,7 +139,7 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Artículo"
+                        label="Artículo de rollo"
                         fullWidth
                         variant="outlined"
                         value={rolloName}
@@ -179,9 +199,27 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
                     message={successMessage}
                 />
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{mr: 2, mb: 2}}>
                 <Button onClick={onClose}>Cancelar</Button>
-                <Button onClick={handleSave} disabled={isSaving}>{isSaving ? "Guardando..." : "Guardar"}</Button>
+                <Button
+                    startIcon={isSuccess ? <CheckCircleIcon /> : null}
+                    variant="contained"
+                    onClick={handleSave}
+                    disabled={!!error || !rolloName || !rolloDescription || isSuccess || isLoading || !selectedColor}
+                    sx={{
+                        backgroundColor: isSaving ? 'grey' : isSuccess ? 'green' : 'primary.main',
+                        color: 'white',
+                        '&:hover': {
+                            backgroundColor: isSaving ? 'grey' : isSuccess ? 'darkgreen' : 'primary.dark'
+                        },
+                        '&.Mui-disabled': {
+                            backgroundColor: isSuccess ? 'green' : 'grey',
+                            color: 'white',
+                        },
+                    }}
+                >
+                    {isSaving ? "Guardando..." : isSuccess? "Guardado" : "Guardar"}
+                </Button>
             </DialogActions>
         </Dialog>
     );
