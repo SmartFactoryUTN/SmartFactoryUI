@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box, } from '@mui/material';
 
 interface SVGViewerProps {
   url: string;
@@ -7,23 +8,33 @@ interface SVGViewerProps {
   zoom: number;
   position: { x: number; y: number };
   isDragging: boolean;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onMouseMove: (e: React.MouseEvent) => void;
+  onMouseUp: () => void;
+  onMouseLeave: () => void;
 }
 
-const SVGViewer: React.FC<SVGViewerProps> = ({ 
-  url, 
+const SVGViewer: React.FC<SVGViewerProps> = ({
+  url,
   containerWidth,
   containerHeight,
   zoom,
   position,
-  isDragging 
+  isDragging,
+  onMouseDown,
+  onMouseMove,
+  onMouseUp,
+  onMouseLeave
 }) => {
   const [modifiedSvgUrl, setModifiedSvgUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [svgDimensions, setSvgDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const fetchAndModifySvg = async () => {
       try {
+        setIsLoaded(false); // Reset loaded state when fetching new SVG
         const response = await fetch(url);
         const svgText = await response.text();
         
@@ -37,10 +48,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
           const binHeight = parseFloat(binElement.getAttribute('height') || '0');
           
           if (binWidth && binHeight) {
-            // Store the actual dimensions
             setSvgDimensions({ width: binWidth, height: binHeight });
             
-            // Update the SVG attributes
             svgElement.setAttribute('width', binWidth.toString());
             svgElement.setAttribute('height', binHeight.toString());
             svgElement.setAttribute('viewBox', `0 0 ${binWidth} ${binHeight}`);
@@ -50,51 +59,106 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
             const modifiedUrl = URL.createObjectURL(blob);
             
             setModifiedSvgUrl(modifiedUrl);
+            console.log('SVG modified and blob URL created:', modifiedUrl);
           }
         }
       } catch (err) {
-        console.error('Error modifying SVG:', err);
-        setError('Error loading SVG');
+        console.error('Estamos trabajando en la vista previa de su tizada:', err);
+        setError('Error al cargar el SVG');
       }
     };
 
-    fetchAndModifySvg();
+    if (url && containerWidth > 0 && containerHeight > 0) {
+      fetchAndModifySvg();
+    }
     
     return () => {
       if (modifiedSvgUrl) {
         URL.revokeObjectURL(modifiedSvgUrl);
       }
     };
-  }, [url]);
+  }, [url, containerWidth, containerHeight]); // Add dependencies
+
+  const handleLoad = () => {
+    console.log('SVG loaded');
+    setIsLoaded(true);
+  };
 
   if (error) return <div>Error: {error}</div>;
-  if (!svgDimensions) return <div>Loading...</div>;
+  if (!svgDimensions || !modifiedSvgUrl) return(
+    <Box sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '2px',
+      '& .dot': {
+        width: '4px',
+        height: '4px',
+        backgroundColor: 'grey',
+        borderRadius: '50%',
+        animation: 'dotPulse 1.5s infinite',
+        '&:nth-of-type(2)': {
+          animationDelay: '0.2s',
+        },
+        '&:nth-of-type(3)': {
+          animationDelay: '0.4s',
+        },
+      },
+      '@keyframes dotPulse': {
+        '0%': { transform: 'scale(1)' },
+        '50%': { transform: 'scale(1.5)' },
+        '100%': { transform: 'scale(1)' },
+      },
+    }}>
+      <span className="dot" />
+      <span className="dot" />
+      <span className="dot" />
+    </Box>
+  );
 
-  // Calculate the scale to fit the container while maintaining aspect ratio
   const scale = Math.min(
     containerWidth / svgDimensions.width,
     containerHeight / svgDimensions.height
-  ) * 0.9; // 90% to leave some margin
+  ) * 0.9;
 
   return (
-    <object
-      type="image/svg+xml"
-      data={modifiedSvgUrl || url}
+    <div
       style={{
         position: 'absolute',
-        left: '50%',
-        top: '50%',
-        transform: `translate(-50%, -50%) 
-                   translate(${position.x}px, ${position.y}px) 
-                   scale(${scale * zoom})`,
-        transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-        transformOrigin: 'center',
-        maxWidth: '100%',
-        maxHeight: '100%',
+        width: '100%',
+        height: '100%',
+        cursor: isDragging ? 'grabbing' : 'grab',
+        userSelect: 'none',
+        opacity: isLoaded ? 1 : 0, // Fade in when loaded
+        transition: 'opacity 0.3s ease-in-out',
       }}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseLeave}
     >
-      Su navegador no soporta SVGs
-    </object>
+      <object
+        type="image/svg+xml"
+        data={modifiedSvgUrl}
+        onLoad={handleLoad}
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: `translate(-50%, -50%) translate(${position.x}px, ${position.y}px) scale(${scale * zoom})`,
+          transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+          transformOrigin: 'center',
+          maxWidth: '100%',
+          maxHeight: '100%',
+          pointerEvents: 'none',
+        }}
+      >
+        Su navegador no soporta SVGs
+      </object>
+    </div>
   );
 };
 

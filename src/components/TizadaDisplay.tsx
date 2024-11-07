@@ -157,31 +157,30 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
           });
           return (
             <Box
-        ref={containerRef}
-        onWheel={handleWheel}
-        sx={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          overflow: 'hidden',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          backgroundColor: '#f5f5f5',
-          borderRadius: '8px',
-        }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        {/* Replace the current Box+iframe structure with SVGViewer */}
-        <SVGViewer 
-          url={svgUrl} 
-          containerWidth={containerRef.current?.clientWidth || 0}
-          containerHeight={containerRef.current?.clientHeight || 0}
-          zoom={zoom}
-          position={position}
-          isDragging={isDragging}
-        />
+              ref={containerRef}
+              onWheel={handleWheel}
+              sx={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                cursor: isDragging ? 'grabbing' : 'grab',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '8px',
+              }}
+            >
+            <SVGViewer 
+              url={svgUrl} 
+              containerWidth={containerRef.current?.clientWidth || 0}
+              containerHeight={containerRef.current?.clientHeight || 0}
+              zoom={zoom}
+              position={position}
+              isDragging={isDragging}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            />
               
               {/* Overlays */}
               {tizada.results[0]?.materialUtilization !== undefined && (
