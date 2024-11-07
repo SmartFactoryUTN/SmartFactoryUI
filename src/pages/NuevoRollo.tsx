@@ -146,7 +146,6 @@ const NuevoRolloModal = ({open, onClose, onSave}) => {
                         onChange={(e) => setRolloName(e.target.value)}
                     />
                     <TextField
-                        autoFocus
                         margin="dense"
                         label="Descripción"
                         fullWidth
