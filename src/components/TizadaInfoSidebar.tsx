@@ -54,7 +54,7 @@ export default function TizadaInfoSidebar({
   onDownload,
   canDownload = false,
 }: TizadaInfoSidebarProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [drawerWidth, setDrawerWidth] = useState(DEFAULT_DRAWER_WIDTH);
   const [isResizing, setIsResizing] = useState(false);
   const theme = useTheme();
