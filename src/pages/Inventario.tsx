@@ -113,7 +113,6 @@ function Inventario() {
     const fetchRollos = async () => {
         try {
             const response = await getRollos();
-            console.log(response)
             if (response.status === "success") {
                 setRollos(response.data);
             } else {
@@ -152,8 +151,8 @@ function Inventario() {
 
     {/* Rollos de tela */}
     const rolloColumns: GridColDef[] = [
-        {field: 'name', headerName: 'Artículo', editable: false, flex: 1},
-        {field: 'description', headerName: 'Descripción', editable: false, flex: 1},
+        {field: 'name', headerName: 'Artículo', editable: false, width: 150},
+        {field: 'description', headerName: 'Descripción', editable: false, width: 250},
         {
             field: 'color',
             headerName: 'Color',
@@ -197,9 +196,16 @@ function Inventario() {
     const fabricColumns: GridColDef[] = [
         {
             field: 'molde',
-            headerName: 'Nombre del molde',
+            headerName: 'Molde Artículo',
             editable: false,
             valueGetter: (_, row) => row.molde.name,
+            width:200
+        },
+        {
+            field: 'description',
+            headerName: 'Descripción',
+            editable: false,
+            valueGetter: (_, row) => row.molde.description,
             flex: 1
         },
         {field: 'rollo', headerName: 'Rollo', editable: false, valueGetter: (_, row) => row.fabricRoll.name, flex: 0.75},
@@ -233,7 +239,8 @@ function Inventario() {
 
     {/* Prendas */}
     const prendaColumns: GridColDef[] = [
-        {field: 'article', headerName: 'Artículo', editable: false, flex: 1},
+        {field: 'article', headerName: 'Artículo', editable: false, width: 150},
+        {field: 'description', headerName: 'Descripción', editable: false, flex: 1, width: 250},
         {
             field: 'stock',
             headerName: 'Stock',

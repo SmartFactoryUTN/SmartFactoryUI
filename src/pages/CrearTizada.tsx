@@ -395,10 +395,13 @@ function CrearTizada() {
                       onChange={(e) => handleMoldChange(index, 'uuid', e.target.value as string)}
                       label="Seleccionar Molde"
                     >
-                      {availableMolds.map((availableMold) => (
-                        <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
-                          {availableMold.name}
-                        </MenuItem>
+                      {availableMolds
+                        .slice()
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((availableMold) => (
+                          <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
+                            {availableMold.name}
+                          </MenuItem>
                       ))}
                     </Select>
                   </FormControl>

@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { Box, Button, Typography, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import PageLayout from '../components/layout/PageLayout';
 import { getFontFamily } from '../utils/fonts';
+import { useUserContext } from "../components/Login/UserProvider";
 
 const Login = () => {
+    const { userData } = useUserContext();
     const [isModalOpen, setIsModalOpen] = useState(false);    
     const [nombre, setNombre] = useState('');    
     const [email, setEmail] = useState('');    
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Short timeout to ensure we have the auth state
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000); // Adjust this timeout as needed
+
+        return () => clearTimeout(timer);
+    }, [userData]);
 
     const solicitarDemo = async () => {
         setIsModalOpen(true);       
@@ -25,8 +37,87 @@ const Login = () => {
     const handleCloseModal = () => {
       setIsModalOpen(false);
     };
+
+    if (isLoading) {
+        return (
+            <PageLayout>
+                <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        minHeight: '80vh'
+                    }}
+                >
+                    <CircularProgress 
+                        size={60}
+                        sx={{ 
+                            color: '#708d81'  // Using the same green from your gradient
+                        }} 
+                    />
+                </Box>
+            </PageLayout>
+        );
+    }
+
+    const AuthenticatedContent = () => (
+        <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'left',
+            justifyContent: 'center',
+            minHeight: '80vh',
+            gap: 4
+        }}>
+            <Typography 
+                variant="h1"
+                sx={{
+                    fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                    color: 'text.secondary',
+                    textAlign: 'left',
+                    fontFamily: getFontFamily('mono'),
+                    mb: 0
+                }}
+            >
+                Bienvenido,
+            </Typography>
+            <Typography 
+                variant="h1"
+                sx={{
+                    fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                    fontFamily: getFontFamily('mono'),
+                    background: 'linear-gradient(45deg, #708d81 30%, #708d81 90%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextStroke: '2px #001427',
+                    textStroke: '2px #001427',
+                    letterSpacing: '0.01em',
+                    textTransform: 'uppercase',
+                    textAlign: 'center',
+                    lineHeight: 0.7,
+                    mb: 0,
+                }}
+            >
+                {userData?.name}
+            </Typography>
+            <Typography 
+                variant="h5"
+                sx={{
+                    fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                    color: 'text.secondary',
+                    textAlign: 'center',
+                    mb: 1,
+                    fontFamily: getFontFamily('mono'),
+                }}
+            >
+                Ya puede comenzar a optimizar sus procesos textiles
+            </Typography>
+        </Box>
+    );
+
     return (
         <PageLayout>
+        {userData ? <AuthenticatedContent /> : 
+        <div>
             <Box sx={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
@@ -112,8 +203,6 @@ const Login = () => {
                     Solicitar una demo
                 </Button>
             </Box>
-
-            {/*POPUP INGRESAR DATOS USUARIO*/}
             <Dialog open={isModalOpen} onClose={handleCloseModal} 
                 sx={{padding:'20px'}}
             >
@@ -173,6 +262,7 @@ const Login = () => {
             </Button>
             </DialogActions>
             </Dialog>
+        </div>}
         </PageLayout>
     );
 };
