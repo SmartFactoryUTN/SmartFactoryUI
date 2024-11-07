@@ -54,7 +54,8 @@ export interface TizadaResult {
 
 export interface RolloDeTela {
     fabricRollId: string;
-    name: string; 
+    name: string;
+    description: string;
     color: FabricColor;
     stock: number;
     createdAt: string;

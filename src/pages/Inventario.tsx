@@ -153,6 +153,7 @@ function Inventario() {
     {/* Rollos de tela */}
     const rolloColumns: GridColDef[] = [
         {field: 'name', headerName: 'Artículo', editable: false, flex: 1},
+        {field: 'description', headerName: 'Descripción', editable: false, flex: 1},
         {
             field: 'color',
             headerName: 'Color',
