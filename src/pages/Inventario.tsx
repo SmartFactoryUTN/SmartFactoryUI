@@ -65,7 +65,6 @@ function Inventario() {
             selectedRollos.map((r) => r.fabricRollId).includes(rollo.fabricRollId)
         );
         setSelectedRollos(rollosSeleccionadosData);
-        console.log(rollosSeleccionadosData);
         setOpenConvertirRolloModal(true);
     };
 
@@ -153,6 +152,7 @@ function Inventario() {
     {/* Rollos de tela */}
     const rolloColumns: GridColDef[] = [
         {field: 'name', headerName: 'Artículo', editable: false, width: 150},
+        {field: 'description', headerName: 'Descripción', editable: false, width: 250},
         {
             field: 'color',
             headerName: 'Color',
