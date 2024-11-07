@@ -47,3 +47,31 @@ export const formatArea: GridValueFormatter = (value: unknown) => {
   if (value == null) return 'N/A';
   return typeof value === 'number' ? value.toFixed(2) : String(value);
 };
+
+export const formatTimeAgo = (date: string | null) => {
+  if (!date) return '';
+  
+  const now = new Date();
+  const past = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) return 'hace menos de un minuto';
+  if (diffInSeconds < 3600) return `hace ${Math.floor(diffInSeconds / 60)} minutos`;
+  if (diffInSeconds < 86400) return `hace ${Math.floor(diffInSeconds / 3600)} horas`;
+  return `hace ${Math.floor(diffInSeconds / 86400)} días`;
+};
+
+export const formatTimeRemaining = (endTime: string | null) => {
+  if (!endTime) return '';
+  
+  const now = new Date();
+  const end = new Date(endTime);
+  // Convert end time to local timezone
+  const localEnd = new Date(end.getTime() - (end.getTimezoneOffset() * 60000));
+  const diffInSeconds = Math.floor((localEnd.getTime() - now.getTime()) / 1000);
+  
+  if (diffInSeconds <= 0) return 'finalizando...';
+  if (diffInSeconds < 60) return `${diffInSeconds} segundos restantes`;
+  const minutes = Math.ceil(diffInSeconds / 60);
+  return `${minutes} ${minutes === 1 ? 'minuto restante' : 'minutos restantes'}`;
+};

@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import MaterialUtilizationOverlay from '../components/MaterialUtilizationOverlay.tsx'
 
 interface TizadaDisplayProps {
   tizada: TizadaResult | null;
@@ -142,50 +143,61 @@ const handleZoomIn = useCallback(() => {
       case 'IN_PROGRESS':
         return <CircularProgress />;
 
-      case 'FINISHED':
-        if (svgUrl) {
-          return (
-            <Box
-              ref={containerRef}
-              onWheel={handleWheel}
-              sx={{
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                overflow: 'hidden',
-                cursor: isDragging ? 'grabbing' : 'grab',
-                backgroundColor: '#f5f5f5',
-                borderRadius: '8px',
-              }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-            >
+        case 'FINISHED':
+          if (svgUrl) {
+            return (
               <Box
+                ref={containerRef}
+                onWheel={handleWheel}
                 sx={{
+                  position: 'relative', // This is important
                   width: '100%',
                   height: '100%',
-                  transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
-                  transformOrigin: 'center',
-                  transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                  overflow: 'hidden',
+                  cursor: isDragging ? 'grabbing' : 'grab',
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: '8px',
                 }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
               >
-                <iframe
-                  src={svgUrl}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                    pointerEvents: 'none', // This prevents iframe from capturing events
+                {/* SVG Container */}
+                <Box
+                  sx={{
+                    position: 'absolute', // Change to absolute
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+                    transformOrigin: 'center',
+                    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
                   }}
-                  title="Tizada SVG"
-                />
+                >
+                  <iframe
+                    src={svgUrl}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                      pointerEvents: 'none',
+                    }}
+                    title="Tizada SVG"
+                  />
+                </Box>
+        
+                {/* Overlays */}
+                {tizada.results[0]?.materialUtilization !== undefined && (
+                  <MaterialUtilizationOverlay 
+                    utilization={tizada.results[0].materialUtilization} 
+                  />
+                )}
+                <ZoomControls />
               </Box>
-              <ZoomControls />
-            </Box>
-          );
-        }
+            );
+          }
         return null;
 
       case 'ERROR':

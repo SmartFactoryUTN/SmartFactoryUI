@@ -42,14 +42,25 @@ export interface TizadaResult {
     name: string;
     parts: TizadaPart[];
     bin: TizadaBin | null;
-    results: TizadaResult[];
+    results: TizadaResultData[];
     state: TizadaStatus;
     active: boolean;
     createdAt: string;
     updatedAt: string;
     deletedAt: string | null;
+    invokedAt: string | null;
+    estimatedEndTime: string | null;
+}
+
+export interface TizadaResultData {
+    uuid: string;
     url: string;
-    utilizationPercentage?: number;
+    materialUtilization: number;
+    iterations: number;
+    timeoutReached: boolean;
+    createdAt: string;
+    updatedAt: string | null;
+    deletedAt: string | null;
 }
 
 export interface RolloDeTela {

@@ -16,10 +16,16 @@ import {
   TableRow,
   Paper
 } from '@mui/material';
+import { formatTimeRemaining, formatTimeAgo } from '../utils/helpers';
+import {TizadaResult} from '../utils/types'
+
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import CircleIcon from '@mui/icons-material/Circle';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import TimerIcon from '@mui/icons-material/Timer';
+
 import {GridColDef} from '@mui/x-data-grid'; //GridRowParams ? Maybe needed to fetch and download a tizada by ID
 
 
@@ -30,6 +36,7 @@ interface TizadaInfoSidebarProps {
   moldColumns: GridColDef[];
   onDownload?: () => void;
   canDownload?: boolean;
+  tizada: TizadaResult | null; 
 }
 
 const MIN_DRAWER_WIDTH = 300;
@@ -53,6 +60,7 @@ export default function TizadaInfoSidebar({
   moldRows,
   onDownload,
   canDownload = false,
+  tizada, 
 }: TizadaInfoSidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [drawerWidth, setDrawerWidth] = useState(DEFAULT_DRAWER_WIDTH);
@@ -257,6 +265,23 @@ export default function TizadaInfoSidebar({
             </Typography>
           </Box>
 
+          {tizada?.state === 'IN_PROGRESS' && (
+          <Box sx={{ mb: 3 }}>
+            <Chip
+              icon={<AccessTimeIcon />}
+              label={`Optimizando ${formatTimeAgo(tizada.invokedAt)}`}
+              color="default"
+              variant="outlined"
+              sx={{ mb: 1 }}
+            />
+            <Chip
+              icon={<TimerIcon />}
+              label={formatTimeRemaining(tizada.estimatedEndTime)}
+              color="default"
+              variant="outlined"
+            />
+          </Box>
+          )}
           <Divider sx={{ mb: 3 }} />
 
           {/* Molds Section */}

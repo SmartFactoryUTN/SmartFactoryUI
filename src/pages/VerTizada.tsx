@@ -6,7 +6,6 @@ import { formatDate, getStatusDisplay } from '../utils/helpers';
 import { useUserContext } from "../components/Login/UserProvider.tsx";
 import TizadaDisplay from '../components/TizadaDisplay.tsx';
 import TizadaInfoSidebar from '../components/TizadaInfoSidebar.tsx';
-
 import { GridColDef } from '@mui/x-data-grid';
 import { Button, Box, Snackbar, Alert } from '@mui/material';
 
@@ -155,8 +154,10 @@ function VerTizada() {
                     moldColumns={moldColumns}
                     onDownload={handleDownload}
                     canDownload={canDownload}
+                    tizada={tizada}
                 />
             </Box>
+                
             
             <Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
                 <Button 
