@@ -31,10 +31,11 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   const [svgDimensions, setSvgDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Separate useEffect for SVG processing that only depends on url
   useEffect(() => {
     const fetchAndModifySvg = async () => {
       try {
-        setIsLoaded(false); // Reset loaded state when fetching new SVG
+        setIsLoaded(false);
         const response = await fetch(url);
         const svgText = await response.text();
         
@@ -59,16 +60,15 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
             const modifiedUrl = URL.createObjectURL(blob);
             
             setModifiedSvgUrl(modifiedUrl);
-            console.log('SVG modified and blob URL created:', modifiedUrl);
           }
         }
       } catch (err) {
-        console.error('Estamos trabajando en la vista previa de su tizada:', err);
+        console.error('Error loading SVG:', err);
         setError('Error al cargar el SVG');
       }
     };
 
-    if (url && containerWidth > 0 && containerHeight > 0) {
+    if (url) {
       fetchAndModifySvg();
     }
     
@@ -77,7 +77,10 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
         URL.revokeObjectURL(modifiedSvgUrl);
       }
     };
-  }, [url, containerWidth, containerHeight]); // Add dependencies
+  }, [url]); // Only depend on url changes
+
+  // Calculate scale based on container dimensions
+  
 
   const handleLoad = () => {
     console.log('SVG loaded');
@@ -119,10 +122,10 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
     </Box>
   );
 
-  const scale = Math.min(
+  const scale = svgDimensions ? Math.min(
     containerWidth / svgDimensions.width,
     containerHeight / svgDimensions.height
-  ) * 0.9;
+  ) * 0.9 : 1;
 
   return (
     <div

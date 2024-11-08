@@ -8,6 +8,7 @@ import TizadaDisplay from '../components/TizadaDisplay.tsx';
 import TizadaInfoSidebar from '../components/TizadaInfoSidebar.tsx';
 import { GridColDef } from '@mui/x-data-grid';
 import { Button, Box, Snackbar, Alert } from '@mui/material';
+import { useSidebarWidth } from '../components/hooks/useSidebarWidth';
 
 function VerTizada() {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ function VerTizada() {
     const [success, setSuccess] = useState<boolean>(false);
     const [svgUrl, setSvgUrl] = useState<string | null>(null);
     const { userData } = useUserContext();
+    const sidebarState = useSidebarWidth();
 
      // Prevent browser zoom
      const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -139,8 +141,22 @@ function VerTizada() {
 
  
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)', touchAction: 'none'}}>
-            <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', width: '100%', padding: '8px 0'}}>
+        <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            height: 'calc(100vh - 100px)', 
+            touchAction: 'none',
+            position: 'relative', // Add this
+        }}>
+            <Box sx={{ 
+                position: 'relative', // Add this
+                display: 'flex', 
+                flex: 1, 
+                overflow: 'hidden',
+                width: `calc(100% - ${sidebarState.effectiveWidth}px)`, // Change this
+                padding: '8px 0',
+                transition: 'width 0.2s' // Optional: smooth width transition
+            }}>
                 <TizadaDisplay 
                     tizada={tizada}
                     svgUrl={svgUrl}
@@ -155,11 +171,18 @@ function VerTizada() {
                     onDownload={handleDownload}
                     canDownload={canDownload}
                     tizada={tizada}
+                    sidebarState={sidebarState}
                 />
             </Box>
-                
             
-            <Box sx={{ p: 2, borderTop: '1px solid #ccc', textAlign: 'center' }}>
+            <Box sx={{ 
+                p: 2, 
+                borderTop: '1px solid #ccc', 
+                textAlign: 'center',
+                marginRight: `${sidebarState.effectiveWidth}px`,
+                width: `calc(100% - ${sidebarState.effectiveWidth}px)`, // Change this
+                transition: 'width 0.2s' // Optional: smooth width transition
+            }}>
                 <Button 
                     variant="contained" 
                     color="primary" 

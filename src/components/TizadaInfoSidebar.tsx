@@ -37,11 +37,16 @@ interface TizadaInfoSidebarProps {
   onDownload?: () => void;
   canDownload?: boolean;
   tizada: TizadaResult | null; 
+  sidebarState: {
+    isOpen: boolean;
+    setIsOpen: (open: boolean) => void;
+    drawerWidth: number;
+    setDrawerWidth: (width: number) => void;
+  };
 }
 
 const MIN_DRAWER_WIDTH = 300;
 const MAX_DRAWER_WIDTH = 600;
-const DEFAULT_DRAWER_WIDTH = 350;
 const CONTROL_BAR_WIDTH = 60;
 const NAVBAR_HEIGHT = 64;
 
@@ -61,10 +66,13 @@ export default function TizadaInfoSidebar({
   onDownload,
   canDownload = false,
   tizada, 
+  sidebarState,
 }: TizadaInfoSidebarProps) {
-  const [isOpen, setIsOpen] = useState(true);
-  const [drawerWidth, setDrawerWidth] = useState(DEFAULT_DRAWER_WIDTH);
+  const { isOpen, setIsOpen, drawerWidth, setDrawerWidth } = sidebarState;
   const [isResizing, setIsResizing] = useState(false);
+  //const [isOpen, setIsOpen] = useState(true);
+  //const [drawerWidth, setDrawerWidth] = useState(DEFAULT_DRAWER_WIDTH);
+  //const [isResizing, setIsResizing] = useState(false);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
