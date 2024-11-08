@@ -11,31 +11,32 @@ const MaterialUtilizationOverlay: React.FC<MaterialUtilizationOverlayProps> = ({
   return (
     <Box
       sx={{
-        position: 'absolute',
+        position: 'sticky',
         top: 20,
         left: 20,
         display: 'flex',
         flexDirection: 'column', // Make it stack vertically
         alignItems: 'center',
         gap: 1,
-        backgroundColor: 'rgba(33, 33, 33, 0.5)', // Darker, semi-transparent background
-        padding: '10px 16px',
+        backgroundColor: 'rgba(245, 245, 245, 0.5)', 
+        padding: '10px 10px',
         borderRadius: '8px',
-        boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0px 3px 8px rgba(63, 63, 103, 0.2)',
         zIndex: 2000, // Ensure it's above everything
         backdropFilter: 'blur(4px)', // Adds a frosted glass effect
-        border: '1px solid rgba(255, 255, 255, 0.1)', // Subtle border
+        border: '1px solid rgba(250, 250, 250, 0.5)', // Subtle border
+        width: 'fit-content'
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <PercentIcon sx={{ 
-          fontSize: '1.2rem', 
-          color: 'rgba(255, 255, 255, 0.9)',
+          fontSize: '1rem', 
+          color: 'rgba(0, 0, 0, 0.7)',
         }} />
         <Typography sx={{ 
-          fontSize: '0.875rem',
+          fontSize: '0.8rem',
           fontWeight: 500,
-          color: 'rgba(255, 255, 255, 0.9)',
+          color: 'rgba(0, 0, 0, 0.7)',
           userSelect: 'none',
         }}>
           Aprovechamiento del material
@@ -44,7 +45,7 @@ const MaterialUtilizationOverlay: React.FC<MaterialUtilizationOverlayProps> = ({
         <Typography sx={{ 
           fontSize: '1rem',
           fontWeight: 600,
-          color: 'rgba(255, 255, 255, 0.9)',
+          color: 'rgba(0, 0, 0, 0.75)',
           userSelect: 'none',
         }}>
           {utilization.toFixed(2)}%
