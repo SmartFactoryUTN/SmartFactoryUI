@@ -222,7 +222,7 @@ export default function TizadaInfoSidebar({
             alignItems: 'flex-start',
             mb: 3,
           }}>
-            <Box>
+            <Box  sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
                 {tizadaName}
               </Typography>
@@ -232,6 +232,7 @@ export default function TizadaInfoSidebar({
                 color={statusConfig.color as any}
                 size="small"
                 variant="outlined"
+                sx={{ alignSelf: 'left' }}
               />
             </Box>
             <IconButton onClick={toggleDrawer} size="small">
