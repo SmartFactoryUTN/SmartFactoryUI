@@ -1,4 +1,5 @@
 import {
+    Alert,
     Button,
     Dialog,
     DialogActions,
@@ -11,11 +12,11 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {RolloDeTela, TizadaResult} from "../utils/types";
-import {useEffect, useState} from "react";
-import {convertRollos, getTizadas} from "../api/methods.ts"; // getTizadasFinalizadas ver si vuelve
+import { RolloDeTela, TizadaResult } from "../utils/types";
+import { useEffect, useState } from "react";
+import { convertRollos, getTizadas } from "../api/methods.ts";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import {useUserContext} from "../components/Login/UserProvider.tsx";
+import { useUserContext } from "../components/Login/UserProvider.tsx";
 
 interface ConvertirRolloModalProps {
     open: boolean;
@@ -35,13 +36,16 @@ interface RollQuantity {
     quantity: number;
 }
 
-const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose, selectedRollos, onConversionSuccess}) => {
-    //const [tizadasFinished, setTizadasFinished] = useState<Tizada[]>([]);
+const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
+                                                                     open,
+                                                                     onClose,
+                                                                     selectedRollos,
+                                                                     onConversionSuccess
+                                                                 }) => {
     const [selectedTizada, setSelectedTizada] = useState<TizadaResult | null>(null);
     const [successMessage, setSuccessMessage] = useState("");
     const [isConverting, setIsConverting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    //const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [tizadas, setTizadas] = useState<TizadaResult[]>([]);
     const { userData } = useUserContext();
@@ -53,66 +57,42 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
     });
 
     useEffect(() => {
-        setConvertirRolloData({
-            ...convertirRolloData,
-            rollsQuantity: selectedRollos.map(rollo => ({
-                rollId: rollo.fabricRollId,
-                quantity: 1
-            }))
-        });
+        if (selectedRollos.length > 0) {
+            setConvertirRolloData((prevData) => ({
+                ...prevData,
+                rollsQuantity: selectedRollos.map(rollo => ({
+                    rollId: rollo.fabricRollId,
+                    quantity: 1
+                }))
+            }));
+        }
     }, [selectedRollos]);
 
-    {/*
-    useEffect(() => {
-        fetchTizadasFinalizadas();
-    }, []);    */}
-    
     useEffect(() => {
         fetchTizadas();
     }, []);
 
     useEffect(() => {
-        if (!open) {
-            resetValues();
-        }
+        if (!open) resetValues();
     }, [open]);
 
-    {/**/}
     const fetchTizadas = async () => {
         try {
-          const response = await getTizadas(userData?.id);
-          if (response.status === "success") {
-            // @ts-expect-error "skipped"
-            const finishedTizadas = response.data["tizadas"].filter(
-                (tizada: TizadaResult) => tizada.state === "FINISHED"
-            );
-            setTizadas(finishedTizadas);
-          } else {
-            console.error("Failed to fetch tizadas");
-          }
-        } catch (error) {
-          console.error("Error fetching tizadas:", error);
-        }
-    };    
-    
-    {/*
-    const fetchTizadasFinalizadas = useCallback(async () => {
-        if (isLoading) return;
-        setIsLoading(true);
-        try {
-            const result = await getTizadasFinalizadas();
-            if (result.status === 'success') {
-                setTizadasFinished(result.data);
+            const response = await getTizadas(userData?.id);
+            if (response.status === "success") {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                const finishedTizadas = response.data["tizadas"].filter(
+                    (tizada: TizadaResult) => tizada.state === "FINISHED"
+                );
+                setTizadas(finishedTizadas);
             } else {
-                console.error('Failed to fetch tizadas:', result.data);
-                setError('Failed to fetch tizadas. Please try again.');
+                console.error("Failed to fetch tizadas");
             }
         } catch (error) {
-            console.error('Error fetching tizadas:', error);
-        } finally {
-            setIsLoading(false);
+            console.error("Error fetching tizadas:", error);
         }
-    }, [isLoading]);*/}
+    };
 
     const handleTizadaChange = (event: any) => {
         const selectedId = event.target.value;
@@ -122,10 +102,8 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
     };
 
     const handleQuantityChange = (rollId: string, newQuantity: number) => {
-        if (newQuantity < 1) return;
-
         const updatedRollsQuantity = convertirRolloData.rollsQuantity.map((roll) =>
-            roll.rollId === rollId ? { ...roll, quantity: newQuantity } : roll
+            roll.rollId === rollId ? { ...roll, quantity: newQuantity || 1 } : roll
         );
         setConvertirRolloData({ ...convertirRolloData, rollsQuantity: updatedRollsQuantity });
     };
@@ -136,23 +114,21 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
 
         try {
             const response = await convertRollos(convertirRolloData);
-
             if (response.status === 'success') {
                 setIsSuccess(true);
-                setIsConverting(false);
                 setSuccessMessage("¡Rollos convertidos a moldes exitosamente!");
                 setTimeout(() => {
-                    setIsSuccess(false);
-                    setSuccessMessage("");
                     onClose();
                     onConversionSuccess();
+                    resetValues();
                 }, 1500);
             } else {
-                console.error('Error al guardar el rollo:', response.data.message);
-                setIsConverting(false);
+                setError("No pudimos convertir tus rollos. Por favor, verificar sus stocks.");
             }
         } catch (error) {
-            console.error('Error en la llamada a la API:', error);
+            console.error("Error en la conversión:", error);
+            setError("Error en la conversión. Intente nuevamente.");
+        } finally {
             setIsConverting(false);
         }
     };
@@ -164,7 +140,7 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
             rollsQuantity: selectedRollos.map(rollo => ({
                 rollId: rollo.fabricRollId,
                 quantity: 1
-            })),
+            }))
         });
         setSelectedTizada(null);
         setSuccessMessage("");
@@ -173,9 +149,17 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
         setIsConverting(false);
     };
 
+    const allFieldsCompleted = () => {
+        return (
+            convertirRolloData.layerMultiplier > 0 &&
+            convertirRolloData.tizadaId !== "" &&
+            convertirRolloData.rollsQuantity.every((roll) => roll.quantity > 0)
+        );
+    };
+
     return (
-        <Dialog open={open} onClose={onClose} maxWidth={false} fullWidth sx={{width: '700px', maxWidth: '90%', margin: 'auto'}}>
-            <DialogTitle variant={"h5"}>Convertir rollos seleccionados a moldes cortados</DialogTitle>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle>Convertir rollos seleccionados a moldes cortados</DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
@@ -183,20 +167,30 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
                     label="Cantidad de tendidas"
                     fullWidth
                     variant="outlined"
-                    value={convertirRolloData.layerMultiplier}
-                    onChange={(e) => setConvertirRolloData({ ...convertirRolloData, layerMultiplier: parseInt(e.target.value, 10) })}
+                    placeholder="1"
+                    value={convertirRolloData.layerMultiplier || ""}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        setConvertirRolloData({
+                            ...convertirRolloData,
+                            layerMultiplier: value === "" ? 0 : parseInt(value, 10)
+                        });
+                    }}
+                    onBlur={() => {
+                        if (convertirRolloData.layerMultiplier === 0) {
+                            setConvertirRolloData({ ...convertirRolloData, layerMultiplier: 1 });
+                        }
+                    }}
+                    inputProps={{ min: 1 }}
                 />
                 <Select
                     fullWidth
                     value={selectedTizada?.uuid || ""}
-                    id={"tizadaSelect"}
                     onChange={handleTizadaChange}
-                    variant={"outlined"}
                     displayEmpty
-                    sx={{mt: 2}}
-                    renderValue={selectedTizada?.uuid ? undefined : () => "Seleccione tizada"}
+                    sx={{ mt: 2 }}
                 >
-                    <MenuItem value={""} disabled>
+                    <MenuItem value="" disabled>
                         Seleccione tizada
                     </MenuItem>
                     {tizadas.map((tizada) => (
@@ -205,65 +199,72 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({open, onClose,
                         </MenuItem>
                     ))}
                 </Select>
-
-                <Typography sx={{mt:3, mb:2}} variant={"h6"}>Rollos seleccionados:</Typography>
-
-                <Grid container spacing={2}>
+                <Typography sx={{ mt: 3, mb: 2 }} variant="h6">
+                    Rollos seleccionados:
+                </Typography>
+                <Grid container spacing={2} sx={{mb: 4 }}>
                     <Grid item xs={9}>
-                        <Typography sx={{"fontWeight": "bold"}}>Nombre del rollo</Typography>
+                        <Typography sx={{ fontWeight: 'bold' }}>Artículo de rollo</Typography>
                     </Grid>
                     <Grid item xs={3}>
-                        <Typography sx={{"fontWeight": "bold"}}>Cantidad</Typography>
+                        <Typography sx={{ fontWeight: 'bold' }}>Cantidad</Typography>
                     </Grid>
                 </Grid>
-
-                {/* Lista de rollos */}
-                {convertirRolloData.rollsQuantity.length > 0 && selectedRollos.map((rollo, index) => (
-                    <Grid container spacing={2} key={rollo.fabricRollId} sx={{mb: 2}} alignItems="center">
-                        <Grid item xs={9}>
-                            <Typography>{rollo.name}</Typography>
+                <Grid container spacing={2} sx={{ pl: 2 }}>
+                    {convertirRolloData.rollsQuantity.map((rollo, index) => (
+                        <Grid container spacing={2} sx={{mb: 1}} key={rollo.rollId} alignItems="center">
+                            <Grid item xs={9}>
+                                <Typography>{selectedRollos[index]?.name}</Typography>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <TextField
+                                    type="number"
+                                    placeholder="1"
+                                    value={rollo.quantity || ""}
+                                    onChange={(e) =>
+                                        handleQuantityChange(rollo.rollId, e.target.value === "" ? 0 : parseInt(e.target.value, 10))
+                                    }
+                                    onBlur={() => {
+                                        if (rollo.quantity === 0) {
+                                            handleQuantityChange(rollo.rollId, 1);
+                                        }
+                                    }}
+                                    inputProps={{ min: 1 }}
+                                    fullWidth
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={3}>
-                            <TextField
-                                type="number"
-                                value={convertirRolloData.rollsQuantity[index]?.quantity || 1}
-                                onChange={(e) => handleQuantityChange(rollo.fabricRollId, parseInt(e.target.value, 10))}
-                                inputProps={{ min: 1 }}
-                                fullWidth
-                            />
-                        </Grid>
-                    </Grid>
-                ))}
+                    ))}
+                </Grid>
                 <Snackbar
                     open={!!successMessage}
                     autoHideDuration={3000}
                     message={successMessage}
                 />
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={3000}
-                    onClose={() => setError(null)}
-                    message={error}
-                />
+                {error && (
+                    <Snackbar
+                        open={!!error}
+                        autoHideDuration={3000}
+                        onClose={() => setError(null)}
+                        message={error}
+                    >
+                        <Alert severity="error" onClose={() => setError(null)} sx={{ width: '100%' }}>
+                            {error}
+                        </Alert>
+                    </Snackbar>
+                )}
             </DialogContent>
-
-            <DialogActions sx={{mr: 2, mb: 2}}>
+            <DialogActions sx={{ mr: 2, mb: 2 }}>
                 <Button onClick={onClose}>Cancelar</Button>
                 <Button
                     onClick={handleSave}
                     variant="contained"
                     startIcon={isSuccess ? <CheckCircleIcon /> : null}
-                    disabled={isConverting || isSuccess}
+                    disabled={isConverting || isSuccess || !allFieldsCompleted()}
                     sx={{
                         backgroundColor: isSuccess ? 'green' : 'primary.main',
-                        color: 'white',
-                        '&:hover': {
-                            backgroundColor: isSuccess ? 'darkgreen' : 'primary.dark',
-                        },
-                        '&.Mui-disabled': {
-                            backgroundColor: isSuccess ? 'green' : 'grey',
-                            color: 'white',
-                        },
+                        '&:hover': { backgroundColor: isSuccess ? 'darkgreen' : 'primary.dark' },
+                        color: 'white'
                     }}
                 >
                     {isConverting ? "Convirtiendo..." : isSuccess ? "Convertidos" : "Convertir"}

@@ -318,10 +318,9 @@ export const convertRollos = async (convertRollosData: any): Promise<ApiResponse
             },
             body: JSON.stringify(convertRollosData),
         });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
+
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error("Error converting rolls:", error);
         throw error;
