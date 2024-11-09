@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {deleteTizadas, getTizadas, downloadFile} from '../api/methods'
+import {deleteTizadas, getTizadas, downloadFile, invokeTizada} from '../api/methods'
 import {TizadaResult} from '../utils/types'
 import {formatDate, getStatusDisplay} from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
@@ -14,12 +14,16 @@ import {esES} from '@mui/x-data-grid/locales';
 import {Box, Typography, Button, Snackbar, Alert, IconButton} from '@mui/material';
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SyncIcon from '@mui/icons-material/Sync';
 
 function MisTizadas() {
     const navigate = useNavigate();
     const [tizadas, setTizadas] = useState<TizadaResult[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [invokeSuccess, setInvokeSuccess] = useState(false);
+    const [loadingTizadaId, setLoadingTizadaId] = useState<string | null>(null);
     const { userData } = useUserContext();
     console.log(userData);
 
@@ -104,19 +108,80 @@ function MisTizadas() {
             sortable: false,
             filterable: false,
             renderCell: (params) => (
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent row selection
-                  navigate(`/tizadas/tizada/${params.row.uuid}`);
-                }}
-                size="small"
-                //color="primary"
-              >
-                <VisibilityIcon />
-              </IconButton> 
-            ),
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems:'center',
+                width: '100%', 
+                height: '100%', 
+                gap: 1 
+              }}>
+                <IconButton
+                  onClick={() => navigate(`/tizadas/tizada/${params.row.uuid}`)}
+                  size="small"
+                  disabled={loadingTizadaId === params.row.uuid}
+                >
+                  <VisibilityIcon />
+                </IconButton>
+                {params.row.state === 'CREATED' && (
+                  loadingTizadaId === params.row.uuid ? (
+                    <IconButton
+                      size="small"
+                      disabled
+                      sx={{ 
+                        color: 'success.main',
+                        animation: 'spin 1s linear infinite',
+                        '@keyframes spin': {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' },
+                        },
+                      }}
+                    >
+                      <SyncIcon />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      onClick={() => startTizadaProgress(params.row.uuid)}
+                      size="small"
+                      disabled={loadingTizadaId !== null}
+                      sx={{ 
+                        color: 'success.main',
+                        '&:hover': {
+                          backgroundColor: 'success.light',
+                          color: 'success.dark',
+                        }
+                      }}
+                    >
+                      <PlayArrowIcon />
+                    </IconButton>
+                  )
+                )}
+              </Box>
+            )
           }
       ];
+
+      const startTizadaProgress = async (uuid: string) => {
+        try {
+          setLoadingTizadaId(uuid);
+          const response = await invokeTizada(uuid, userData?.id ?? '');
+          if (response.status === 'success') {
+            setInvokeSuccess(true);
+            await fetchTizadas(); // Wait for table refresh
+            setLoadingTizadaId(null); // Clear loading only after fetch
+            setTimeout(() => {
+              setInvokeSuccess(false);
+            }, 1000);
+          } else {
+            setError("Error al iniciar la optimización de la tizada. Por favor, inténtelo nuevamente.");
+            setLoadingTizadaId(null); // Clear loading on error
+          }
+        } catch (error) {
+          console.error('Error starting tizada generation:', error);
+          setError("Error al iniciar la optimización de la tizada. Por favor, inténtelo nuevamente.");
+          setLoadingTizadaId(null); // Clear loading on error
+        }
+      };
+      
 
       const handleDelete = async (selectedIds: string[]) => {
         try {
@@ -210,15 +275,29 @@ function MisTizadas() {
                         },
                     }}
                 />
+                {/* Edit description success Snackbar */}
                 <Snackbar 
                   open={success} 
                   autoHideDuration={6000} 
                   onClose={() => setSuccess(false)}
-                  >
+                >
                   <Alert onClose={() => setSuccess(false)} severity="success">
                     {`${editingField === 'name' ? 'Nombre' : 'Descripción'} actualizado exitosamente`}
                   </Alert>
                 </Snackbar>
+
+                {/* Invoke success Snackbar */}
+                <Snackbar 
+                  open={invokeSuccess} 
+                  autoHideDuration={6000} 
+                  onClose={() => setInvokeSuccess(false)}
+                >
+                  <Alert onClose={() => setInvokeSuccess(false)} severity="success">
+                    Optimizando la tizada
+                  </Alert>
+                </Snackbar>
+
+                {/* Error Snackbar */}
                 <Snackbar 
                   open={error !== null} 
                   autoHideDuration={6000} 
