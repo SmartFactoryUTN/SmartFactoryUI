@@ -12,8 +12,8 @@ type StatusConfig = {
 
 export const getStatusDisplay = (status: TizadaStatus) => {
   const statusConfig: StatusConfig = {
-    CREATED: { label: 'Creada', color: '#ed6c02' },
-    IN_PROGRESS: { label: 'En curso', color: '#ff9800' },
+    CREATED: { label: 'Por tizar', color: '#ed6c02' },
+    IN_PROGRESS: { label: 'Optimizando', color: '#ff9800' },
     FINISHED: { label: 'Terminada', color: '#2e7d32' },
     ERROR: { label: 'Error', color: '#d32f2f' }
   };
