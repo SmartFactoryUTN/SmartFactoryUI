@@ -405,7 +405,7 @@ function Inventario() {
                     </Button>
                 </Box>
             </Box>
-            <Box sx={{height: 400, width: '100%'}}>
+            <Box sx={{width: '100%', height: '400'}}>
                 <DataGrid
                     rows={prendas}
                     columns={prendaColumns}
@@ -433,11 +433,14 @@ function Inventario() {
                         '& .MuiDataGrid-scrollbar--horizontal': {
                             display: 'block',
                         },
+                        '& .MuiDataGrid-overlay': {
+                            visibility: prendas.length === 0 ? 'none !important' : 'flex',
+                        },
                     }}
                     pageSizeOptions={[5]}
                     checkboxSelection={true}
                     disableRowSelectionOnClick
-                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                    localeText={{...esES.components.MuiDataGrid.defaultProps.localeText, noRowsLabel: ""}}
                     onRowSelectionModelChange={(newSelection) => {
                         const selectedPrendasData = prendas.filter((prenda) =>
                             newSelection.includes(prenda.garmentId)
