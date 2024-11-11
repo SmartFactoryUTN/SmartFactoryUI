@@ -10,7 +10,7 @@ import {
     Select,
     Snackbar,
     TextField,
-    Typography
+    Typography,
 } from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
 import {Molde, RolloDeTela} from "../utils/types.tsx";
@@ -30,19 +30,18 @@ interface PrendaFormData {
 interface GarmentComponent {
     moldeId: string;
     quantity: number;
-    fabricRollId: string;
 }
 
 function CrearPrenda() {
     const navigate = useNavigate();
     const { userData } = useUserContext();
+    const [selectedRollId, setSelectedRollId] = useState<string>('');
     const [prendaFormData, setPrendaFormData] = useState<PrendaFormData>({
         article: "",
         description: "",
         garmentComponents: [{
             moldeId: '',
             quantity: 1,
-            fabricRollId: ''
         }]
     });
 
@@ -124,13 +123,27 @@ function CrearPrenda() {
         setIsSaving(true);
         setIsSuccess(false);
 
+        // Validaciones
+        if (selectedRollId == '') {
+            setError("Por favor, seleccione un rollo de tela");
+            setIsSaving(false);
+            return;
+        }
         if (!prendaFormData.article) {
             setError("Por favor, ingresar el artículo de la prenda");
             setIsSaving(false);
             return;
         }
         try {
-            const response = await createPrenda(prendaFormData);
+            const payloadToSend = {
+                article: prendaFormData.article,
+                description: prendaFormData.description,
+                garmentComponents: prendaFormData.garmentComponents.map(component => ({
+                    ...component,
+                    fabricRollId: selectedRollId
+                }))
+            };
+            const response = await createPrenda(payloadToSend);
 
             if (response.status === "success") {
                 setIsSuccess(true);
@@ -160,111 +173,168 @@ function CrearPrenda() {
     return (
         <PageLayout>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                <Typography color="black" variant="h4">Crear nueva prenda</Typography>
+                <Typography color="black" variant="h4">Agregar una nueva prenda</Typography>
             </Box>
             <form>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
+                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}> 
+                            Artículo de la prenda
+                        </Typography>
                         <TextField
                             fullWidth
-                            label="Artículo"
+                            label="Ingrese el artículo de la prenda"
                             name="name"
                             value={prendaFormData.article}
                             onChange={(e) => setPrendaFormData({ ...prendaFormData, article: e.target.value })}
                             variant="outlined"
                         />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}> 
+                            Descripción de la prenda
+                        </Typography>
                         <TextField
                             fullWidth
-                            label="Descripción"
+                            label="Ingrese una descripción o detalle de la prenda"
                             value={prendaFormData.description}
                             onChange={(e) => setPrendaFormData({...prendaFormData, description: e.target.value })}
-                            margin="normal"
-                            multiline
                             rows={3}
                         />
                     </Grid>
-                </Grid>
-
-                <Grid item xs={12} sx={{ mb: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
-                        <Typography sx={{ flexGrow: 1, textAlign: 'left' }} variant={"h6"}> Moldes</Typography>
-                    </Box>
-                </Grid>
-
-                {prendaFormData.garmentComponents.map((mold, index) => (
-                    <Grid container spacing={2} key={index} sx={{ mb: 2 }} alignItems="center">
-                        <Grid item xs={5}>
-                            <FormControl fullWidth>
-                                <InputLabel>Seleccionar molde</InputLabel>
-                                <Select
-                                    value={mold.moldeId}
-                                    onChange={(e) => handleMoldChange(index, 'moldeId', e.target.value as string)}
-                                    label="Seleccionar Molde"
-                                    sx={{
-                                        "& .MuiSelect-select": {
-                                            display: 'flex',
-                                            justifyContent: 'flex-start', // Alinear texto hacia la izquierda
-                                        },
-                                    }}
-                                >
-                                    {availableMolds.map((availableMold) => (
-                                        <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
-                                            {availableMold.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                    <Grid item xs={12}>
+                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}>
+                            Material
+                        </Typography>
+                        <FormControl fullWidth>
+                            <InputLabel>Seleccionar un rollo de tela</InputLabel>
+                            <Select
+                                value={selectedRollId}
+                                onChange={(e) => setSelectedRollId(e.target.value)}
+                                label="Seleccionar un rollo de tela"
+                                renderValue={(selected) => {
+                                    const selectedRoll = fabricRolls.find(roll => roll.fabricRollId === selected);
+                                    return selectedRoll ? selectedRoll.name : '';
+                                }}
+                                sx={{
+                                    // Alinea el texto del valor seleccionado
+                                    "& .MuiSelect-select": {
+                                        display: 'flex',
+                                        justifyContent: 'flex-start',
+                                        alignItems: 'center'
+                                    }
+                                }}
+                            >
+                                {fabricRolls.map((roll) => (
+                                    <MenuItem key={roll.fabricRollId} value={roll.fabricRollId}>
+                                        <Box>
+                                            <Typography>{roll.name}</Typography>
+                                            <Typography variant="caption" color="textSecondary">
+                                            {roll.description} | Color: {roll.color.name}
+                                            </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                ))}
+                            </Select>
                             </FormControl>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControl fullWidth>
-                                <InputLabel>Seleccionar rollo</InputLabel>
-                                <Select
-                                    value={mold.fabricRollId}
-                                    onChange={(e) => handleMoldChange(index, 'fabricRollId', e.target.value as string)}
-                                    label="Seleccionar rollo"
-                                    sx={{
-                                        "& .MuiSelect-select": {
-                                            display: 'flex',
-                                            justifyContent: 'flex-start',
-                                        },
-                                    }}
-                                >
-                                    {fabricRolls.map((fabricRoll) => (
-                                        <MenuItem key={fabricRoll.fabricRollId} value={fabricRoll.fabricRollId}>
-                                            {fabricRoll.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={2}>
-                            <TextField
-                                fullWidth
-                                label="Cantidad"
-                                type="number"
-                                value={mold.quantity}
-                                onChange={(e) => handleMoldChange(index, 'quantity', parseInt(e.target.value))}
-                                InputProps={{ inputProps: { min: 1 } }}
-                            />
-                        </Grid>
-                        <Grid item xs={0.5}>
-                            <IconButton onClick={() => removeMold(index)} color="error">
-                                <DeleteIcon />
-                            </IconButton>
-                        </Grid>
+                            {selectedRollId && (
+                            <Typography 
+                                variant="body2" 
+                                color="text.secondary" 
+                                sx={{ mt: 1, ml: 1, textAlign: 'left' }}
+                            >
+                                {(() => {
+                                    const selectedRoll = fabricRolls.find(roll => roll.fabricRollId === selectedRollId);
+                                    return selectedRoll ? 
+                                        `${selectedRoll.description || 'Sin descripción'} | Color: ${selectedRoll.color.name}` : '';
+                                })()}
+                            </Typography>
+                             )}
+                        
                     </Grid>
-                ))}
+                    <Grid item xs={12}>
+                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}>
+                            Moldes de la prenda
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" gutterBottom sx={{mb:2, textAlign: 'left'}}>
+                            Seleccione los moldes que componen este artículo e indique la cantidad necesaria de cada uno
+                        </Typography>
 
-                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button
-                        startIcon={<AddIcon />}
-                        onClick={addMold}
-                        variant="outlined"
-                    >
-                        Agregar
-                    </Button>
-                </Box>
+                        {prendaFormData.garmentComponents.map((mold, index) => (
+                            <Box key={index} sx={{ mb: 3 }}>
+                                <Grid container spacing={2} alignItems="center">
+                                    <Grid item xs={9}>
+                                        <FormControl fullWidth>
+                                            <InputLabel>Seleccionar molde</InputLabel>
+                                            <Select
+                                                value={mold.moldeId}
+                                                onChange={(e) => handleMoldChange(index, 'moldeId', e.target.value as string)}
+                                                label="Seleccionar molde"
+                                                renderValue={(selected) => {
+                                                    const selectedMold = availableMolds.find(m => m.uuid === selected);
+                                                    return selectedMold ? (
+                                                        <Box>
+                                                            <Typography component="span">{selectedMold.name}</Typography>
+                                                            <Typography component="span" color="text.secondary" sx={{ ml: 1 }}>
+                                                                {selectedMold.description || 'Sin descripción'}
+                                                            </Typography>
+                                                        </Box>
+                                                    ) : '';
+                                                }}
+                                                sx={{
+                                                    "& .MuiSelect-select": {
+                                                        display: 'flex',
+                                                        justifyContent: 'flex-start',
+                                                    }
+                                                }}
+                                            >
+                                                {availableMolds.map((availableMold) => (
+                                                    <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
+                                                        <Box>
+                                                            <Typography>{availableMold.name}</Typography>
+                                                            <Typography variant="caption" color="textSecondary">
+                                                                {availableMold.description || 'Sin descripción'}
+                                                            </Typography>
+                                                        </Box>
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <TextField
+                                            fullWidth
+                                            label="Cantidad"
+                                            type="number"
+                                            value={mold.quantity}
+                                            onChange={(e) => handleMoldChange(index, 'quantity', parseInt(e.target.value))}
+                                            InputProps={{ inputProps: { min: 1 } }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1}>
+                                        <IconButton 
+                                            onClick={() => removeMold(index)} 
+                                            color="error"
+                                            aria-label="Eliminar molde"
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        ))}
 
+                        <Box sx={{ mt: 2 }}>
+                            <Button
+                                startIcon={<AddIcon />}
+                                onClick={addMold}
+                                variant="outlined"
+                            >
+                                Agregar otro molde
+                            </Button>
+                        </Box>
+                    </Grid>
+                </Grid>
                 <Box sx={{ mt: 5, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                     <Button
                         onClick={handleBack}
