@@ -11,7 +11,7 @@ import { useEditManager } from '../components/hooks/useEditManager';
 
 import {DataGrid, GridColDef} from '@mui/x-data-grid'; //GridRowParams ? Maybe needed to fetch and download a tizada by ID
 import {esES} from '@mui/x-data-grid/locales';
-import {Box, Typography, Button, Snackbar, Alert, IconButton} from '@mui/material';
+import {Box, Typography, Button, Snackbar, Alert, IconButton, Tooltip} from '@mui/material';
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -115,6 +115,7 @@ function MisTizadas() {
                 height: '100%', 
                 gap: 1 
               }}>
+                <Tooltip title="Ver tizada">
                 <IconButton
                   onClick={() => navigate(`/tizadas/tizada/${params.row.uuid}`)}
                   size="small"
@@ -122,6 +123,7 @@ function MisTizadas() {
                 >
                   <VisibilityIcon />
                 </IconButton>
+                </Tooltip>
                 {params.row.state === 'CREATED' && (
                   loadingTizadaId === params.row.uuid ? (
                     <IconButton
@@ -139,6 +141,7 @@ function MisTizadas() {
                       <SyncIcon />
                     </IconButton>
                   ) : (
+                    <Tooltip title="Comenzar optimización de la tizada">
                     <IconButton
                       onClick={() => startTizadaProgress(params.row.uuid)}
                       size="small"
@@ -153,6 +156,7 @@ function MisTizadas() {
                     >
                       <PlayArrowIcon />
                     </IconButton>
+                    </Tooltip>
                   )
                 )}
               </Box>

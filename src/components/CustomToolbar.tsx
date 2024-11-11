@@ -1,6 +1,5 @@
-// CustomToolbar.tsx
 import { GridToolbarContainer, GridToolbarProps, useGridApiContext } from '@mui/x-data-grid';
-import { Button, Tooltip, Box } from '@mui/material';
+import { Button, Tooltip, Box, } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 
@@ -62,13 +61,20 @@ function CustomToolbar(props: CustomToolbarProps) {
     )
   };
 
+  // Wrap the buttons in Tooltip only if nothing is selected
+  const content = (
+    <Box>
+      {actions.map(action => actionButtons[action])}
+    </Box>
+  );
+
   return (
     <GridToolbarContainer {...other}>
-      <Tooltip title={tooltipText} placement="left">
-        <Box>
-          {actions.map(action => actionButtons[action])}
-        </Box>
-      </Tooltip>
+      {hasSelections ? content : (
+        <Tooltip title={tooltipText} placement="left">
+          {content}
+        </Tooltip>
+      )}
     </GridToolbarContainer>
   );
 }
