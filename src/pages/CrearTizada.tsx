@@ -506,10 +506,10 @@ function CrearTizada() {
                                 Cancelar
                             </Button>
                             <Button type="submit" variant="contained" color="primary" sx={{mr: 2}}>
-                                Guardar Tizada
+                                Guardar
                             </Button>
                             <Button variant="contained" color="primary" onClick={handleSaveAndCptimize}>
-                                Guardar y optimizar
+                                Guardar y tizar
                             </Button>
                         </Box>
                     </Grid>
