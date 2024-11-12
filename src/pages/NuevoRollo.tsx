@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     Button,
     Dialog,
@@ -18,8 +18,15 @@ import { createColor, createRollo, getFabricColors } from "../api/methods.ts";
 import { FabricColor } from "../utils/types.tsx";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddIcon from "@mui/icons-material/Add";
+import CancelIcon from "@mui/icons-material/Cancel";
 
-const NuevoRolloModal = ({ open, onClose, onSave }) => {
+interface NuevoRolloModalProps {
+    open: boolean;
+    onClose: () => void;
+    onSave: () => void;
+}
+
+const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
     const [colors, setColors] = useState<FabricColor[]>([]);
     const [selectedColor, setSelectedColor] = useState<FabricColor | null>(null);
     const [newColorName, setNewColorName] = useState("");
@@ -32,6 +39,10 @@ const NuevoRolloModal = ({ open, onClose, onSave }) => {
     const [iconType, setIconType] = useState("add");
     const [isColorValid, setIsColorValid] = useState(false);
     const [showRolloSuccessSnackbar, setShowRolloSuccessSnackbar] = useState(false);
+    const [lastSavedColor, setLastSavedColor] = useState<FabricColor | null>(null);
+
+    // Habilita GUARDAR si hay un color seleccionado o guardado, y los otros campos están completos.
+    const isFormValid = rolloName.trim() && rolloDescription.trim() && isColorValid;
 
     const handleAddColor = async () => {
         if (newColorName.trim()) {
@@ -48,29 +59,38 @@ const NuevoRolloModal = ({ open, onClose, onSave }) => {
 
                 setIconType("check");
                 setIsColorValid(true);
+                setLastSavedColor(persistedNewColor);
+                setShowSuccessSnackbar(true);
 
                 setTimeout(() => {
                     setColors((prevColors) => [...prevColors, persistedNewColor]);
                     setSelectedColor(persistedNewColor);
                     setNewColorName("");
-                    setShowSuccessSnackbar(true);
+                    setShowSuccessSnackbar(false);
                     setIconType("add");
                 }, 1500);
             } catch (error) {
                 setError("Hubo un error al agregar el color. Intente nuevamente.");
+                setIconType("error");
+
+                setTimeout(() => setIconType("add"), 3000);
             }
         }
     };
 
-    const handleColorChange = (_, newValue) => {
+    const handleColorChange = (ev: React.SyntheticEvent, newValue: FabricColor | string | null) => {
+        console.log(ev);
+        console.log(newValue);
+        console.log(typeof newValue)
         if (typeof newValue === 'string') {
+            console.log(newValue);
             setNewColorName(newValue);
             setSelectedColor(null);
             setIsColorValid(false);
         } else {
             setSelectedColor(newValue);
             setNewColorName("");
-            setIsColorValid(!!newValue); // true si es un color existente
+            setIsColorValid(!!newValue);
         }
     };
 
@@ -101,7 +121,7 @@ const NuevoRolloModal = ({ open, onClose, onSave }) => {
         setIsSaving(true);
         setIsSuccess(false);
 
-        if (!rolloName || !rolloDescription || !isColorValid) {
+        if (!isFormValid) {
             alert("Por favor, complete todos los campos.");
             setIsSaving(false);
             return;
@@ -172,7 +192,12 @@ const NuevoRolloModal = ({ open, onClose, onSave }) => {
                         onChange={handleColorChange}
                         freeSolo
                         inputValue={newColorName}
-                        onInputChange={(_, newInputValue) => setNewColorName(newInputValue)}
+                        onInputChange={(_: React.SyntheticEvent, newInputValue: string) => {
+                            setNewColorName(newInputValue);
+                            if (newInputValue != lastSavedColor?.name) {
+                                setIsColorValid(false);
+                            } else { setIsColorValid(true); }
+                        }}
                         sx={{
                             "& .MuiInputBase-root": {
                                 borderColor: newColorName && !colors.some(color => color.name === newColorName) ? "primary.main" : "inherit"
@@ -202,6 +227,8 @@ const NuevoRolloModal = ({ open, onClose, onSave }) => {
                                                     >
                                                         {iconType === "check" ? (
                                                             <CheckCircleIcon color="success" />
+                                                        ) : iconType === "error" ? (
+                                                            <CancelIcon color="error" />
                                                         ) : (
                                                             <AddIcon />
                                                         )}
@@ -220,7 +247,7 @@ const NuevoRolloModal = ({ open, onClose, onSave }) => {
                 </FormControl>
                 <Snackbar
                     open={showSuccessSnackbar}
-                    autoHideDuration={3000}
+                    autoHideDuration={1500}
                     onClose={() => setShowSuccessSnackbar(false)}
                     TransitionComponent={(props) => <Slide {...props} direction="up" />}
                 >
@@ -257,7 +284,7 @@ const NuevoRolloModal = ({ open, onClose, onSave }) => {
                     startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : isSuccess ? <CheckCircleIcon /> : null}
                     variant="contained"
                     onClick={handleSave}
-                    disabled={isSaving || !rolloName || !rolloDescription || !isColorValid}
+                    disabled={isSaving || !isFormValid}
                     sx={{
                         backgroundColor: isSaving ? 'grey' : isSuccess ? 'green' : 'primary.main',
                         color: 'white',
