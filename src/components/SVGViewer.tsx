@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import { fixTizadaSVGViewbox } from '../utils/helpers';
 
@@ -13,7 +13,7 @@ interface SVGViewerProps {
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseUp: () => void;
   onMouseLeave: () => void;
-  isTizada?: boolean; // New prop to determine if this is a tizada view
+  isTizada?: boolean;
 }
 
 const SVGViewer: React.FC<SVGViewerProps> = ({
@@ -27,8 +27,10 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   onMouseMove,
   onMouseUp,
   onMouseLeave,
-  isTizada = false // Default to false for backward compatibility
+  isTizada = false
 }) => {
+  // Keep track of the original URL to detect changes
+  const originalUrlRef = useRef<string>('');
   const [modifiedSvgUrl, setModifiedSvgUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [svgDimensions, setSvgDimensions] = useState<{ width: number; height: number } | null>(null);
@@ -36,19 +38,20 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
 
   useEffect(() => {
     const processSvg = async () => {
+      // Only process if URL has changed
+      if (url === originalUrlRef.current) return;
+      originalUrlRef.current = url;
+
       try {
         setIsLoaded(false);
         
         if (isTizada) {
-          // Use special handling for tizadas
           const modifiedUrl = await fixTizadaSVGViewbox(url);
           setModifiedSvgUrl(modifiedUrl);
-          // We'll get dimensions from the object onLoad
-          setSvgDimensions({ width: 100, height: 100 }); // Temporary dimensions
+          setSvgDimensions({ width: 100, height: 100 });
         } else {
-          // Regular SVG handling (use directly)
           setModifiedSvgUrl(url);
-          setSvgDimensions({ width: 100, height: 100 }); // Will be adjusted by scale
+          setSvgDimensions({ width: 100, height: 100 });
         }
       } catch (err) {
         console.error('Error processing SVG:', err);
@@ -60,14 +63,14 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
       processSvg();
     }
     
+    // Cleanup function
     return () => {
-      if (modifiedSvgUrl && isTizada) {
+      if (modifiedSvgUrl && isTizada && originalUrlRef.current !== url) {
         URL.revokeObjectURL(modifiedSvgUrl);
       }
     };
   }, [url, isTizada]);
 
-  // Rest of the component remains the same
   const handleLoad = () => {
     setIsLoaded(true);
   };
