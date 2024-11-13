@@ -546,7 +546,7 @@ interface FabricPieceUpdatePayload {
 }
 
 interface PrendaUpdatePayload {
-    name?: string;
+    article?: string;
     stock?: number;
     description?: string;
 }

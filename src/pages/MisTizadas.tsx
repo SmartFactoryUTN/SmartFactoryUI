@@ -75,6 +75,7 @@ function MisTizadas() {
                 : params.row.name}  
               row={params.row}
               field="name"
+              idField="uuid"
               isEditing={params.row.uuid === editingId && editingField === 'name'}
               onEdit={(id) => startEdit(id, 'name', params.row.name)} 
               onSave={(id) => saveEdit(id, 'name')}

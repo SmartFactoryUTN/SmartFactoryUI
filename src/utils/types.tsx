@@ -83,7 +83,9 @@ export interface FabricPiece {
 
 export interface Prenda {
     garmentId: string;
-    name: string;
+    article: string;
+    description: string;
+    fabricPieces: GarmentPart[];
     stock: number; //verificar que este bien
     createdAt: string;
     updatedAt: string;
@@ -107,8 +109,7 @@ export interface MoldeCortado {
 export interface GarmentPart {
     fabricPieceId: string;
     name: string;
-    color: string;
-    colorId: string;
+    fabricRoll: RolloDeTela;
     moldeId: string;
     url: string;
     quantity: number;
