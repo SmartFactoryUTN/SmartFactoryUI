@@ -55,6 +55,9 @@ function CrearPrenda() {
     const [successMessage, setSuccessMessage] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [moldSelectionErrors, setMoldSelectionErrors] = useState<boolean[]>([]);
+    const [moldQuantityErrors, setMoldQuantityErrors] = useState<boolean[]>([]);
+    const [focusField, setFocusField] = useState<{index: number, type: 'select' | 'quantity'} | null>(null);
 
     useEffect(() => {
         fetchMolds();
@@ -101,10 +104,52 @@ function CrearPrenda() {
         }
     }, [isLoadingColors]);
 
-    const handleMoldChange = (index: number, field: 'moldeId' | 'quantity' | 'fabricRollId', value: string | number) => {
-        const newMolds = [...prendaFormData.garmentComponents];
-        newMolds[index] = { ...newMolds[index], [field]: value };
-        setPrendaFormData((prev) => ({ ...prev, garmentComponents: newMolds }));
+    const getAvailableMoldesForIndex = (index: number) => {
+        const selectedMoldes = prendaFormData.garmentComponents 
+            .filter((_, i) => i !== index)
+            .map(m => m.moldeId);
+        
+        return availableMolds.filter(mold => !selectedMoldes.includes(mold.uuid));
+    };
+
+    const handleMoldChange = (index: number, field: 'moldeId' | 'quantity', value: string | number) => {
+        const newSelectErrors = [...moldSelectionErrors];
+        const newQuantityErrors = [...moldQuantityErrors];
+        const newComponents = [...prendaFormData.garmentComponents];
+    
+        if (field === 'moldeId') {
+            newSelectErrors[index] = false;
+            newComponents[index] = {
+                ...newComponents[index],
+                moldeId: value as string
+            };
+            setMoldSelectionErrors(newSelectErrors);
+            if (focusField?.type === 'select') {
+                setFocusField(null);
+            }
+        } else {
+            const isEmpty = value === '';
+            const numValue = isEmpty ? 0 : Number(value);
+            const isInvalid = isEmpty || numValue < 1 || isNaN(numValue);
+            newQuantityErrors[index] = isInvalid;
+            newComponents[index] = {
+                ...newComponents[index],
+                quantity: numValue
+            };
+            setMoldQuantityErrors(newQuantityErrors);
+            if (focusField?.type === 'quantity') {
+                setFocusField(null);
+            }
+        }
+    
+        setPrendaFormData(prev => ({
+            ...prev,
+            garmentComponents: newComponents
+        }));
+    
+        if (!newSelectErrors.includes(true) && !newQuantityErrors.includes(true)) {
+            setError(null);
+        }
     };
 
     const addMold = () => {
@@ -253,87 +298,110 @@ function CrearPrenda() {
                         
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}>
-                            Moldes de la prenda
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" gutterBottom sx={{mb:2, textAlign: 'left'}}>
-                            Seleccione los moldes que componen este artículo e indique la cantidad necesaria de cada uno
-                        </Typography>
+                    <Typography sx={{ flexGrow: 1, textAlign: 'left', mb: 2, fontWeight: 'bold' }}>
+                    Moldes de la prenda
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" gutterBottom sx={{mb:2, textAlign: 'left'}}>
+                    Seleccione los moldes que componen este artículo e indique la cantidad necesaria de cada uno
+                    </Typography>
 
-                        {prendaFormData.garmentComponents.map((mold, index) => (
-                            <Box key={index} sx={{ mb: 3 }}>
-                                <Grid container spacing={2} alignItems="center">
-                                    <Grid item xs={9}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>Seleccionar molde</InputLabel>
-                                            <Select
-                                                value={mold.moldeId}
-                                                onChange={(e) => handleMoldChange(index, 'moldeId', e.target.value as string)}
-                                                label="Seleccionar molde"
-                                                renderValue={(selected) => {
-                                                    const selectedMold = availableMolds.find(m => m.uuid === selected);
-                                                    return selectedMold ? (
-                                                        <Box>
-                                                            <Typography component="span">{selectedMold.name}</Typography>
-                                                            <Typography component="span" color="text.secondary" sx={{ ml: 1 }}>
-                                                                {selectedMold.description || 'Sin descripción'}
-                                                            </Typography>
-                                                        </Box>
-                                                    ) : '';
-                                                }}
-                                                sx={{
-                                                    "& .MuiSelect-select": {
-                                                        display: 'flex',
-                                                        justifyContent: 'flex-start',
-                                                    }
-                                                }}
-                                            >
-                                                {availableMolds.map((availableMold) => (
-                                                    <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
-                                                        <Box>
-                                                            <Typography>{availableMold.name}</Typography>
-                                                            <Typography variant="caption" color="textSecondary">
-                                                                {availableMold.description || 'Sin descripción'}
-                                                            </Typography>
-                                                        </Box>
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                        <TextField
-                                            fullWidth
-                                            label="Cantidad"
-                                            type="number"
-                                            value={mold.quantity}
-                                            onChange={(e) => handleMoldChange(index, 'quantity', parseInt(e.target.value))}
-                                            InputProps={{ inputProps: { min: 1 } }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={1}>
-                                        <IconButton 
-                                            onClick={() => removeMold(index)} 
-                                            color="error"
-                                            aria-label="Eliminar molde"
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        ))}
-
-                        <Box sx={{ mt: 2 }}>
-                            <Button
-                                startIcon={<AddIcon />}
-                                onClick={addMold}
-                                variant="outlined"
+                    {prendaFormData.garmentComponents.map((mold, index) => (
+                    <Box key={index} sx={{ mb: 3 }}>
+                        <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={9}>
+                            <FormControl 
+                            fullWidth
+                            error={moldSelectionErrors[index]}
                             >
-                                Agregar otro molde
-                            </Button>
-                        </Box>
-                    </Grid>
+                            <InputLabel error={moldSelectionErrors[index]}>
+                                Seleccionar molde
+                            </InputLabel>
+                            <Select
+                                value={mold.moldeId}
+                                onChange={(e) => handleMoldChange(index, 'moldeId', e.target.value as string)}
+                                label="Seleccionar molde"
+                                error={moldSelectionErrors[index]}
+                                autoFocus={moldSelectionErrors[index]}
+                                inputRef={input => {
+                                if (focusField?.index === index && 
+                                    focusField.type === 'select') {
+                                    input?.focus();
+                                }
+                                }}
+                                renderValue={(selected) => {
+                                const selectedMold = availableMolds.find(m => m.uuid === selected);
+                                return selectedMold ? (
+                                    <Box>
+                                    <Typography component="span">{selectedMold.name}</Typography>
+                                    <Typography component="span" color="text.secondary" sx={{ ml: 1 }}>
+                                        {selectedMold.description || 'Sin descripción'}
+                                    </Typography>
+                                    </Box>
+                                ) : '';
+                                }}
+                                sx={{
+                                "& .MuiSelect-select": {
+                                    display: 'flex',
+                                    justifyContent: 'flex-start',
+                                }
+                                }}
+                            >
+                                {getAvailableMoldesForIndex(index)
+                                .slice()
+                                .sort((a, b) => a.name.localeCompare(b.name))
+                                .map((availableMold) => (
+                                    <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
+                                    <Box>
+                                        <Typography>{availableMold.name}</Typography>
+                                        <Typography variant="caption" color="textSecondary">
+                                        {availableMold.description || 'Sin descripción'}
+                                        </Typography>
+                                    </Box>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={2}>
+                            <TextField
+                            fullWidth
+                            label="Cantidad"
+                            type="number"
+                            value={mold.quantity === 0 ? '' : mold.quantity}
+                            onChange={(e) => handleMoldChange(index, 'quantity', parseInt(e.target.value))}
+                            InputProps={{ inputProps: { min: 1 } }}
+                            error={moldQuantityErrors[index]}
+                            inputRef={input => {
+                                if (focusField?.index === index && 
+                                    focusField.type === 'quantity') {
+                                input?.focus();
+                                }
+                            }}
+                            />
+                        </Grid>
+                        <Grid item xs={1}>
+                            <IconButton 
+                            onClick={() => removeMold(index)} 
+                            color="error"
+                            aria-label="Eliminar molde"
+                            >
+                            <DeleteIcon />
+                            </IconButton>
+                        </Grid>
+                        </Grid>
+                    </Box>
+                    ))}
+
+                    <Box sx={{ mt: 2 }}>
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={addMold}
+                        variant="outlined"
+                    >
+                        Agregar otro molde
+                    </Button>
+                    </Box>
+                </Grid>
                 </Grid>
                 <Box sx={{ mt: 5, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                     <Button
