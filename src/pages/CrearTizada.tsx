@@ -222,6 +222,11 @@ function CrearTizada() {
         setIsSaveAndOptimize(false);
 
         const maxTime = optimizationTime * 60 * 1000;
+        
+        if (formData.name.trim() == '') {
+            setError("Por favor, ingrese un nombre para la tizada.");
+            return;
+        }
 
         if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
             setError("Por favor, seleccione un molde y especifíque una cantidad.");
@@ -258,6 +263,11 @@ function CrearTizada() {
 
         const maxTime = optimizationTime * 60 * 1000;
         let uuid: string | null = null;
+
+        if (formData.name.trim() == '') {
+            setError("Por favor, ingrese un nombre para la tizada.");
+            return;
+        }
 
         if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
             setError("Por favor, seleccione un molde y especifíque una cantidad.");
@@ -318,7 +328,7 @@ function CrearTizada() {
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
-                            required
+                            //required
                         />
                     </Grid>
                     {/* Dimensiones de la mesa de corte */}
