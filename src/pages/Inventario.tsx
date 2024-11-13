@@ -7,7 +7,7 @@ import {
     updateRollo,
     updatePrenda,
     updateFabric,
-    deleteRollos
+    deleteRollos, deleteFabrics, deletePrendas
 } from '../api/methods'; // Llamadas a la API
 import {FabricPiece, Prenda, RolloDeTela} from '../utils/types'; // Entidades
 import EditableNumericCell from '../components/EditableNumericCell';
@@ -113,7 +113,33 @@ function Inventario() {
         }
       };
 
-    const handleDelete = async (selectedIds: string[]) => {
+    const handleDeleteFabrics = async (selectedIds: string[]) => {
+        try {
+            const response = await deleteFabrics(selectedIds);
+            if (response.status === "success") {
+                fetchFabrics();
+            } else {
+                console.error("Failed to delete some or all fabric pieces");
+            }
+        } catch (error) {
+            console.error("Error deleting fabric pieces:", error);
+        }
+    };
+
+    const handleDeleteGarments = async (selectedIds: string[]) => {
+        try {
+            const response = await deletePrendas(selectedIds);
+            if (response.status === "success") {
+                fetchPrendas();
+            } else {
+                console.error("Failed to delete some or all garments");
+            }
+        } catch (error) {
+            console.error("Error deleting garments:", error);
+        }
+    };
+
+    const handleDeleteRolls = async (selectedIds: string[]) => {
         try {
             const response = await deleteRollos(selectedIds);
             if (response.status === "success") {
@@ -352,7 +378,7 @@ function Inventario() {
                         },
                     }}
                     pageSizeOptions={[5]}
-                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                    localeText={{...esES.components.MuiDataGrid.defaultProps.localeText, noRowsLabel: ""}}
                     checkboxSelection={true}
                     disableRowSelectionOnClick
                     onRowSelectionModelChange={(newSelection) => {
@@ -368,7 +394,7 @@ function Inventario() {
                         toolbar: {
                             actions: ['delete'],
                             tooltipText: "Seleccione uno o varios rollos",
-                            onDelete: handleDelete,
+                            onDelete: handleDeleteRolls,
                         },
                     }}
                 />
@@ -385,6 +411,7 @@ function Inventario() {
                 <DataGrid
                     rows={fabrics}
                     columns={fabricColumns}
+                    checkboxSelection={true}
                     getRowId={(row) => row.fabricPieceId}
                     initialState={{
                         pagination: {
@@ -411,9 +438,18 @@ function Inventario() {
                         },
                     }}
                     pageSizeOptions={[5]}
-                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                    localeText={{...esES.components.MuiDataGrid.defaultProps.localeText, noRowsLabel: ""}}
                     disableRowSelectionOnClick
-                    
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
+                    slotProps={{
+                        toolbar: {
+                            actions: ['delete'],
+                            tooltipText: "Seleccione uno o varios moldes cortados",
+                            onDelete: handleDeleteFabrics,
+                        },
+                    }}
                 />
             </Box>
 
@@ -432,7 +468,6 @@ function Inventario() {
                     </Button>
                     <Button variant="contained" color="primary" onClick={() => navigate(`/inventario/prenda/crear`)}
                             sx={{mb: 2, minWidth: "20px", minHeight: "20px"}}>
-                        {/*<Typography variant="h5">+</Typography>*/}
                         Crear prenda
                     </Button>
                 </Box>
@@ -478,6 +513,16 @@ function Inventario() {
                             newSelection.includes(prenda.garmentId)
                         );
                         setSelectedPrendas(selectedPrendasData);
+                    }}
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
+                    slotProps={{
+                        toolbar: {
+                            actions: ['delete'],
+                            tooltipText: "Seleccione una o varias prendas",
+                            onDelete: handleDeleteGarments,
+                        },
                     }}
                 />
             </Box>

@@ -649,11 +649,53 @@ export const deleteRollo = async (uuid: string) => {
 };
 
 export const deleteFabric = async (uuid: string) => {
-// Implementation here
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/inventario/fabricPiece/${uuid}`);
+
+        const response = await fetch(url.toString(), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return {status: "OK", data: undefined};
+    } catch (error) {
+        console.error(`Error deleting fabric piece ${uuid}:`, error);
+        return {status: "ERROR", data: undefined};
+    }
 };
 
 export const deletePrenda = async (uuid: string) => {
-// Implementation here
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/inventario/prenda/${uuid}`);
+
+        const response = await fetch(url.toString(), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return {status: "OK", data: undefined};
+    } catch (error) {
+        console.error(`Error deleting garment ${uuid}:`, error);
+        return {status: "ERROR", data: undefined};
+    }
 };
 
 
@@ -674,9 +716,33 @@ export const deleteRollos = async (ids: string[]) => {
 };
 
 export const deleteFabrics = async (ids: string[]) => {
-// Implementation here
+    try {
+        const results = await Promise.all(ids.map(id => deleteFabric(id)));
+        const hasError = results.some(result => result.status === "ERROR");
+
+        if (hasError) {
+            return {status: "ERROR", data: undefined};
+        }
+
+        return {status: "success", data: undefined};
+    } catch (error) {
+        console.error("Error deleting fabric pieces:", error);
+        return {status: "ERROR", data: undefined};
+    }
 };
 
 export const deletePrendas = async (ids: string[]) => {
-// Implementation here
+    try {
+        const results = await Promise.all(ids.map(id => deletePrenda(id)));
+        const hasError = results.some(result => result.status === "ERROR");
+
+        if (hasError) {
+            return {status: "ERROR", data: undefined};
+        }
+
+        return {status: "success", data: undefined};
+    } catch (error) {
+        console.error("Error deleting garments:", error);
+        return {status: "ERROR", data: undefined};
+    }
 };
