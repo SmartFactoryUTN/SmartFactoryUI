@@ -161,7 +161,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
               size="large"
               onClick={onStartProgress}
             >
-              GENERAR TIZADA
+              TIZAR
             </Button>
           </Box>
         );
