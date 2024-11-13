@@ -196,6 +196,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
+                isTizada={true} // Add this line
               />
               
               {tizada.results[0]?.materialUtilization !== undefined && (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, } from '@mui/material';
+import { Box } from '@mui/material';
+import { fixTizadaSVGViewbox } from '../utils/helpers';
 
 interface SVGViewerProps {
   url: string;
@@ -12,6 +13,7 @@ interface SVGViewerProps {
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseUp: () => void;
   onMouseLeave: () => void;
+  isTizada?: boolean; // New prop to determine if this is a tizada view
 }
 
 const SVGViewer: React.FC<SVGViewerProps> = ({
@@ -24,66 +26,49 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   onMouseDown,
   onMouseMove,
   onMouseUp,
-  onMouseLeave
+  onMouseLeave,
+  isTizada = false // Default to false for backward compatibility
 }) => {
   const [modifiedSvgUrl, setModifiedSvgUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [svgDimensions, setSvgDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Separate useEffect for SVG processing that only depends on url
   useEffect(() => {
-    const fetchAndModifySvg = async () => {
+    const processSvg = async () => {
       try {
         setIsLoaded(false);
-        const response = await fetch(url);
-        const svgText = await response.text();
         
-        const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-        const svgElement = svgDoc.querySelector('svg');
-        const binElement = svgDoc.querySelector('.bin');
-        
-        if (svgElement && binElement) {
-          const binWidth = parseFloat(binElement.getAttribute('width') || '0');
-          const binHeight = parseFloat(binElement.getAttribute('height') || '0');
-          
-          if (binWidth && binHeight) {
-            setSvgDimensions({ width: binWidth, height: binHeight });
-            
-            svgElement.setAttribute('width', binWidth.toString());
-            svgElement.setAttribute('height', binHeight.toString());
-            svgElement.setAttribute('viewBox', `0 0 ${binWidth} ${binHeight}`);
-            
-            const modifiedSvgText = new XMLSerializer().serializeToString(svgDoc);
-            const blob = new Blob([modifiedSvgText], { type: 'image/svg+xml' });
-            const modifiedUrl = URL.createObjectURL(blob);
-            
-            setModifiedSvgUrl(modifiedUrl);
-          }
+        if (isTizada) {
+          // Use special handling for tizadas
+          const modifiedUrl = await fixTizadaSVGViewbox(url);
+          setModifiedSvgUrl(modifiedUrl);
+          // We'll get dimensions from the object onLoad
+          setSvgDimensions({ width: 100, height: 100 }); // Temporary dimensions
+        } else {
+          // Regular SVG handling (use directly)
+          setModifiedSvgUrl(url);
+          setSvgDimensions({ width: 100, height: 100 }); // Will be adjusted by scale
         }
       } catch (err) {
-        console.error('Error loading SVG:', err);
+        console.error('Error processing SVG:', err);
         setError('Error al cargar el SVG');
       }
     };
 
     if (url) {
-      fetchAndModifySvg();
+      processSvg();
     }
     
     return () => {
-      if (modifiedSvgUrl) {
+      if (modifiedSvgUrl && isTizada) {
         URL.revokeObjectURL(modifiedSvgUrl);
       }
     };
-  }, [url]); // Only depend on url changes
+  }, [url, isTizada]);
 
-  // Calculate scale based on container dimensions
-  
-
+  // Rest of the component remains the same
   const handleLoad = () => {
-    console.log('SVG loaded');
     setIsLoaded(true);
   };
 
@@ -122,10 +107,10 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
     </Box>
   );
 
-  const scale = svgDimensions ? Math.min(
+  const scale = Math.min(
     containerWidth / svgDimensions.width,
     containerHeight / svgDimensions.height
-  ) * 0.9 : 1;
+  ) * 0.9;
 
   return (
     <div
@@ -135,7 +120,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
         height: '100%',
         cursor: isDragging ? 'grabbing' : 'grab',
         userSelect: 'none',
-        opacity: isLoaded ? 1 : 0, // Fade in when loaded
+        opacity: isLoaded ? 1 : 0,
         transition: 'opacity 0.3s ease-in-out',
       }}
       onMouseDown={onMouseDown}

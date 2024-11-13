@@ -13,6 +13,7 @@ import {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
 import {Button, Alert, Snackbar, Typography, Box, IconButton, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import MoldePreviewModal from '../components/MoldePreviewModal';
 
 //, GridRowParams
 
@@ -43,7 +44,7 @@ function MisMoldes() {
       const [isPreviewOpen, setIsPreviewOpen] = useState(false);
       const [selectedMoldeUrl, setSelectedMoldeUrl] = useState<string | null>(null);
       const [selectedMoldeName, setSelectedMoldeName] = useState<string | null>(null);
-    
+      const [selectedMoldeDescription, setSelectedMoldeDescription] = useState<string | null>(null);
 
       useEffect(() => {
         fetchMoldes();
@@ -146,6 +147,7 @@ function MisMoldes() {
                 {/*PREVIEW DEL MOLDE*/}
                 setSelectedMoldeUrl(params.row.url);
                 setSelectedMoldeName(params.row.name);
+                setSelectedMoldeDescription(params.row.description);
                 setIsPreviewOpen(true);
               }}
               size="small"
@@ -225,38 +227,13 @@ function MisMoldes() {
                     },
                   }}
                 />
-
-                <Dialog 
+                <MoldePreviewModal
                   open={isPreviewOpen}
                   onClose={() => setIsPreviewOpen(false)}
-                  maxWidth="md"
-                  fullWidth
-                >
-                  
-                  <DialogTitle>Vista Previa del Molde {selectedMoldeName}</DialogTitle>
-                  <DialogContent>
-                    {selectedMoldeUrl && (
-                      <object
-                        type="image/svg+xml"
-                        data={selectedMoldeUrl}
-                        style={{
-                          width: '100%',
-                          height: '500px',
-                          border: '1px solid #ccc',
-                          borderRadius: '4px',
-                          marginTop: '16px'
-                        }}
-                      >
-                        Su navegador no soporta SVGs
-                      </object>
-                    )}
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setIsPreviewOpen(false)}>
-                      Cerrar
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+                  moldeUrl={selectedMoldeUrl}
+                  moldeName={selectedMoldeName}
+                  moldeDescription={selectedMoldeDescription}
+                />
                 <Snackbar 
                   open={success} 
                   autoHideDuration={6000} 
