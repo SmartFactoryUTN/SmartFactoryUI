@@ -104,11 +104,11 @@ function CrearTizada() {
                     setAvailableMolds(result.data.moldes);
                 } else {
                     console.error('Failed to fetch molds');
-                    setError('Failed to fetch molds. Please try again.');
+                    setError('Error al cargar sus moldes. Por favor, cargue la página nuevamente.');
                 }
             } catch (error) {
                 console.error('Error fetching molds:', error);
-                setError('An error occurred while fetching molds. Please try again.');
+                setError('Error al cargar sus moldes. Por favor, cargue la página nuevamente.');
             } finally {
                 setIsLoading(false);
             }
