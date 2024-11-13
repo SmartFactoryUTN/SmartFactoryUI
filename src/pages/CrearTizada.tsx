@@ -284,11 +284,11 @@ function CrearTizada() {
                             navigate('/tizadas');
                         }, 1500);
                     } else {
-                        setError("Failed to start tizada generation. Please try again.");
+                        setError("Error al iniciar la optimización. Verifique su conexión e inténtelo nuevamente.");
                     }
                 } catch (error) {
                     console.error('Error starting tizada generation:', error);
-                    setError("An error occurred while starting tizada generation. Please try again.");
+                    setError("Error al iniciar la optimización. Verifique su conexión e inténtelo nuevamente.");
                 }
             } else {
                 setError("Error al crear la tizada. Por favor, intentelo nuevamente.");
