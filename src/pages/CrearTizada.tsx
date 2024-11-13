@@ -185,7 +185,6 @@ function CrearTizada() {
     {/* Logica de carga de moldes */
     }
     const handleMoldChange = (index: number, field: 'uuid' | 'quantity', value: string | number) => {
-        // Create new arrays for both error states
         const newSelectErrors = [...moldSelectionErrors];
         const newQuantityErrors = [...moldQuantityErrors];
         const newMolds = [...formData.molds];
@@ -219,7 +218,6 @@ function CrearTizada() {
             }
         }
     
-        // Update form data in one go
         setFormData(prev => ({
             ...prev,
             molds: newMolds
@@ -522,87 +520,94 @@ function CrearTizada() {
                     </Grid>
                     <Grid item xs={12}>
                         <Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-                            <Typography sx={{flexGrow: 1, textAlign: 'left', fontWeight: 'bold'}}>
-                                Moldes
-                                {/*<Tooltip title={tooltipMoldes}>
-      <IconButton size="small" sx={{ "& .MuiInputBase-input": { fontSize: 10, height: 4, padding: 1 } }}      >
-        <HelpOutlineIcon fontSize="small" />
-      </IconButton>
-    </Tooltip>
-    */}
-                            </Typography>
+                        <Typography sx={{flexGrow: 1, textAlign: 'left', fontWeight: 'bold'}}>
+                            Moldes
+                        </Typography>
                         </Box>
                         {formData.molds.map((mold, index) => (
-                            <Grid container spacing={2} key={index} sx={{mb: 2}} alignItems="center">
-                                <Grid item xs={6}>
-                                    <FormControl 
-                                        error={moldSelectionErrors[index]}
-                                        fullWidth
-                                    >
-                                        <InputLabel 
-                                            error={moldSelectionErrors[index]}
-                                        >
-                                            Seleccionar Molde
-                                        </InputLabel>
-                                        <Select
-                                            value={mold.uuid}
-                                            onChange={(e) => handleMoldChange(index, 'uuid', e.target.value as string)}
-                                            label="Seleccionar Molde"
-                                            error={moldSelectionErrors[index]}
-                                            autoFocus={moldSelectionErrors[index]}
-                                            inputRef={input => {
-                                                if (focusField?.index === index && 
-                                                    focusField.type === 'select') {
-                                                    input?.focus();
-                                                }
-                                            }}
-                                        >
-                                            {getAvailableMoldesForIndex(index)
-                                                .slice()
-                                                .sort((a, b) => a.name.localeCompare(b.name))
-                                                .map((availableMold) => (
-                                                    <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
-                                                        {availableMold.name}
-                                                    </MenuItem>
-                                                ))}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Cantidad"
-                                        type="number"
-                                        // Convert 0 to empty string for display, but keep other numbers
-                                        value={mold.quantity === 0 ? '' : mold.quantity}
-                                        onChange={(e) => handleMoldChange(index, 'quantity', e.target.value)}
-                                        InputProps={{
-                                            inputProps: { min: 1 }
-                                        }}
-                                        error={moldQuantityErrors[index]}
-                                        inputRef={input => {
-                                            if (focusField?.index === index && 
-                                                focusField.type === 'quantity') {
-                                                input?.focus();
-                                            }
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <IconButton onClick={() => removeMold(index)} color="error">
-                                        <DeleteIcon/>
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        ))}
-                        <Box sx={{mt: 2}}>
-                            <Button
-                                startIcon={<AddIcon/>}
-                                onClick={addMold}
-                                variant="outlined"
+                        <Grid container spacing={2} key={index} sx={{ mb: 2 }} alignItems="center">
+                            <Grid item xs={6}>
+                            <FormControl 
+                                error={moldSelectionErrors[index]}
+                                fullWidth
                             >
-                                Agregar Molde
-                            </Button>
+                                <InputLabel error={moldSelectionErrors[index]}>
+                                Seleccionar Molde
+                                </InputLabel>
+                                <Select
+                                value={mold.uuid}
+                                onChange={(e) => handleMoldChange(index, 'uuid', e.target.value as string)}
+                                label="Seleccionar Molde"
+                                error={moldSelectionErrors[index]}
+                                autoFocus={moldSelectionErrors[index]}
+                                inputRef={input => {
+                                    if (focusField?.index === index && 
+                                        focusField.type === 'select') {
+                                    input?.focus();
+                                    }
+                                }}
+                                renderValue={(selected) => {
+                                    const selectedMold = availableMolds.find(m => m.uuid === selected);
+                                    return selectedMold ? (
+                                    <Box>
+                                        <Typography component="span">{selectedMold.name}</Typography>
+                                        <Typography component="span" color="text.secondary" sx={{ ml: 1 }}>
+                                        {selectedMold.description || 'Sin descripción'}
+                                        </Typography>
+                                    </Box>
+                                    ) : '';
+                                }}
+                                >
+                                {getAvailableMoldesForIndex(index)
+                                    .slice()
+                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                    .map((availableMold) => (
+                                    <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
+                                        <Box>
+                                        <Typography>{availableMold.name}</Typography>
+                                        <Typography variant="caption" color="textSecondary">
+                                            {availableMold.description || 'Sin descripción'}
+                                        </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            </Grid>
+                            <Grid item xs={4}>
+                            <TextField
+                                fullWidth
+                                label="Cantidad"
+                                type="number"
+                                value={mold.quantity === 0 ? '' : mold.quantity}
+                                onChange={(e) => handleMoldChange(index, 'quantity', e.target.value)}
+                                InputProps={{
+                                inputProps: { min: 1 }
+                                }}
+                                error={moldQuantityErrors[index]}
+                                inputRef={input => {
+                                if (focusField?.index === index && 
+                                    focusField.type === 'quantity') {
+                                    input?.focus();
+                                }
+                                }}
+                            />
+                            </Grid>
+                            <Grid item xs={2}>
+                            <IconButton onClick={() => removeMold(index)} color="error">
+                                <DeleteIcon/>
+                            </IconButton>
+                            </Grid>
+                        </Grid>
+                        ))}
+                        <Box sx={{ mt: 2 }}>
+                        <Button
+                            startIcon={<AddIcon/>}
+                            onClick={addMold}
+                            variant="outlined"
+                        >
+                            Agregar Molde
+                        </Button>
                         </Box>
                     </Grid>
 

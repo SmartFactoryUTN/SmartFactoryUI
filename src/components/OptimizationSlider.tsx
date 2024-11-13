@@ -49,7 +49,7 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
   return (
     <Box sx={{ width: '100%' }}>
 
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 0 }}>
             {/* Main title */}
             <Typography 
                 sx={{ 
@@ -103,7 +103,7 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
     </Box>
 
         {/* New subtitle with quality level */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="subtitle2" color="text.secondary">
                 Calidad de optimización:&nbsp;
             </Typography>
