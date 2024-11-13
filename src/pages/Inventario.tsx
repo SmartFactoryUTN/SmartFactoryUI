@@ -40,11 +40,8 @@ function Inventario() {
     const [openModalRollo, setOpenModalRollo] = useState<boolean>(false);
     const [openConvertirRolloModal, setOpenConvertirRolloModal] = useState<boolean>(false);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [error, setError] = useState<string | null>(null);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [success, setSuccess] = useState(false);
+    const [, setError] = useState<string | null>(null); // FIXME: volver a agregar error
+    const [, setSuccess] = useState(false); // FIXME: volver a agregar success
 
     const {
         editingId: editingIdRollo,

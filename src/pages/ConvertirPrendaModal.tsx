@@ -26,7 +26,6 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
 
     const currentPrenda = selectedPrendas[currentPrendaIndex];
     const stockActualPrendas = currentPrenda.stock || 0;
-    const stockRestado = parseInt(quantity) || 0;
 
     const handleConvertir = async () => {
         setIsConverting(true);
@@ -80,7 +79,7 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
 
                 <Tabs
                     value={currentPrendaIndex}
-                    onChange={(e, newIndex) => setCurrentPrendaIndex(newIndex)}
+                    onChange={(_, newIndex) => setCurrentPrendaIndex(newIndex)}
                     variant="scrollable"
                     scrollButtons="auto"
                 >
