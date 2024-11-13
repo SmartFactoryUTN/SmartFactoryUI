@@ -230,7 +230,7 @@ function CrearTizada() {
             setError(null);
         }
     };
-      
+
     const addMold = () => {
         setFormData((prev) => ({
             ...prev,
@@ -245,6 +245,14 @@ function CrearTizada() {
         setFormData((prev) => ({...prev, molds: newMolds}));
         setMoldSelectionErrors(prev => prev.filter((_, i) => i !== index));
         setMoldQuantityErrors(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const getAvailableMoldesForIndex = (index: number) => {
+        const selectedMoldes = formData.molds
+            .filter((_, i) => i !== index) // Exclude current index
+            .map(m => m.uuid);
+        
+        return availableMolds.filter(mold => !selectedMoldes.includes(mold.uuid));
     };
 
     const validateForm = () => {
@@ -549,7 +557,7 @@ function CrearTizada() {
                                                 }
                                             }}
                                         >
-                                            {availableMolds
+                                            {getAvailableMoldesForIndex(index)
                                                 .slice()
                                                 .sort((a, b) => a.name.localeCompare(b.name))
                                                 .map((availableMold) => (
