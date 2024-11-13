@@ -41,10 +41,7 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
     const [showRolloSuccessSnackbar, setShowRolloSuccessSnackbar] = useState(false);
     const [lastSavedColor, setLastSavedColor] = useState<FabricColor | null>(null);
 
-    // Habilita GUARDAR si hay un color seleccionado o guardado, y los otros campos están completos.
     const isFormValid = useMemo(() => rolloName.trim() && rolloDescription.trim() && isColorValid, [rolloName, rolloDescription, isColorValid]);
-    console.log("IS FORM VALID:", isFormValid);
-    console.log("isColorValid:", isColorValid);
 
     const handleAddColor = async () => {
         if (newColorName.trim()) {
@@ -80,9 +77,8 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
         }
     };
 
-    const handleColorChange = (ev: React.SyntheticEvent, newValue: FabricColor | string | null) => {
+    const handleColorChange = (_: React.SyntheticEvent, newValue: FabricColor | string | null) => {
         if (newValue === null) {
-            // Maneja el caso cuando el valor es limpiado (clear)
             setSelectedColor(null);
             setNewColorName("");
             setIsColorValid(false);
@@ -197,10 +193,7 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
                         inputValue={newColorName}
                         onInputChange={(_: React.SyntheticEvent, newInputValue: string) => {
                             setNewColorName(newInputValue);
-                            console.log("LAST SAVED COLOR: ", lastSavedColor)
                             if (newInputValue != lastSavedColor?.name && lastSavedColor !== null) {
-                                console.log("LAST SAVED COLOR nameeee: ", lastSavedColor?.name);
-                                console.log("IF DEL AUTOCOMPLETE")
                                 setIsColorValid(false);
                             }
                         }}
