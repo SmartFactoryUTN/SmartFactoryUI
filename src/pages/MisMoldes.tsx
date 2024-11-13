@@ -11,7 +11,7 @@ import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 import {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import {Button, Alert, Snackbar, Typography, Box, IconButton, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
+import {Button, Alert, Snackbar, Typography, Box, IconButton} from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MoldePreviewModal from '../components/MoldePreviewModal';
 
