@@ -63,32 +63,65 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal 
+            open={open} 
+            onClose={onClose}
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}
+        >
             <Box sx={{
                 bgcolor: 'background.paper',
                 borderRadius: 2,
                 boxShadow: 24,
-                p: 4,
                 width: '760px',
-                margin: 'auto',
-                mt: '20vh'
+                maxHeight: '80vh',
+                m: 2,
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column'
             }}>
-                <Typography variant="h6" align="left" gutterBottom>
-                    Coser Prenda
-                </Typography>
+                {/* Header Section - Fixed */}
+                <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+                    <Typography variant="h6" align="left">
+                        Coser Prenda
+                    </Typography>
+                    
+                    <Tabs
+                        value={currentPrendaIndex}
+                        onChange={(_, newIndex) => setCurrentPrendaIndex(newIndex)}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        sx={{ mt: 2 }}
+                    >
+                        {selectedPrendas.map((prenda) => (
+                            <Tab label={prenda.article} key={prenda.garmentId} />
+                        ))}
+                    </Tabs>
+                </Box>
 
-                <Tabs
-                    value={currentPrendaIndex}
-                    onChange={(_, newIndex) => setCurrentPrendaIndex(newIndex)}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                >
-                    {selectedPrendas.map((prenda) => (
-                        <Tab label={prenda.article} key={prenda.garmentId} />
-                    ))}
-                </Tabs>
-
-                <Box sx={{ mt: 3 }}>
+                {/* Content Section - Scrollable */}
+                <Box sx={{
+                    flex: 1,
+                    overflow: 'auto',
+                    p: 3,
+                    '&::-webkit-scrollbar': {
+                        width: '8px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        backgroundColor: 'rgba(0,0,0,0.05)',
+                        borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: 'rgba(0,0,0,0.2)',
+                        borderRadius: '4px',
+                        '&:hover': {
+                            backgroundColor: 'rgba(0,0,0,0.3)',
+                        },
+                    },
+                }}>
                     <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
                         <Typography variant="subtitle1" sx={{ mr: 1 }}>
                             Ingresá la cantidad de prendas que quieras coser.
@@ -117,7 +150,6 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
                         Stock actual de esta prenda: {stockActualPrendas}
                     </Typography>
 
-                    {/* Mostrar los moldes de la prenda seleccionada */}
                     <Box sx={{ mt: 3 }}>
                         <Typography variant="h6" gutterBottom>
                             Moldes que conforman la prenda
@@ -129,9 +161,8 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
                                         <ListItemText
                                             primary={`${mold.name}`}
                                             secondary={`Stock: ${mold.quantity}`}
-                                            sx={{ mb : 0}}
+                                            sx={{ mb: 0 }}
                                         />
-                                        {/* Aquí agregamos el contenido adicional debajo del secondary */}
                                         <Box>
                                             <Typography variant="body2" color="textSecondary">
                                                 {`Moldes cortados que gastarás: ${mold.quantity * Number(quantity)}`}
@@ -143,7 +174,16 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
                         </List>
                     </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+
+                {/* Footer Section - Fixed */}
+                <Box sx={{ 
+                    p: 3, 
+                    borderTop: '1px solid', 
+                    borderColor: 'divider',
+                    display: 'flex', 
+                    justifyContent: 'flex-end',
+                    bgcolor: 'background.paper',
+                }}>
                     <Button onClick={onClose} sx={{ mr: 2 }}>
                         Cerrar
                     </Button>
@@ -162,8 +202,18 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
                     </Button>
                 </Box>
 
-                <Snackbar open={!!successMessage} autoHideDuration={3000} message={successMessage} onClose={() => setSuccessMessage("")} />
-                <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')} message={error} />
+                <Snackbar 
+                    open={!!successMessage} 
+                    autoHideDuration={3000} 
+                    message={successMessage} 
+                    onClose={() => setSuccessMessage("")} 
+                />
+                <Snackbar 
+                    open={!!error} 
+                    autoHideDuration={3000} 
+                    onClose={() => setError('')} 
+                    message={error} 
+                />
             </Box>
         </Modal>
     );
