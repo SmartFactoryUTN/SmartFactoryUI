@@ -1,26 +1,31 @@
-import React, {useState} from 'react';
-import {Box, Button, Modal, Snackbar, TextField, Typography} from '@mui/material';
-import {Prenda} from '../utils/types';
-import {convertPrenda} from "../api/methods.ts";
+import React, { useState } from 'react';
+import { Box, Button, Modal, Snackbar, Tab, Tabs, TextField, Typography, Tooltip, List, ListItem, ListItemText } from '@mui/material';
+import { Prenda } from '../utils/types';
+import { convertPrenda } from "../api/methods.ts";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import InfoIcon from "@mui/icons-material/Info";
 
 interface ConvertirPrendaModalProps {
     open: boolean;
     onClose: () => void;
-    selectedPrenda: Prenda | null;
+    selectedPrendas: Prenda[];
     onConversionSuccess: () => void;
 }
 
 const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
-    { open, onClose, selectedPrenda, onConversionSuccess }) => {
+    { open, onClose, selectedPrendas, onConversionSuccess }) => {
 
-    const [quantity, setQuantity] = useState<number | string>('');
-    const [error, setError] = useState<string>(''); // Estado de error como string
+    const [currentPrendaIndex, setCurrentPrendaIndex] = useState(0);
+    const [quantity, setQuantity] = useState<string>('');
+    const [error, setError] = useState<string>('');
     const [isConverting, setIsConverting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
 
-    if (!selectedPrenda) return null;
+    if (!selectedPrendas || selectedPrendas.length === 0) return null;
+
+    const currentPrenda = selectedPrendas[currentPrendaIndex];
+    const stockActualPrendas = currentPrenda.stock || 0;
 
     const handleConvertir = async () => {
         setIsConverting(true);
@@ -28,27 +33,23 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
 
         try {
             const response = await convertPrenda({
-                "garmentId": selectedPrenda.garmentId,
+                "garmentId": currentPrenda.garmentId,
                 "quantity": quantity
             });
             if (response.status === 'success') {
                 setIsSuccess(true);
-                setIsConverting(false);
                 setSuccessMessage("¡Tu stock de prendas aumentó correctamente!");
                 setTimeout(() => {
                     setIsSuccess(false);
                     setSuccessMessage("");
-                    onClose();
                     onConversionSuccess();
                 }, 1500);
             } else {
-                console.error('Error al convertir los moldes', response.data.message);
                 setError(response.data.message);
-                setIsConverting(false);
             }
         } catch (error) {
-            console.error('Error en la llamada a la API:', error);
             setError('Error en la conversión. Intenta nuevamente.');
+        } finally {
             setIsConverting(false);
         }
     };
@@ -57,13 +58,8 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
         const value = e.target.value;
         const parsedValue = parseInt(value, 10);
 
-        if (isNaN(parsedValue) || parsedValue <= 0) {
-            setError('Por favor, ingresa un número entero positivo mayor que 0');
-        } else {
-            setError('');
-        }
-
-        setQuantity(value); // Actualizar el valor del input
+        setQuantity(value);
+        setError(isNaN(parsedValue) || parsedValue <= 0 ? 'Por favor, ingresa un número entero positivo mayor que 0' : '');
     };
 
     return (
@@ -73,35 +69,83 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
                 borderRadius: 2,
                 boxShadow: 24,
                 p: 4,
-                width: '400px',
+                width: '760px',
                 margin: 'auto',
                 mt: '20vh'
             }}>
-                <Typography variant="h6" component="h2">
-                    Convertir Prenda
+                <Typography variant="h6" align="left" gutterBottom>
+                    Coser Prenda
                 </Typography>
-                <Typography sx={{ mt: 2 }}>
-                    Estás a punto de convertir moldes cortados en la prenda: <strong>{selectedPrenda.name}</strong>
-                </Typography>
-                <Typography sx={{mt: 2}}>
-                    Esto restará stock de moldes cortados (si es que hay existencias), considerando los que nos indicaste cuando diste de alta la prenda.
-                </Typography>
-                <Typography sx={{ mt: 2 }}>
-                    ¿En cuánto quisieras aumentar el stock de esta prenda?
-                </Typography>
-                <TextField
-                    fullWidth
-                    type="number"
-                    value={quantity}
-                    onChange={handleInputChange}
-                    error={!!error}
-                    helperText={error}
-                    sx={{ mt: 2 }}
-                    InputProps={{ inputProps: { min: 1 } }}
-                />
+
+                <Tabs
+                    value={currentPrendaIndex}
+                    onChange={(_, newIndex) => setCurrentPrendaIndex(newIndex)}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
+                    {selectedPrendas.map((prenda) => (
+                        <Tab label={prenda.article} key={prenda.garmentId} />
+                    ))}
+                </Tabs>
+
+                <Box sx={{ mt: 3 }}>
+                    <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
+                        <Typography variant="subtitle1" sx={{ mr: 1 }}>
+                            Ingresá la cantidad de prendas que quieras coser.
+                        </Typography>
+                        <Tooltip title="SmartFactory calculará si cuentas con moldes suficientes y te los restará de tu stock.">
+                            <InfoIcon color="action" fontSize="small" />
+                        </Tooltip>
+                    </Box>
+
+                    <TextField
+                        fullWidth
+                        type="number"
+                        value={quantity}
+                        onChange={handleInputChange}
+                        error={!!error}
+                        helperText={error || "Ingresa la cantidad de prendas a coser"}
+                        placeholder="Cantidad de prendas"
+                        size="small"
+                        sx={{ mb: 2 }}
+                        InputProps={{
+                            inputProps: { min: 1 },
+                            sx: { padding: '4px 8px' }
+                        }}
+                    />
+                    <Typography color="textSecondary">
+                        Stock actual de esta prenda: {stockActualPrendas}
+                    </Typography>
+
+                    {/* Mostrar los moldes de la prenda seleccionada */}
+                    <Box sx={{ mt: 3 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Moldes que conforman la prenda
+                        </Typography>
+                        <List>
+                            {currentPrenda.fabricPieces && currentPrenda.fabricPieces.map((mold, index) => (
+                                <ListItem key={index}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        <ListItemText
+                                            primary={`${mold.name}`}
+                                            secondary={`Stock: ${mold.quantity}`}
+                                            sx={{ mb : 0}}
+                                        />
+                                        {/* Aquí agregamos el contenido adicional debajo del secondary */}
+                                        <Box>
+                                            <Typography variant="body2" color="textSecondary">
+                                                {`Moldes cortados que gastarás: ${mold.quantity * Number(quantity)}`}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Box>
+                </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                    <Button onClick={onClose} sx={{ mr: 2 }} color="error">
-                        Cancelar
+                    <Button onClick={onClose} sx={{ mr: 2 }}>
+                        Cerrar
                     </Button>
                     <Button
                         onClick={handleConvertir}
@@ -111,31 +155,15 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
                         disabled={!!error || quantity === '' || isConverting || isSuccess}
                         sx={{
                             backgroundColor: isSuccess ? 'green' : 'primary.main',
-                            color: 'white',
-                            '&:hover': {
-                                backgroundColor: isSuccess ? 'darkgreen' : 'primary.dark',
-                            },
-                            '&.Mui-disabled': {
-                                backgroundColor: isSuccess ? 'green' : 'grey',
-                                color: 'white',
-                            },
+                            '&:hover': { backgroundColor: isSuccess ? 'darkgreen' : 'primary.dark' }
                         }}
                     >
-                        {isConverting ? "Convirtiendo..." : isSuccess ? "Convertidas" : "Convertir"}
+                        {isConverting ? "Convirtiendo..." : isSuccess ? "Convertida" : "Convertir"}
                     </Button>
                 </Box>
-                <Snackbar
-                    open={!!successMessage}
-                    autoHideDuration={3000}
-                    message={successMessage}
-                    onClose={() => setSuccessMessage("")}
-                />
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={3000}
-                    onClose={() => setError('')}
-                    message={error}
-                />
+
+                <Snackbar open={!!successMessage} autoHideDuration={3000} message={successMessage} onClose={() => setSuccessMessage("")} />
+                <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')} message={error} />
             </Box>
         </Modal>
     );

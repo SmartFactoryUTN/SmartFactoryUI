@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {
     Button,
     Dialog,
@@ -41,8 +41,7 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
     const [showRolloSuccessSnackbar, setShowRolloSuccessSnackbar] = useState(false);
     const [lastSavedColor, setLastSavedColor] = useState<FabricColor | null>(null);
 
-    // Habilita GUARDAR si hay un color seleccionado o guardado, y los otros campos están completos.
-    const isFormValid = rolloName.trim() && rolloDescription.trim() && isColorValid;
+    const isFormValid = useMemo(() => rolloName.trim() && rolloDescription.trim() && isColorValid, [rolloName, rolloDescription, isColorValid]);
 
     const handleAddColor = async () => {
         if (newColorName.trim()) {
@@ -78,19 +77,19 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
         }
     };
 
-    const handleColorChange = (ev: React.SyntheticEvent, newValue: FabricColor | string | null) => {
-        console.log(ev);
-        console.log(newValue);
-        console.log(typeof newValue)
-        if (typeof newValue === 'string') {
-            console.log(newValue);
+    const handleColorChange = (_: React.SyntheticEvent, newValue: FabricColor | string | null) => {
+        if (newValue === null) {
+            setSelectedColor(null);
+            setNewColorName("");
+            setIsColorValid(false);
+        } else if (typeof newValue === 'string') {
             setNewColorName(newValue);
             setSelectedColor(null);
             setIsColorValid(false);
         } else {
-            setSelectedColor(newValue);
             setNewColorName("");
-            setIsColorValid(!!newValue);
+            setSelectedColor(newValue);
+            setIsColorValid(true);
         }
     };
 
@@ -194,9 +193,9 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
                         inputValue={newColorName}
                         onInputChange={(_: React.SyntheticEvent, newInputValue: string) => {
                             setNewColorName(newInputValue);
-                            if (newInputValue != lastSavedColor?.name) {
+                            if (newInputValue != lastSavedColor?.name && lastSavedColor !== null) {
                                 setIsColorValid(false);
-                            } else { setIsColorValid(true); }
+                            }
                         }}
                         sx={{
                             "& .MuiInputBase-root": {

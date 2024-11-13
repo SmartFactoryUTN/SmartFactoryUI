@@ -1,8 +1,8 @@
-import { editMolde, editTizada } from '../../api/methods';
+import {editMolde, editTizada, updatePrenda, updateRollo} from '../../api/methods';
 import {useState} from 'react';
 
-type EntityType = 'molde' | 'tizada';
-type EditableField = 'name' | 'description';
+type EntityType = 'molde' | 'tizada' | 'rollo' | 'prenda';
+type EditableField = 'name' | 'description' | 'article';
 
 interface EditManagerConfig {
   entityType: EntityType;
@@ -25,11 +25,18 @@ export const useEditManager = ({ entityType, onSuccess, onError }: EditManagerCo
     try {
       let response;
 
-      if (entityType === 'molde') {
+      if (entityType === 'molde' && (field === 'name' || field === 'description')) {
         response = await editMolde(id, field, editedValue);
-      } else {
-        // Tizada only has name field
+      } else if (entityType === 'tizada' && field === 'name') {
         response = await editTizada(id, editedValue);
+      } else if (entityType === 'rollo' && (field === 'name' || field === 'description')) {
+        const payload = { [field]: editedValue };
+        response = await updateRollo(id, payload);
+      } else if (entityType === 'prenda' && (field === 'article' || field === 'description')) {
+        const payload = { [field]: editedValue };
+        response = await updatePrenda(id, payload);
+      } else {
+        throw new Error(`El campo ${field} no es válido para la entidad ${entityType}`);
       }
 
       if (response.status === "OK") {
@@ -43,6 +50,9 @@ export const useEditManager = ({ entityType, onSuccess, onError }: EditManagerCo
       onError(`Error al actualizar el campo`);
     }
   };
+
+
+
 
   const cancelEdit = () => {
     setEditingId(null);

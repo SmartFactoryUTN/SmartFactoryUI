@@ -92,6 +92,7 @@ function MisMoldes() {
                 : params.row.name}  
               row={params.row}
               field="name"
+              idField="uuid"
               isEditing={params.row.uuid === editingId && editingField === 'name'}
               onEdit={(id) => startEdit(id, 'name', params.row.name)} 
               onSave={(id) => saveEdit(id, 'name')}
@@ -112,6 +113,7 @@ function MisMoldes() {
                 : params.row.description} 
               row={params.row}
               field="description"
+              idField="uuid"
               isEditing={params.row.uuid === editingId && editingField === 'description'}
               onEdit={(id) => startEdit(id, 'description', params.row.description)}  
               onSave={(id) => saveEdit(id, 'description')}

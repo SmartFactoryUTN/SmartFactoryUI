@@ -9,6 +9,7 @@ interface EditableCellProps {
   value: string;
   row: any;
   field: string;
+  idField: string;
   isEditing: boolean;
   onEdit: (id: string) => void;
   onSave: (id: string) => void;
@@ -16,14 +17,15 @@ interface EditableCellProps {
   onChange: (value: string) => void;
 }
 
-const EditableCell = ({ 
-  value, 
-  row, 
-  isEditing, 
-  onEdit, 
-  onSave, 
+const EditableCell = ({
+  value,
+  row,
+  idField,
+  isEditing,
+  onEdit,
+  onSave,
   onCancel,
-  onChange 
+  onChange
 }: EditableCellProps) => {
   const [inputValue, setInputValue] = useState(value);
 
@@ -35,10 +37,10 @@ const EditableCell = ({
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Stop propagation for all keys when editing
     e.stopPropagation();
-    
+
     // Handle Enter key to save
     if (e.key === 'Enter') {
-      onSave(row.uuid);
+      onSave(row[idField]);
     }
     // Handle Escape key to cancel
     if (e.key === 'Escape') {
@@ -62,7 +64,7 @@ const EditableCell = ({
           onKeyDown={handleKeyDown} // Add the keyDown handler
           onClick={(e) => e.stopPropagation()} // Prevent row selection
           InputProps={{
-            sx: { 
+            sx: {
               padding: '0px',
               '& input': {
                 padding: '8px'
@@ -71,17 +73,17 @@ const EditableCell = ({
           }}
         />
         <Box sx={{ ml: 1 }}>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e) => {
               e.stopPropagation();
-              onSave(row.uuid);
+              onSave(row[idField]);
             }}
           >
             <CheckIcon fontSize="small" color="primary" />
           </IconButton>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e) => {
               e.stopPropagation();
               onCancel();
@@ -95,9 +97,9 @@ const EditableCell = ({
   }
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      alignItems: 'center', 
+    <Box sx={{
+      display: 'flex',
+      alignItems: 'center',
       width: '100%',
       '& .edit-button': {
         opacity: 0,
@@ -114,7 +116,7 @@ const EditableCell = ({
         sx={{ ml: 'auto' }}
         onClick={(e) => {
           e.stopPropagation();
-          onEdit(row.uuid);
+          onEdit(row[idField]);
         }}
       >
         <EditIcon fontSize="small" />
