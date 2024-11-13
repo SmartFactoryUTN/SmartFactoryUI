@@ -93,3 +93,35 @@ export const formatTimeRemaining = (endTime: string | null) => {
   const minutes = Math.ceil(diffInSeconds / 60);
   return `${minutes} ${minutes === 1 ? 'minuto restante' : 'minutos restantes'}`;
 };
+
+// TODO: Remove this file once backend handles SVG saving properly
+export const fixTizadaSVGViewbox = async (svgUrl: string): Promise<string> => {
+  try {
+    const response = await fetch(svgUrl);
+    const svgText = await response.text();
+    
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+    const svgElement = svgDoc.querySelector('svg');
+    const binElement = svgDoc.querySelector('.bin');
+    
+    if (svgElement && binElement) {
+      const binWidth = parseFloat(binElement.getAttribute('width') || '0');
+      const binHeight = parseFloat(binElement.getAttribute('height') || '0');
+      
+      if (binWidth && binHeight) {
+        svgElement.setAttribute('width', binWidth.toString());
+        svgElement.setAttribute('height', binHeight.toString());
+        svgElement.setAttribute('viewBox', `0 0 ${binWidth} ${binHeight}`);
+        
+        const modifiedSvgText = new XMLSerializer().serializeToString(svgDoc);
+        const blob = new Blob([modifiedSvgText], { type: 'image/svg+xml' });
+        return URL.createObjectURL(blob);
+      }
+    }
+    throw new Error('Could not find necessary SVG elements');
+  } catch (err) {
+    console.error('Error fixing tizada SVG:', err);
+    throw err;
+  }
+};
