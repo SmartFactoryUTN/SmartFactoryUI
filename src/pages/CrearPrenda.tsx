@@ -11,6 +11,7 @@ import {
     Snackbar,
     TextField,
     Typography,
+    Alert
 } from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
 import {Molde, RolloDeTela} from "../utils/types.tsx";
@@ -51,13 +52,19 @@ function CrearPrenda() {
     const [isLoadingColors, setIsLoadingColors] = useState<boolean>(false);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, setError] = useState<string | null>(null); // FIXME: volver a agregar el error
     const [successMessage, setSuccessMessage] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [moldSelectionErrors, setMoldSelectionErrors] = useState<boolean[]>([]);
     const [moldQuantityErrors, setMoldQuantityErrors] = useState<boolean[]>([]);
-    const [focusField, setFocusField] = useState<{index: number, type: 'select' | 'quantity'} | null>(null);
+    const [articleError, setArticleError] = useState(false);
+    const [descriptionError, setDescriptionError] = useState(false);
+    const [rollError, setRollError] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [focusField, setFocusField] = useState<{
+        type: 'article' | 'description' | 'roll' | 'select' | 'quantity';
+        index?: number;
+    } | null>(null);
 
     useEffect(() => {
         fetchMolds();
@@ -163,22 +170,88 @@ function CrearPrenda() {
         const newMolds = prendaFormData.garmentComponents.filter((_, i) => i !== index);
         setPrendaFormData((prev) => ({ ...prev, garmentComponents: newMolds }));
     };
+    
+    const validateForm = () => {
+        // Reset all errors
+        setArticleError(false);
+        setDescriptionError(false);
+        setRollError(false);
+        setMoldSelectionErrors(new Array(prendaFormData.garmentComponents.length).fill(false));
+        setMoldQuantityErrors(new Array(prendaFormData.garmentComponents.length).fill(false));
+        
+        let isValid = true;
+        
+        // Validate article
+        if (!prendaFormData.article.trim()) {
+            setArticleError(true);
+            setError("Por favor, ingrese el artículo de la prenda");
+            setFocusField({ type: 'article' });
+            isValid = false;
+            return false;
+        }
+
+        // Validate description
+        if (!prendaFormData.description.trim()) {
+            setDescriptionError(true);
+            setError("Por favor, ingrese una descripción de la prenda");
+            setFocusField({ type: 'description' });
+            isValid = false;
+            return false;
+        }
+
+        // Validate roll selection
+        if (!selectedRollId) {
+            setRollError(true);
+            setError("Por favor, seleccione un rollo de tela");
+            setFocusField({ type: 'roll' });
+            isValid = false;
+            return false;
+        }
+
+        // Check each mold and set focus on first error
+        const newSelectionErrors = new Array(prendaFormData.garmentComponents.length).fill(false);
+        const newQuantityErrors = new Array(prendaFormData.garmentComponents.length).fill(false);
+        let focusSet = false;
+
+        for (let i = 0; i < prendaFormData.garmentComponents.length; i++) {
+            const component = prendaFormData.garmentComponents[i];
+            if (!component.moldeId) {
+                newSelectionErrors[i] = true;
+                if (!focusSet) {
+                    setFocusField({ type: 'select', index: i });
+                    setError("Por favor, seleccione un molde");
+                    focusSet = true;
+                }
+                isValid = false;
+            } else if (component.quantity < 1) {
+                newQuantityErrors[i] = true;
+                if (!focusSet) {
+                    setFocusField({ type: 'quantity', index: i });
+                    setError("Por favor, ingrese una cantidad válida");
+                    focusSet = true;
+                }
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            setMoldSelectionErrors(newSelectionErrors);
+            setMoldQuantityErrors(newQuantityErrors);
+            return false;
+        }
+
+        return true;
+    };
 
     const handleSave = async () => {
         setIsSaving(true);
         setIsSuccess(false);
 
-        // Validaciones
-        if (selectedRollId == '') {
-            setError("Por favor, seleccione un rollo de tela");
+        if (!validateForm()) {
             setIsSaving(false);
             return;
         }
-        if (!prendaFormData.article) {
-            setError("Por favor, ingresar el artículo de la prenda");
-            setIsSaving(false);
-            return;
-        }
+
         try {
             const payloadToSend = {
                 article: prendaFormData.article,
@@ -192,7 +265,6 @@ function CrearPrenda() {
 
             if (response.status === "success") {
                 setIsSuccess(true);
-                setIsSaving(false);
                 setSuccessMessage("¡Prenda guardada exitosamente!");
                 setTimeout(() => {
                     setIsSuccess(false);
@@ -200,12 +272,12 @@ function CrearPrenda() {
                     navigate(`/inventario`)
                 }, 1500);
             } else {
-                console.error('Error al guardar la prenda:', response.data.message);
-                setIsSaving(false);
+                setError("Error al guardar la prenda. Por favor, intentelo nuevamente.");
             }
         } catch (error) {
             console.error('Error creando prenda:', error);
             setError("Un error ocurrió al crear la prenda, intentelo de nuevo por favor.");
+        } finally {
             setIsSaving(false);
         }
     };
@@ -231,7 +303,19 @@ function CrearPrenda() {
                             label="Ingrese el artículo de la prenda"
                             name="name"
                             value={prendaFormData.article}
-                            onChange={(e) => setPrendaFormData({ ...prendaFormData, article: e.target.value })}
+                            onChange={(e) => {
+                                setPrendaFormData({ ...prendaFormData, article: e.target.value });
+                                if (articleError) {
+                                    setArticleError(false);
+                                    setError(null);
+                                }
+                            }}
+                            error={articleError}
+                            inputRef={input => {
+                                if (focusField?.type === 'article') {
+                                    input?.focus();
+                                }
+                            }}
                             variant="outlined"
                         />
                     </Grid>
@@ -243,7 +327,19 @@ function CrearPrenda() {
                             fullWidth
                             label="Ingrese una descripción o detalle de la prenda"
                             value={prendaFormData.description}
-                            onChange={(e) => setPrendaFormData({...prendaFormData, description: e.target.value })}
+                            onChange={(e) => {
+                                setPrendaFormData({...prendaFormData, description: e.target.value });
+                                if (descriptionError) {
+                                    setDescriptionError(false);
+                                    setError(null);
+                                }
+                            }}
+                            error={descriptionError}
+                            inputRef={input => {
+                                if (focusField?.type === 'description') {
+                                    input?.focus();
+                                }
+                            }}
                             rows={3}
                         />
                     </Grid>
@@ -251,12 +347,24 @@ function CrearPrenda() {
                         <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}>
                             Material
                         </Typography>
-                        <FormControl fullWidth>
-                            <InputLabel>Seleccionar un rollo de tela</InputLabel>
+                        <FormControl fullWidth error={rollError}>
+                            <InputLabel error={rollError}>Seleccionar un rollo de tela</InputLabel>
                             <Select
                                 value={selectedRollId}
-                                onChange={(e) => setSelectedRollId(e.target.value)}
+                                onChange={(e) => {
+                                    setSelectedRollId(e.target.value);
+                                    if (rollError) {
+                                        setRollError(false);
+                                        setError(null);
+                                    }
+                                }}
                                 label="Seleccionar un rollo de tela"
+                                error={rollError}
+                                inputRef={input => {
+                                    if (focusField?.type === 'roll') {
+                                        input?.focus();
+                                    }
+                                }}
                                 renderValue={(selected) => {
                                     const selectedRoll = fabricRolls.find(roll => roll.fabricRollId === selected);
                                     return selectedRoll ? selectedRoll.name : '';
@@ -431,10 +539,19 @@ function CrearPrenda() {
                     </Button>
                 </Box>
                 <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError(null)}
+                >
+                    <Alert onClose={() => setError(null)} severity="error">
+                        {error}
+                    </Alert>
+                </Snackbar>
+                <Snackbar
                     open={!!successMessage}
                     autoHideDuration={3000}
                     message={successMessage}
-                />
+                />                
             </form>
         </PageLayout>
     );
