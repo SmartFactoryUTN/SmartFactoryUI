@@ -19,6 +19,7 @@ function VerTizada() {
     const [svgUrl, setSvgUrl] = useState<string | null>(null);
     const { userData } = useUserContext();
     const sidebarState = useSidebarWidth();
+    const [pollingInterval, setPollingInterval] = useState<number>(0);
 
      // Prevent browser zoom
      const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -43,22 +44,51 @@ function VerTizada() {
         };
     }, [handleKeyDown, handleWheel]);
     
-    const fetchTizadaData = async () => {
-        try {
-            const response = await getTizadaById(uuid!);
-            if (response.status === "success") {
-                setTizada(response.data);
-                console.log(response.data);
-                if (response.data.state === 'FINISHED' && response.data.results && response.data.results.length > 0) {
-                    setSvgUrl(response.data.results[0].url);
-                }
+    // Refresh the data every second if tizada is in progress
+    useEffect(() => {
+            if (!tizada) return;
+    
+            // Adjust polling interval based on state
+            if (tizada.state === 'IN_PROGRESS') {
+                setPollingInterval(1000); // Poll every second when in progress
+            } else if (tizada.state === 'FINISHED' || tizada.state === 'ERROR') {
+                setPollingInterval(0); // Stop polling when finished or error
             } else {
-                console.error("Failed to fetch tizada");
+                setPollingInterval(5000); // Poll every 5 seconds otherwise
             }
-        } catch (error) {
-            console.error('Error fetching tizada data:', error);
-        }
-    };
+        }, [tizada?.state]);
+    
+        useEffect(() => {
+            if (pollingInterval === 0) return;
+    
+            const pollInterval = setInterval(() => {
+                fetchTizadaData();
+            }, pollingInterval);
+    
+            return () => clearInterval(pollInterval);
+        }, [pollingInterval]);
+    
+        // Modify fetchTizadaData to handle errors better
+        const fetchTizadaData = async () => {
+            try {
+                const response = await getTizadaById(uuid!);
+                if (response.status === "success") {
+                    setTizada(response.data);
+                    if (response.data.state === 'FINISHED' && response.data.results && response.data.results.length > 0) {
+                        setSvgUrl(response.data.results[0].url);
+                    }
+                } else {
+                    console.error("Failed to fetch tizada");
+                    setError("Error al actualizar los datos de la tizada");
+                    setPollingInterval(0); // Stop polling on error
+                }
+            } catch (error) {
+                console.error('Error fetching tizada data:', error);
+                setError("Error al actualizar los datos de la tizada");
+                setPollingInterval(0); // Stop polling on error
+            }
+        };
+    
 
     useEffect(() => {
         fetchTizadaData();

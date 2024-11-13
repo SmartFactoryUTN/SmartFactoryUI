@@ -52,13 +52,31 @@ export const formatTimeAgo = (date: string | null) => {
   if (!date) return '';
   
   const now = new Date();
+  // Parse the UTC date and adjust to local timezone
   const past = new Date(date);
+  // Adjust for timezone difference
+  past.setHours(past.getHours() - 3); // Assuming GMT-3, adjust as needed
+
   const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
   
-  if (diffInSeconds < 60) return 'hace menos de un minuto';
-  if (diffInSeconds < 3600) return `hace ${Math.floor(diffInSeconds / 60)} minutos`;
-  if (diffInSeconds < 86400) return `hace ${Math.floor(diffInSeconds / 3600)} horas`;
-  return `hace ${Math.floor(diffInSeconds / 86400)} días`;
+  console.log('Time difference in seconds:', diffInSeconds); // For debugging
+
+  if (diffInSeconds < 0) return 'iniciando optimización...';
+  if (diffInSeconds < 60) {
+    return `hace ${diffInSeconds} ${diffInSeconds === 1 ? 'segundo' : 'segundos'}`;
+  }
+  
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `hace ${diffInMinutes} ${diffInMinutes === 1 ? 'minuto' : 'minutos'}`;
+  }
+  
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `hace ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`;
+  }
+  
+  return formatDate(date);
 };
 
 export const formatTimeRemaining = (endTime: string | null) => {
