@@ -1,6 +1,14 @@
 import {useEffect, useState} from 'react'; //, useCallback
 import {useNavigate} from 'react-router-dom';
-import {getFabrics, getPrendas, getRollos, updateRollo, updatePrenda, updateFabric} from '../api/methods'; // Llamadas a la API
+import {
+    getFabrics,
+    getPrendas,
+    getRollos,
+    updateRollo,
+    updatePrenda,
+    updateFabric,
+    deleteRollos
+} from '../api/methods'; // Llamadas a la API
 import {FabricPiece, Prenda, RolloDeTela} from '../utils/types'; // Entidades
 import EditableNumericCell from '../components/EditableNumericCell';
 import PageLayout from '../components/layout/PageLayout';
@@ -12,6 +20,7 @@ import { getFontFamily } from '../utils/fonts';
 import {DataGrid, GridColDef} from '@mui/x-data-grid'; // , GridRowParams
 import {esES} from '@mui/x-data-grid/locales';
 import {Box, Typography, Button} from '@mui/material';
+import CustomToolbar from "../components/CustomToolbar.tsx";
 
 {/* UI Components */}
 
@@ -103,6 +112,19 @@ function Inventario() {
           console.error('Error saving stock:', error);
         }
       };
+
+    const handleDelete = async (selectedIds: string[]) => {
+        try {
+            const response = await deleteRollos(selectedIds);
+            if (response.status === "success") {
+                fetchRollos();
+            } else {
+                console.error("Failed to delete some or all rolls");
+            }
+        } catch (error) {
+            console.error("Error deleting rolls:", error);
+        }
+    };
 
     useEffect(() => {
         fetchRollos();
@@ -338,6 +360,16 @@ function Inventario() {
                             newSelection.includes(rollo.fabricRollId)
                         );
                         setSelectedRollos(selectedRollosData);
+                    }}
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
+                    slotProps={{
+                        toolbar: {
+                            actions: ['delete'],
+                            tooltipText: "Seleccione uno o varios rollos",
+                            onDelete: handleDelete,
+                        },
                     }}
                 />
             </Box>

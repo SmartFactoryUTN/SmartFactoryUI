@@ -89,15 +89,15 @@ export const createMolde = async (payload: CreateMoldePayload): Promise<ApiRespo
             },
         });
 
-    if (!response.ok) {
-      throw new Error('Failed to create mold');
-    }
+        if (!response.ok) {
+            throw new Error('Failed to create mold');
+        }
 
-    return await response.json();
-  } catch (error) {
-    console.error("Error creating mold:", error);
-    throw error;
-  }
+        return await response.json();
+    } catch (error) {
+        console.error("Error creating mold:", error);
+        throw error;
+    }
 };
 
 export const createTizada = async (tizadaData: CreateTizadaFormData): Promise<ApiResponse<string>> => {
@@ -138,7 +138,7 @@ export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promis
 
         // Handle both 200 and 204 as success cases
         if (response.status === 204) {
-            return { status: 'success', data: undefined };
+            return {status: 'success', data: undefined};
         }
 
         if (!response.ok) {
@@ -147,14 +147,14 @@ export const invokeTizada = async (tizadaUUID: string, userUUID: string): Promis
 
         // Handle 200 case if API changes in future
         const data = await response.json();
-        return { status: 'success', data };
+        return {status: 'success', data};
     } catch (error) {
         console.error("Error invoking tizada:", error);
-        return { status: 'error', data: undefined };
+        return {status: 'error', data: undefined};
     }
 };
 
-export const editTizada = async (uuid: string, name:string): Promise<ApiResponse<void>> => {
+export const editTizada = async (uuid: string, name: string): Promise<ApiResponse<void>> => {
     try {
         const token = useAccessToken();
         const url = new URL(`${BASE_API_URL}/tizada/${uuid}`);
@@ -164,7 +164,7 @@ export const editTizada = async (uuid: string, name:string): Promise<ApiResponse
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ name }),
+            body: JSON.stringify({name}),
 
         });
 
@@ -172,51 +172,51 @@ export const editTizada = async (uuid: string, name:string): Promise<ApiResponse
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return { status: "OK", data: undefined };
+        return {status: "OK", data: undefined};
     } catch (error) {
         console.error(`Error al editar tizada ${uuid}:`, error);
-        return { status: "ERROR", data: undefined };
+        return {status: "ERROR", data: undefined};
     }
 };
 
 export const deleteTizada = async (uuid: string): Promise<ApiResponse<void>> => {
-  try {
-      const token = useAccessToken();
-      const url = new URL(`${BASE_API_URL}/tizada/${uuid}`);
-      url.searchParams.append('id', uuid);
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/tizada/${uuid}`);
+        url.searchParams.append('id', uuid);
 
-      const response = await fetch(url.toString(), {
-          method: 'DELETE',
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-    });
+        const response = await fetch(url.toString(), {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return {status: "OK", data: undefined};
+    } catch (error) {
+        console.error(`Error deleting tizada ${uuid}:`, error);
+        return {status: "ERROR", data: undefined};
     }
-
-    return { status: "OK", data: undefined };
-  } catch (error) {
-    console.error(`Error deleting tizada ${uuid}:`, error);
-    return { status: "ERROR", data: undefined };
-  }
 };
 
 export const deleteTizadas = async (uuids: string[]): Promise<ApiResponse<void>> => {
-  try {
-    const results = await Promise.all(uuids.map(uuid => deleteTizada(uuid)));
-    const hasError = results.some(result => result.status === "ERROR");
+    try {
+        const results = await Promise.all(uuids.map(uuid => deleteTizada(uuid)));
+        const hasError = results.some(result => result.status === "ERROR");
 
-    if (hasError) {
-      return { status: "ERROR", data: undefined };
+        if (hasError) {
+            return {status: "ERROR", data: undefined};
+        }
+
+        return {status: "success", data: undefined};
+    } catch (error) {
+        console.error("Error deleting tizadas:", error);
+        return {status: "ERROR", data: undefined};
     }
-    
-    return { status: "success", data: undefined };
-  } catch (error) {
-    console.error("Error deleting tizadas:", error);
-    return { status: "ERROR", data: undefined };
-  }
 };
 
 export const getRollos = async (): Promise<ApiResponse<RolloDeTela[]>> => {
@@ -226,8 +226,8 @@ export const getRollos = async (): Promise<ApiResponse<RolloDeTela[]>> => {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
-        }); 
-        console.log("Rollos: ", response);
+        });
+    console.log("Rollos: ", response);
     return await response.json();
 };
 
@@ -239,7 +239,7 @@ export const getFabrics = async (): Promise<ApiResponse<FabricPiece[]>> => {
                 Authorization: `Bearer ${token}`,
             }
         });
-        console.log("Fabric: ", response);
+    console.log("Fabric: ", response);
     return await response.json();
 };
 
@@ -250,14 +250,14 @@ export const getPrendas = async (): Promise<ApiResponse<Prenda[]>> => {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
-        }); 
-        console.log("Prendas: ", response);
+        });
+    console.log("Prendas: ", response);
     return await response.json();
 };
 
 export const getFabricColors = async (): Promise<ApiResponse<FabricColor[]>> => {
     const token = useAccessToken();
-    const response = await fetch(`${BASE_API_URL}/inventario/color`,{
+    const response = await fetch(`${BASE_API_URL}/inventario/color`, {
         headers: {
             Authorization: `Bearer ${token}`,
         }
@@ -336,7 +336,8 @@ export const getTizadasFinalizadas = async (): Promise<ApiResponse<Tizada[]>> =>
         },
     });
     return await response.json();
-};*/}
+};*/
+}
 
 export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse<any>> => {
     try {
@@ -359,7 +360,7 @@ export const convertPrenda = async (convertPrendaData: any): Promise<ApiResponse
     }
 }
 
-export const editMolde = async (uuid: string, field:'name' | 'description', value: string): Promise<ApiResponse<void>> => {
+export const editMolde = async (uuid: string, field: 'name' | 'description', value: string): Promise<ApiResponse<void>> => {
     try {
         const token = useAccessToken();
         const url = new URL(`${BASE_API_URL}/molde/${uuid}`);
@@ -369,17 +370,17 @@ export const editMolde = async (uuid: string, field:'name' | 'description', valu
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ [field]: value }), // This will be { name: value } or { description: value }
+            body: JSON.stringify({[field]: value}), // This will be { name: value } or { description: value }
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return { status: "OK", data: undefined };
+        return {status: "OK", data: undefined};
     } catch (error) {
         console.error(`Error updating molde ${uuid}:`, error);
-        return { status: "ERROR", data: undefined };
+        return {status: "ERROR", data: undefined};
     }
 };
 
@@ -395,17 +396,17 @@ export const deleteMolde = async (uuid: string): Promise<ApiResponse<void>> => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            
+
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return { status: "OK", data: undefined };
+        return {status: "OK", data: undefined};
     } catch (error) {
         console.error(`Error deleting molde ${uuid}:`, error);
-        return { status: "ERROR", data: undefined };
+        return {status: "ERROR", data: undefined};
     }
 };
 
@@ -415,29 +416,29 @@ export const deleteMoldes = async (uuids: string[]): Promise<ApiResponse<void>> 
         const hasError = results.some(result => result.status === "ERROR");
 
         if (hasError) {
-            return { status: "ERROR", data: undefined };
+            return {status: "ERROR", data: undefined};
         }
 
-        return { status: "success", data: undefined };
+        return {status: "success", data: undefined};
     } catch (error) {
         console.error("Error deleting moldes:", error);
-        return { status: "ERROR", data: undefined };
+        return {status: "ERROR", data: undefined};
     }
 };
 
 export const getUserInfo = async () => {
-    try{
+    try {
         const token = useAccessToken();
-        const response = await fetch(`${BASE_API_URL}/users/info`,{
+        const response = await fetch(`${BASE_API_URL}/users/info`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
 
         return await response.json();
-    }catch (error){
+    } catch (error) {
         console.error("Error deleting moldes:", error);
-        return { status: "ERROR", data: undefined };
+        return {status: "ERROR", data: undefined};
     }
 }
 
@@ -485,23 +486,23 @@ export const downloadTizadaSvg = async (url: string, fileName: string) => {
 
         // Get the blob from response
         const blob = await response.blob();
-        
+
         // Create object URL from blob
         const objectUrl = window.URL.createObjectURL(blob);
-        
+
         // Create temporary link element
         const link = document.createElement('a');
         link.href = objectUrl;
         link.download = `${fileName}.svg`; // Set suggested filename
-        
+
         // Add to document, click, and remove
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         // Clean up the object URL
         window.URL.revokeObjectURL(objectUrl);
-        
+
         return true;
     } catch (error) {
         console.error('Download failed:', error);
@@ -567,10 +568,10 @@ export const updateRollo = async (uuid: string, payload: RolloUpdatePayload): Pr
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return { status: "OK", data: undefined };
+        return {status: "OK", data: undefined};
     } catch (error) {
         console.error(`Error updating rollo ${uuid}:`, error);
-        return { status: "ERROR", data: undefined };
+        return {status: "ERROR", data: undefined};
     }
 };
 
@@ -588,13 +589,13 @@ export const updateFabric = async (uuid: string, payload: FabricPieceUpdatePaylo
         });
 
         if (!response.ok) {
-           throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return { status: "OK", data: undefined };
+        return {status: "OK", data: undefined};
     } catch (error) {
         console.error(`Error updating fabric piece ${uuid}:`, error);
-        return { status: "ERROR", data: undefined };
+        return {status: "ERROR", data: undefined};
     }
 };
 
@@ -608,25 +609,44 @@ export const updatePrenda = async (uuid: string, payload: PrendaUpdatePayload): 
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-           body: JSON.stringify(payload),
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return { status: "OK", data: undefined };
+        return {status: "OK", data: undefined};
     } catch (error) {
         console.error(`Error updating prenda ${uuid}:`, error);
-        return { status: "ERROR", data: undefined };
-}
+        return {status: "ERROR", data: undefined};
+    }
 };
 
-
-{/*
 export const deleteRollo = async (uuid: string) => {
-    // Implementation here
-  };
+    try {
+        const token = useAccessToken();
+        const url = new URL(`${BASE_API_URL}/inventario/rollo/${uuid}`);
+
+        const response = await fetch(url.toString(), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return {status: "OK", data: undefined};
+    } catch (error) {
+        console.error(`Error deleting roll ${uuid}:`, error);
+        return {status: "ERROR", data: undefined};
+    }
+};
 
 export const deleteFabric = async (uuid: string) => {
 // Implementation here
@@ -638,7 +658,19 @@ export const deletePrenda = async (uuid: string) => {
 
 
 export const deleteRollos = async (ids: string[]) => {
-// Implementation here
+    try {
+        const results = await Promise.all(ids.map(id => deleteRollo(id)));
+        const hasError = results.some(result => result.status === "ERROR");
+
+        if (hasError) {
+            return {status: "ERROR", data: undefined};
+        }
+
+        return {status: "success", data: undefined};
+    } catch (error) {
+        console.error("Error deleting moldes:", error);
+        return {status: "ERROR", data: undefined};
+    }
 };
 
 export const deleteFabrics = async (ids: string[]) => {
@@ -648,4 +680,3 @@ export const deleteFabrics = async (ids: string[]) => {
 export const deletePrendas = async (ids: string[]) => {
 // Implementation here
 };
-*/ }
