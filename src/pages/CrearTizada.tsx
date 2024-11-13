@@ -323,9 +323,9 @@ function CrearTizada() {
             if (response.status === 'success' && response.data) {
                 setSuccess(true);
                 // response.data is the UUID string directly
-                const uuid = response.data;
+                // const uuid = response.data;
                 setTimeout(() => {
-                    navigate(`/tizadas/tizada/${uuid}`);
+                    navigate(`/tizadas`);
                 }, 2000);
             } else {
                 setError("Error al crear la tizada. Por favor, intentelo nuevamente.");
@@ -556,6 +556,13 @@ function CrearTizada() {
                                         </Typography>
                                     </Box>
                                     ) : '';
+                                
+                                }}
+                                sx={{
+                                    "& .MuiSelect-select": {
+                                        display: 'flex',
+                                        justifyContent: 'flex-start',
+                                    }
                                 }}
                                 >
                                 {getAvailableMoldesForIndex(index)
