@@ -95,6 +95,7 @@ export const formatTimeRemaining = (endTime: string | null) => {
 };
 
 // TODO: Remove this file once backend handles SVG saving properly
+// Helper function
 export const fixTizadaSVGViewbox = async (svgUrl: string): Promise<string> => {
   try {
     const response = await fetch(svgUrl);
@@ -110,8 +111,13 @@ export const fixTizadaSVGViewbox = async (svgUrl: string): Promise<string> => {
       const binHeight = parseFloat(binElement.getAttribute('height') || '0');
       
       if (binWidth && binHeight) {
-        svgElement.setAttribute('width', binWidth.toString());
-        svgElement.setAttribute('height', binHeight.toString());
+        // Set largest dimension as primary and use proportional scaling
+        const largerDimension = Math.max(binWidth, binHeight);
+        const widthScale = binWidth / largerDimension * 100;
+        const heightScale = binHeight / largerDimension * 100;
+        
+        svgElement.setAttribute('width', `${widthScale}%`);
+        svgElement.setAttribute('height', `${heightScale}%`);
         svgElement.setAttribute('viewBox', `0 0 ${binWidth} ${binHeight}`);
         
         const modifiedSvgText = new XMLSerializer().serializeToString(svgDoc);

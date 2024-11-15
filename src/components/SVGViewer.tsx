@@ -29,7 +29,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   onMouseLeave,
   isTizada = false
 }) => {
-  // Keep track of the original URL to detect changes
   const originalUrlRef = useRef<string>('');
   const [modifiedSvgUrl, setModifiedSvgUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -38,20 +37,37 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
 
   useEffect(() => {
     const processSvg = async () => {
-      // Only process if URL has changed
       if (url === originalUrlRef.current) return;
       originalUrlRef.current = url;
 
       try {
         setIsLoaded(false);
+        const response = await fetch(url);
+        const svgText = await response.text();
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
         
         if (isTizada) {
-          const modifiedUrl = await fixTizadaSVGViewbox(url);
-          setModifiedSvgUrl(modifiedUrl);
-          setSvgDimensions({ width: 100, height: 100 });
+          const binElement = svgDoc.querySelector('.bin');
+          if (binElement) {
+            const width = parseFloat(binElement.getAttribute('width') || '0');
+            const height = parseFloat(binElement.getAttribute('height') || '0');
+            const largerDimension = Math.max(width, height);
+            const normalizedWidth = (width / largerDimension) * containerWidth;
+            const normalizedHeight = (height / largerDimension) * containerHeight;
+            setSvgDimensions({ width: normalizedWidth, height: normalizedHeight });
+            
+            const modifiedUrl = await fixTizadaSVGViewbox(url);
+            setModifiedSvgUrl(modifiedUrl);
+          }
         } else {
           setModifiedSvgUrl(url);
-          setSvgDimensions({ width: 100, height: 100 });
+          const svgElement = svgDoc.querySelector('svg');
+          if (svgElement) {
+            const width = parseFloat(svgElement.getAttribute('width') || '100');
+            const height = parseFloat(svgElement.getAttribute('height') || '100');
+            setSvgDimensions({ width, height });
+          }
         }
       } catch (err) {
         console.error('Error processing SVG:', err);
@@ -63,20 +79,19 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
       processSvg();
     }
     
-    // Cleanup function
     return () => {
       if (modifiedSvgUrl && isTizada && originalUrlRef.current !== url) {
         URL.revokeObjectURL(modifiedSvgUrl);
       }
     };
-  }, [url, isTizada]);
+  }, [url, isTizada, containerWidth, containerHeight]);
 
   const handleLoad = () => {
     setIsLoaded(true);
   };
 
   if (error) return <div>Error: {error}</div>;
-  if (!svgDimensions || !modifiedSvgUrl) return(
+  if (!svgDimensions || !modifiedSvgUrl) return (
     <Box sx={{
       position: 'absolute',
       top: '50%',
@@ -110,10 +125,15 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
     </Box>
   );
 
-  const scale = Math.min(
-    containerWidth / svgDimensions.width,
-    containerHeight / svgDimensions.height
-  ) * 0.9;
+  let scale;
+  if (isTizada) {
+    scale = 1; // Use normalized dimensions instead of calculating scale
+  } else {
+    scale = Math.min(
+      containerWidth / svgDimensions.width,
+      containerHeight / svgDimensions.height
+    ) * 0.9;
+  }
 
   return (
     <div
