@@ -92,12 +92,6 @@ export interface Prenda {
     deletedAt: string;
 }
 
-export interface PrendaDetallada {
-    name: string;
-    stock: number;
-    fabricPieces: GarmentPart[]
-}
-
 export interface MoldeCortado {
     fabricPieceId: string;
     color: FabricColor;
@@ -110,9 +104,10 @@ export interface GarmentPart {
     fabricPieceId: string;
     name: string;
     fabricRoll: RolloDeTela;
-    moldeId: string;
+    molde: Molde;
     url: string;
     quantity: number;
+    stock: number;
 }
 
 export interface FabricColor {

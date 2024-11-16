@@ -19,6 +19,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import {useAuth0} from "@auth0/auth0-react";
 import {UserProvider} from "./components/Login/UserProvider.tsx";
+import VerPrenda from "./pages/VerPrenda.tsx";
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
     const { isAuthenticated, isLoading } = useAuth0();
@@ -86,6 +87,11 @@ function App() {
                         <Route path="/inventario/prenda/crear" element={
                             <PrivateRoute>
                                 <CrearPrenda />
+                            </PrivateRoute>
+                        }/>
+                        <Route path="/inventario/prendas/:uuid" element={
+                            <PrivateRoute>
+                                <VerPrenda/>
                             </PrivateRoute>
                         }/>
 

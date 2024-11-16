@@ -9,7 +9,7 @@ import {
     Prenda,
     RolloDeTela,
     CreateTizadaFormData,
-    TizadaResult
+    TizadaResult, PrendaDetallada
 } from '../utils/types';
 
 const useAccessToken = () => {
@@ -745,4 +745,15 @@ export const deletePrendas = async (ids: string[]) => {
         console.error("Error deleting garments:", error);
         return {status: "ERROR", data: undefined};
     }
+};
+
+export const getPrendaById = async (uuid: string): Promise<ApiResponse<Prenda>> => {
+    const token = useAccessToken();
+    const response = await fetch(`${BASE_API_URL}/inventario/prenda/${uuid}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    return await response.json();
 };

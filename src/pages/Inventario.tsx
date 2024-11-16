@@ -19,10 +19,11 @@ import {getFontFamily} from '../utils/fonts';
 
 import {DataGrid, GridColDef} from '@mui/x-data-grid'; // , GridRowParams
 import {esES} from '@mui/x-data-grid/locales';
-import {Box, Typography, Button} from '@mui/material';
+import {Box, Typography, Button, Tooltip, IconButton} from '@mui/material';
 import CustomToolbar from "../components/CustomToolbar.tsx";
 import EditableCell from "../components/EditableCell.tsx";
 import {useEditManager} from "../components/hooks/useEditManager.tsx";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 {/* UI Components */
 }
@@ -443,6 +444,22 @@ function Inventario() {
                         min={0}
                     />
                 </Box>
+            )
+        },
+        {
+            field: 'preview',
+            headerName: '',
+            flex: 0,
+            width: 50,
+            renderCell: (params) => (
+                <Tooltip title="Ver detalle">
+                <IconButton
+                    onClick={() => navigate(`/inventario/prendas/${params.row.garmentId}`)}
+                    sx={{minWidth: 'auto', padding: 0}}
+                >
+                    <VisibilityIcon/>
+                </IconButton>
+                </Tooltip>
             )
         }
     ];

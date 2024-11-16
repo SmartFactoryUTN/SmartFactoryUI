@@ -158,7 +158,7 @@ const ConvertirPrendaModal: React.FC<ConvertirPrendaModalProps> = (
                             '&:hover': { backgroundColor: isSuccess ? 'darkgreen' : 'primary.dark' }
                         }}
                     >
-                        {isConverting ? "Convirtiendo..." : isSuccess ? "Convertida" : "Convertir"}
+                        {isConverting ? "Cosiendo..." : isSuccess ? "Cosida" : "Coser"}
                     </Button>
                 </Box>
 
