@@ -9,7 +9,7 @@ import {
     Prenda,
     RolloDeTela,
     CreateTizadaFormData,
-    TizadaResult, PrendaDetallada
+    TizadaResult
 } from '../utils/types';
 
 const useAccessToken = () => {
