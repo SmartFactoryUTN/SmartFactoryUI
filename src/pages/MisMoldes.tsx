@@ -11,7 +11,18 @@ import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
 import {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
-import {Button, Alert, Snackbar, Typography, Box, IconButton, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
+import {
+  Button, 
+  Alert, 
+  Snackbar, 
+  Typography, 
+  Box, 
+  IconButton, 
+  Dialog, 
+  DialogTitle, 
+  DialogActions, 
+  DialogContent
+} from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SvgPreview from "../components/MoldePreview.tsx";
 
@@ -44,7 +55,7 @@ function MisMoldes() {
       const [isPreviewOpen, setIsPreviewOpen] = useState(false);
       const [selectedMoldeUrl, setSelectedMoldeUrl] = useState<string | null>(null);
       const [selectedMoldeName, setSelectedMoldeName] = useState<string | null>(null);
-    
+      const [selectedMoldeDescription, setSelectedMoldeDescription] = useState<string | null>(null);
 
       useEffect(() => {
         fetchMoldes();
@@ -149,6 +160,7 @@ function MisMoldes() {
                 {/*PREVIEW DEL MOLDE*/}
                 setSelectedMoldeUrl(params.row.url);
                 setSelectedMoldeName(params.row.name);
+                setSelectedMoldeDescription(params.row.description);
                 setIsPreviewOpen(true);
               }}
               size="small"
@@ -228,15 +240,14 @@ function MisMoldes() {
                     },
                   }}
                 />
-
-                <Dialog 
+                <Dialog
                   open={isPreviewOpen}
                   onClose={() => setIsPreviewOpen(false)}
                   maxWidth="md"
                   fullWidth
                 >
                   
-                  <DialogTitle>Vista Previa del Molde {selectedMoldeName}</DialogTitle>
+                  <DialogTitle>Vista Previa del Molde {selectedMoldeName}, {selectedMoldeDescription}</DialogTitle>
                     <DialogContent>
                         { selectedMoldeUrl ? (
                             <SvgPreview url={selectedMoldeUrl!} />

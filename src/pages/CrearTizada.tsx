@@ -81,9 +81,12 @@ function CrearTizada() {
     const [success, setSuccess] = useState<boolean>(false);
     const [isSaveAndOptimize, setIsSaveAndOptimize] = useState<boolean>(false);
     const {userData} = useUserContext();
+    const [nameError, setNameError] = useState(false);
+    const [moldSelectionErrors, setMoldSelectionErrors] = useState<boolean[]>([]);
+    const [moldQuantityErrors, setMoldQuantityErrors] = useState<boolean[]>([]);
+    const [focusField, setFocusField] = useState<{index: number, type: 'select' | 'quantity'} | null>(null);
 
-    {/* Mostrar moldes disponibles del usuario */
-    }
+    {/* Mostrar moldes disponibles del usuario */}
     const [availableMolds, setAvailableMolds] = useState<Molde[]>([]);
 
     useEffect(() => {
@@ -104,11 +107,11 @@ function CrearTizada() {
                     setAvailableMolds(result.data.moldes);
                 } else {
                     console.error('Failed to fetch molds');
-                    setError('Failed to fetch molds. Please try again.');
+                    setError('Error al cargar sus moldes. Por favor, cargue la página nuevamente.');
                 }
             } catch (error) {
                 console.error('Error fetching molds:', error);
-                setError('An error occurred while fetching molds. Please try again.');
+                setError('Error al cargar sus moldes. Por favor, cargue la página nuevamente.');
             } finally {
                 setIsLoading(false);
             }
@@ -117,30 +120,14 @@ function CrearTizada() {
 
     {/* Actualizar los valores en el formulario */
     }
+    
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        //if (name === 'maxTime') {
-        //  if (value === '') {
-        //    setFormData(prev => ({ ...prev, [name]: 0 }));
-        //  } else {
-        //    const numValue = parseInt(value);
-        //    if (!isNaN(numValue) && numValue >= 1 && numValue <= 12) {
-        //      setFormData(prev => ({ ...prev, [name]: numValue }));
-        //    }
-        //  }
-        //} else
-        if (name === 'utilizationPercentage') {
-            if (value === '') {
-                setFormData(prev => ({...prev, [name]: 0}));
-            } else {
-                const numValue = parseFloat(value);
-                if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
-                    setFormData(prev => ({...prev, [name]: Number(numValue.toFixed(1))}));
-                }
-            }
-        } else {
-            setFormData((prev) => ({...prev, [name]: value}));
+        if (name === 'name' && nameError) {
+            setNameError(false);
+            setError(null);
         }
+        setFormData((prev) => ({...prev, [name]: value}));
     };
 
 
@@ -198,19 +185,117 @@ function CrearTizada() {
     {/* Logica de carga de moldes */
     }
     const handleMoldChange = (index: number, field: 'uuid' | 'quantity', value: string | number) => {
+        const newSelectErrors = [...moldSelectionErrors];
+        const newQuantityErrors = [...moldQuantityErrors];
         const newMolds = [...formData.molds];
-        newMolds[index] = {...newMolds[index], [field]: value};
-        setFormData((prev) => ({...prev, molds: newMolds}));
+    
+        if (field === 'uuid') {
+            // Handle molde selection
+            newSelectErrors[index] = false;
+            newMolds[index] = {
+                ...newMolds[index],
+                uuid: value as string
+            };
+            setMoldSelectionErrors(newSelectErrors);
+            // Only reset focus if we're handling a uuid field
+            if (focusField?.type === 'select') {
+                setFocusField(null);
+            }
+        } else {
+            // Handle quantity
+            const isEmpty = value === '';
+            const numValue = isEmpty ? 0 : Number(value);
+            const isInvalid = isEmpty || numValue < 1 || isNaN(numValue);
+            newQuantityErrors[index] = isInvalid;
+            newMolds[index] = {
+                ...newMolds[index],
+                quantity: numValue
+            };
+            setMoldQuantityErrors(newQuantityErrors);
+            // Only reset focus if we're handling a quantity field
+            if (focusField?.type === 'quantity') {
+                setFocusField(null);
+            }
+        }
+    
+        setFormData(prev => ({
+            ...prev,
+            molds: newMolds
+        }));
+    
+        // Clear general error if no validation errors
+        if (!newSelectErrors.includes(true) && !newQuantityErrors.includes(true)) {
+            setError(null);
+        }
     };
+
     const addMold = () => {
         setFormData((prev) => ({
             ...prev,
             molds: [...prev.molds, {uuid: '', quantity: 1}],
         }));
+        setMoldSelectionErrors(prev => [...prev, false]);
+        setMoldQuantityErrors(prev => [...prev, false]);
     };
+    
     const removeMold = (index: number) => {
         const newMolds = formData.molds.filter((_, i) => i !== index);
         setFormData((prev) => ({...prev, molds: newMolds}));
+        setMoldSelectionErrors(prev => prev.filter((_, i) => i !== index));
+        setMoldQuantityErrors(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const getAvailableMoldesForIndex = (index: number) => {
+        const selectedMoldes = formData.molds
+            .filter((_, i) => i !== index) // Exclude current index
+            .map(m => m.uuid);
+        
+        return availableMolds.filter(mold => !selectedMoldes.includes(mold.uuid));
+    };
+
+    const validateForm = () => {
+        // Reset all errors
+        setNameError(false);
+        setMoldSelectionErrors(new Array(formData.molds.length).fill(false));
+        setMoldQuantityErrors(new Array(formData.molds.length).fill(false));
+    
+        if (formData.name.trim() === '') {
+            setError("Por favor, ingrese un nombre para la tizada.");
+            setNameError(true);
+            setFocusField(null);  // Clear any previous mold focus
+            return false;
+        }
+    
+        // Check each mold and set focus on first error
+        const newSelectionErrors = new Array(formData.molds.length).fill(false);
+        const newQuantityErrors = new Array(formData.molds.length).fill(false);
+        let focusSet = false;
+    
+        for (let i = 0; i < formData.molds.length; i++) {
+            const mold = formData.molds[i];
+            if (mold.uuid === '') {
+                newSelectionErrors[i] = true;
+                if (!focusSet) {
+                    setFocusField({ index: i, type: 'select' });
+                    focusSet = true;
+                }
+            } else if (mold.quantity < 1) {
+                newQuantityErrors[i] = true;
+                if (!focusSet) {
+                    setFocusField({ index: i, type: 'quantity' });
+                    focusSet = true;
+                }
+            }
+        }
+    
+        if (focusSet) {
+            setError("Por favor, complete todos los campos de moldes correctamente.");
+            setMoldSelectionErrors(newSelectionErrors);
+            setMoldQuantityErrors(newQuantityErrors);
+            return false;
+        }
+    
+        return true;
     };
 
     {/* LLamada a la api */
@@ -221,13 +306,12 @@ function CrearTizada() {
         setSuccess(false);
         setIsSaveAndOptimize(false);
 
+        //Handle errors
+        if (!validateForm()) return;
+        
         const maxTime = optimizationTime * 60 * 1000;
-
-        if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
-            setError("Por favor, seleccione un molde y especifíque una cantidad.");
-            return;
-        }
-
+        
+        // Build the payload
         const dataToSend = {
             ...formData,
             maxTime
@@ -239,9 +323,9 @@ function CrearTizada() {
             if (response.status === 'success' && response.data) {
                 setSuccess(true);
                 // response.data is the UUID string directly
-                const uuid = response.data;
+                // const uuid = response.data;
                 setTimeout(() => {
-                    navigate(`/tizadas/tizada/${uuid}`);
+                    navigate(`/tizadas`);
                 }, 2000);
             } else {
                 setError("Error al crear la tizada. Por favor, intentelo nuevamente.");
@@ -255,14 +339,11 @@ function CrearTizada() {
     const handleSaveAndCptimize = async () => {
         setError(null);
         setSuccess(false);
+        //Handle errors
+        if (!validateForm()) return;
 
         const maxTime = optimizationTime * 60 * 1000;
-        let uuid: string | null = null;
-
-        if (formData.molds.some(mold => mold.uuid === '' || mold.quantity < 1)) {
-            setError("Por favor, seleccione un molde y especifíque una cantidad.");
-            return;
-        }
+        let uuid: string | null = null;        
 
         const dataToSend = {
             ...formData,
@@ -284,11 +365,11 @@ function CrearTizada() {
                             navigate('/tizadas');
                         }, 1500);
                     } else {
-                        setError("Failed to start tizada generation. Please try again.");
+                        setError("Error al iniciar la optimización. Verifique su conexión e inténtelo nuevamente.");
                     }
                 } catch (error) {
                     console.error('Error starting tizada generation:', error);
-                    setError("An error occurred while starting tizada generation. Please try again.");
+                    setError("Error al iniciar la optimización. Verifique su conexión e inténtelo nuevamente.");
                 }
             } else {
                 setError("Error al crear la tizada. Por favor, intentelo nuevamente.");
@@ -316,9 +397,11 @@ function CrearTizada() {
                             fullWidth
                             label="Ingrese un nombre para su tizada"
                             name="name"
+                            error={nameError}
+                            inputRef={input => nameError && input?.focus()}
                             value={formData.name}
                             onChange={handleInputChange}
-                            required
+                            //required
                         />
                     </Grid>
                     {/* Dimensiones de la mesa de corte */}
@@ -437,62 +520,101 @@ function CrearTizada() {
                     </Grid>
                     <Grid item xs={12}>
                         <Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-                            <Typography sx={{flexGrow: 1, textAlign: 'left', fontWeight: 'bold'}}>
-                                Moldes
-                                {/*<Tooltip title={tooltipMoldes}>
-      <IconButton size="small" sx={{ "& .MuiInputBase-input": { fontSize: 10, height: 4, padding: 1 } }}      >
-        <HelpOutlineIcon fontSize="small" />
-      </IconButton>
-    </Tooltip>
-    */}
-                            </Typography>
+                        <Typography sx={{flexGrow: 1, textAlign: 'left', fontWeight: 'bold'}}>
+                            Moldes
+                        </Typography>
                         </Box>
                         {formData.molds.map((mold, index) => (
-                            <Grid container spacing={2} key={index} sx={{mb: 2}} alignItems="center">
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Seleccionar Molde</InputLabel>
-                                        <Select
-                                            value={mold.uuid}
-                                            onChange={(e) => handleMoldChange(index, 'uuid', e.target.value as string)}
-                                            label="Seleccionar Molde"
-                                        >
-                                            {availableMolds
-                                                .slice()
-                                                .sort((a, b) => a.name.localeCompare(b.name))
-                                                .map((availableMold) => (
-                                                    <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
-                                                        {availableMold.name}
-                                                    </MenuItem>
-                                                ))}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Cantidad"
-                                        type="number"
-                                        value={mold.quantity}
-                                        onChange={(e) => handleMoldChange(index, 'quantity', parseInt(e.target.value))}
-                                        InputProps={{inputProps: {min: 1}}}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <IconButton onClick={() => removeMold(index)} color="error">
-                                        <DeleteIcon/>
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        ))}
-                        <Box sx={{mt: 2}}>
-                            <Button
-                                startIcon={<AddIcon/>}
-                                onClick={addMold}
-                                variant="outlined"
+                        <Grid container spacing={2} key={index} sx={{ mb: 2 }} alignItems="center">
+                            <Grid item xs={6}>
+                            <FormControl 
+                                error={moldSelectionErrors[index]}
+                                fullWidth
                             >
-                                Agregar Molde
-                            </Button>
+                                <InputLabel error={moldSelectionErrors[index]}>
+                                Seleccionar Molde
+                                </InputLabel>
+                                <Select
+                                value={mold.uuid}
+                                onChange={(e) => handleMoldChange(index, 'uuid', e.target.value as string)}
+                                label="Seleccionar Molde"
+                                error={moldSelectionErrors[index]}
+                                autoFocus={moldSelectionErrors[index]}
+                                inputRef={input => {
+                                    if (focusField?.index === index && 
+                                        focusField.type === 'select') {
+                                    input?.focus();
+                                    }
+                                }}
+                                renderValue={(selected) => {
+                                    const selectedMold = availableMolds.find(m => m.uuid === selected);
+                                    return selectedMold ? (
+                                    <Box>
+                                        <Typography component="span">{selectedMold.name}</Typography>
+                                        <Typography component="span" color="text.secondary" sx={{ ml: 1 }}>
+                                        {selectedMold.description || 'Sin descripción'}
+                                        </Typography>
+                                    </Box>
+                                    ) : '';
+                                
+                                }}
+                                sx={{
+                                    "& .MuiSelect-select": {
+                                        display: 'flex',
+                                        justifyContent: 'flex-start',
+                                    }
+                                }}
+                                >
+                                {getAvailableMoldesForIndex(index)
+                                    .slice()
+                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                    .map((availableMold) => (
+                                    <MenuItem key={availableMold.uuid} value={availableMold.uuid}>
+                                        <Box>
+                                        <Typography>{availableMold.name}</Typography>
+                                        <Typography variant="caption" color="textSecondary">
+                                            {availableMold.description || 'Sin descripción'}
+                                        </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            </Grid>
+                            <Grid item xs={4}>
+                            <TextField
+                                fullWidth
+                                label="Cantidad"
+                                type="number"
+                                value={mold.quantity === 0 ? '' : mold.quantity}
+                                onChange={(e) => handleMoldChange(index, 'quantity', e.target.value)}
+                                InputProps={{
+                                inputProps: { min: 1 }
+                                }}
+                                error={moldQuantityErrors[index]}
+                                inputRef={input => {
+                                if (focusField?.index === index && 
+                                    focusField.type === 'quantity') {
+                                    input?.focus();
+                                }
+                                }}
+                            />
+                            </Grid>
+                            <Grid item xs={2}>
+                            <IconButton onClick={() => removeMold(index)} color="error">
+                                <DeleteIcon/>
+                            </IconButton>
+                            </Grid>
+                        </Grid>
+                        ))}
+                        <Box sx={{ mt: 2 }}>
+                        <Button
+                            startIcon={<AddIcon/>}
+                            onClick={addMold}
+                            variant="outlined"
+                        >
+                            Agregar Molde
+                        </Button>
                         </Box>
                     </Grid>
 

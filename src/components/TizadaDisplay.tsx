@@ -16,7 +16,7 @@ interface TizadaDisplayProps {
 const MIN_ZOOM = 0.1;
 const MAX_ZOOM = 30;
 const ZOOM_STEP = 0.1;
-const DEFAULT_ZOOM = 20;
+const DEFAULT_ZOOM = 1;
 
 const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) => {
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
@@ -125,7 +125,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
       >
         <RemoveIcon />
       </IconButton>
-      <Typography sx={{ minWidth: 60, textAlign: 'center', lineHeight: '40px' }}>
+      <Typography sx={{color:'rgba(0,0,0,0.7)', minWidth: 60, textAlign: 'center', lineHeight: '40px' }}>
         {Math.round(zoom * 100)}%
       </Typography>
       <IconButton 
@@ -196,6 +196,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
+                isTizada={true} // Add this line
               />
               
               {tizada.results[0]?.materialUtilization !== undefined && (
