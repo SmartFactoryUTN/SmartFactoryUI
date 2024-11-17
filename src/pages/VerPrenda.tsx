@@ -5,6 +5,7 @@ import { getPrendaById } from "../api/methods.ts";
 import { Prenda, RolloDeTela } from "../utils/types.tsx";
 import PageLayout from "../components/layout/PageLayout";
 import {getFontFamily} from "../utils/fonts.tsx";
+import SvgPreview from "../components/MoldePreview.tsx";
 
 const DetallePrenda: React.FC = () => {
     const { uuid } = useParams<{ uuid: string }>();
@@ -143,18 +144,7 @@ const DetallePrenda: React.FC = () => {
                 </DialogTitle>
                 <DialogContent>
                     {selectedMolde?.url ? (
-                        <object
-                            type="image/svg+xml"
-                            data={selectedMolde.url}
-                            style={{
-                                width: '100%',
-                                height: '500px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                            }}
-                        >
-                            Su navegador no soporta SVGs
-                        </object>
+                        <SvgPreview url={selectedMolde.url} />
                     ) : (
                         <Typography variant="body2" color="textSecondary">
                             No hay una previsualización disponible para este molde.

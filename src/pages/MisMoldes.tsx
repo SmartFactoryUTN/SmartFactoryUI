@@ -13,6 +13,7 @@ import {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {esES} from '@mui/x-data-grid/locales';
 import {Button, Alert, Snackbar, Typography, Box, IconButton, Dialog, DialogTitle, DialogActions, DialogContent} from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SvgPreview from "../components/MoldePreview.tsx";
 
 //, GridRowParams
 
@@ -236,23 +237,15 @@ function MisMoldes() {
                 >
                   
                   <DialogTitle>Vista Previa del Molde {selectedMoldeName}</DialogTitle>
-                  <DialogContent>
-                    {selectedMoldeUrl && (
-                      <object
-                        type="image/svg+xml"
-                        data={selectedMoldeUrl}
-                        style={{
-                          width: '100%',
-                          height: '500px',
-                          border: '1px solid #ccc',
-                          borderRadius: '4px',
-                          marginTop: '16px'
-                        }}
-                      >
-                        Su navegador no soporta SVGs
-                      </object>
-                    )}
-                  </DialogContent>
+                    <DialogContent>
+                        { selectedMoldeUrl ? (
+                            <SvgPreview url={selectedMoldeUrl!} />
+                            ) : (
+                            <Typography variant="body2" color="textSecondary">
+                                No hay una previsualización disponible para este molde.
+                            </Typography>
+                        )}
+                    </DialogContent>
                   <DialogActions>
                     <Button onClick={() => setIsPreviewOpen(false)}>
                       Cerrar
