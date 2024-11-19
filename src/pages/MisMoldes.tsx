@@ -94,7 +94,7 @@ function MisMoldes() {
         { 
           field: 'name', 
           headerName: 'Artículo', 
-          width: 170,
+          width: 150,
           editable: false,
           renderCell: (params) => (
             <EditableCell
@@ -115,7 +115,7 @@ function MisMoldes() {
         { 
           field: 'description', 
           headerName: 'Descripción', 
-          width: 200,
+          width: 170,
           editable: false,
           renderCell: (params) => (
             <EditableCell
