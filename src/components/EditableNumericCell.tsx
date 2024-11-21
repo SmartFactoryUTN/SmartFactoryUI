@@ -9,71 +9,109 @@ import RemoveIcon from '@mui/icons-material/Remove';
 interface EditableNumericCellProps {
   value: number;
   row: any;
-  field?: string; 
+  field?: string;
   isEditing: boolean;
-  onEdit: (id: string) => void;  
-  onSave: () => void;  
+  onEdit: (id: string) => void;
+  onSave: () => void;
   onCancel: () => void;
   onChange: (value: number) => void;
   min?: number;
 }
 
-const EditableNumericCell = ({ 
-  value, 
-  row, 
-  isEditing, 
-  onEdit, 
-  onSave, 
+const EditableNumericCell = ({
+  value,
+  row,
+  isEditing,
+  onEdit,
+  onSave,
   onCancel,
   onChange,
   min = 0
 }: EditableNumericCellProps) => {
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState<string>(value.toString());
+  const [initialValue, setInitialValue] = useState<number>(value);
 
   useEffect(() => {
-    setInputValue(value);
-  }, [value]);
+    if (isEditing) {
+      setInitialValue(value);
+      setInputValue(value.toString());
+    }
+  }, [isEditing, value]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (e.key === 'Enter') {
-      onSave();
+      handleSave();
     }
     if (e.key === 'Escape') {
-      onCancel();
+      handleCancel();
     }
   };
 
   const handleIncrement = () => {
-    const newValue = inputValue + 1;
-    setInputValue(newValue);
+    const newValue = parseInt(inputValue || '0') + 1;
+    setInputValue(newValue.toString());
     onChange(newValue);
   };
 
   const handleDecrement = () => {
-    if (inputValue > min) {
-      const newValue = inputValue - 1;
-      setInputValue(newValue);
+    const currentValue = parseInt(inputValue || '0');
+    if (currentValue > min) {
+      const newValue = currentValue - 1;
+      setInputValue(newValue.toString());
       onChange(newValue);
+    }
+  };
+
+  const handleSave = () => {
+    // If input is empty or invalid, treat it as a cancel
+    if (inputValue.trim() === '' || isNaN(parseInt(inputValue))) {
+      handleCancel();
+      return;
+    }
+    
+    const numValue = parseInt(inputValue);
+    if (numValue >= min) {
+      onChange(numValue);
+      onSave();
+    }
+  };
+
+  const handleCancel = () => {
+    // Reset to initial value and cancel
+    onChange(initialValue);
+    onCancel();
+  };
+
+  const handleInputChange = (value: string) => {
+    // Allow empty string or valid numbers
+    if (value === '' || /^\d+$/.test(value)) {
+      setInputValue(value);
+      if (value !== '') {
+        const numValue = parseInt(value);
+        if (!isNaN(numValue)) {
+          onChange(numValue);
+        }
+      }
     }
   };
 
   if (isEditing) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
+      <Box sx={{
+        display: 'flex',
         alignItems: 'center',
         gap: 0.5,
         width: '100%',
         minWidth: 'min-content'
       }}>
-        <Box sx={{ 
-          display: 'flex', 
+        <Box sx={{
+          display: 'flex',
           alignItems: 'center',
           width: 'auto'
         }}>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={handleDecrement}
             sx={{
               padding: '2px',
@@ -87,10 +125,9 @@ const EditableNumericCell = ({
             value={inputValue}
             size="small"
             autoFocus
-            type="number"
             sx={{
-              mx: 0.5, // Reduced margin
-              minWidth: '60px', // Base width for ~5 characters
+              mx: 0.5,
+              minWidth: '60px',
               maxWidth: '80px',
               '& .MuiOutlinedInput-root': {
                 height: '28px'
@@ -101,49 +138,40 @@ const EditableNumericCell = ({
               },
               '& input[type=number]': {
                 MozAppearance: 'textfield',
-                padding: '4px 8px', // Reduced padding
-                fontSize: '0.875rem' // Slightly smaller font
+                padding: '4px 8px',
+                fontSize: '0.875rem'
               }
             }}
-            inputProps={{ 
-              min,
-              style: { 
-                textAlign: 'center'
-              }
+            inputProps={{
+              style: { textAlign: 'center' }
             }}
-            onChange={(e) => {
-              const newValue = parseInt(e.target.value) || 0;
-              if (newValue >= min) {
-                setInputValue(newValue);
-                onChange(newValue);
-              }
-            }}
+            onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             onClick={(e) => e.stopPropagation()}
           />
 
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={handleIncrement}
             sx={{
-              padding: '2px', // Reduced padding
-              '& svg': { fontSize: '16px' } // Smaller icon
+              padding: '2px',
+              '& svg': { fontSize: '16px' }
             }}
           >
             <AddIcon fontSize="small" />
           </IconButton>
         </Box>
 
-        <Box sx={{ 
+        <Box sx={{
           display: 'flex',
-          gap: 0.25, // Reduced gap
+          gap: 0.25,
           marginLeft: 'auto'
         }}>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e) => {
               e.stopPropagation();
-              onSave(); 
+              handleSave();
             }}
             sx={{
               padding: '2px',
@@ -152,15 +180,15 @@ const EditableNumericCell = ({
           >
             <CheckIcon fontSize="small" color="primary" />
           </IconButton>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e) => {
               e.stopPropagation();
-              onCancel();
+              handleCancel();
             }}
             sx={{
-              padding: '2px', // Reduced padding
-              '& svg': { fontSize: '16px' } // Smaller icon
+              padding: '2px',
+              '& svg': { fontSize: '16px' }
             }}
           >
             <CloseIcon fontSize="small" color="error" />
@@ -168,33 +196,32 @@ const EditableNumericCell = ({
         </Box>
       </Box>
     );
-}
-  
+  }
+
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      alignItems: 'center', 
+    <Box sx={{
+      display: 'flex',
+      alignItems: 'center',
       width: '100%',
     }}>
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</span>
       <Tooltip title="Editar Stock">
-      <IconButton
-        className="edit-button"
-        size="small"
-        sx={{ ml: 'auto' }}
-        onClick={(e) => {
-          e.stopPropagation();
-          const id = row.fabricRollId || row.fabricPieceId || row.garmentId;
-          console.log('Edit clicked:', { row, id }); // Debug log
-          if (id) {
-            onEdit(id);
-          } else {
-            console.error('No valid ID found in row:', row);
-          }
-        }}
-      >
-        <EditIcon />
-      </IconButton>
+        <IconButton
+          className="edit-button"
+          size="small"
+          sx={{ ml: 'auto' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            const id = row.fabricRollId || row.fabricPieceId || row.garmentId;
+            if (id) {
+              onEdit(id);
+            } else {
+              console.error('No valid ID found in row:', row);
+            }
+          }}
+        >
+          <EditIcon />
+        </IconButton>
       </Tooltip>
     </Box>
   );
