@@ -1,4 +1,3 @@
-// EditableCell.tsx
 import { useState, useEffect, KeyboardEvent } from 'react';
 import { Box, IconButton, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -28,24 +27,38 @@ const EditableCell = ({
   onChange
 }: EditableCellProps) => {
   const [inputValue, setInputValue] = useState(value);
+  const [initialValue, setInitialValue] = useState(value);
 
   useEffect(() => {
-    setInputValue(value);
-  }, [value]);
+    if (isEditing) {
+      setInitialValue(value);
+      setInputValue(value);
+    }
+  }, [isEditing, value]);
 
-  // Add this handler
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    // Stop propagation for all keys when editing
     e.stopPropagation();
-
-    // Handle Enter key to save
     if (e.key === 'Enter') {
-      onSave(row[idField]);
+      handleSave();
     }
-    // Handle Escape key to cancel
     if (e.key === 'Escape') {
-      onCancel();
+      handleCancel();
     }
+  };
+
+  const handleSave = () => {
+    // If input is empty or only whitespace, treat it as a cancel
+    if (!inputValue || !inputValue.trim()) {
+      handleCancel();
+      return;
+    }
+    onSave(row[idField]);
+  };
+
+  const handleCancel = () => {
+    // Reset to initial value and cancel
+    onChange(initialValue);
+    onCancel();
   };
 
   if (isEditing) {
@@ -61,8 +74,8 @@ const EditableCell = ({
             setInputValue(newValue);
             onChange(newValue);
           }}
-          onKeyDown={handleKeyDown} // Add the keyDown handler
-          onClick={(e) => e.stopPropagation()} // Prevent row selection
+          onKeyDown={handleKeyDown}
+          onClick={(e) => e.stopPropagation()}
           InputProps={{
             sx: {
               padding: '0px',
@@ -77,7 +90,7 @@ const EditableCell = ({
             size="small"
             onClick={(e) => {
               e.stopPropagation();
-              onSave(row[idField]);
+              handleSave();
             }}
           >
             <CheckIcon fontSize="small" color="primary" />
@@ -86,7 +99,7 @@ const EditableCell = ({
             size="small"
             onClick={(e) => {
               e.stopPropagation();
-              onCancel();
+              handleCancel();
             }}
           >
             <CloseIcon fontSize="small" color="error" />
