@@ -479,15 +479,27 @@ function Inventario() {
             <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                 <Typography variant="h5" sx={{mb: 2}}>Rollos de Tela</Typography>
                 <Box sx={{display: "flex", alignItems: "center"}}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={handleOpenConvertirModal}
-                        sx={{marginRight: 2, mb: 2}}
-                        disabled={selectedRollos.length === 0}
+                    <Tooltip 
+                        title={
+                            selectedRollos.length === 0 
+                                ? "Seleccione al menos un rollo" 
+                                : selectedRollos.some(rollo => rollo.stock === 0)
+                                    ? "Uno o más rollos seleccionados no tienen stock"
+                                    : ""
+                        }
                     >
-                        Convertir
-                    </Button>
+                    <span>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={handleOpenConvertirModal}
+                            sx={{marginRight: 2, mb: 2}}
+                            disabled={selectedRollos.length === 0 || selectedRollos.some(rollo => rollo.stock === 0)}
+                        >
+                            Convertir
+                        </Button>
+                    </span>
+                    </Tooltip>
                     <Button variant="contained" color="primary" onClick={handleOpenModal}
                             sx={{mb: 2, minWidth: "20px", minHeight: "20px"}}>
                         {/*<Typography variant="h5">+</Typography>*/}
