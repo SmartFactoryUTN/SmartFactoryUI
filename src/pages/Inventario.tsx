@@ -564,12 +564,13 @@ function Inventario() {
 
             {/* Fabrics Table */}
             <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                 <SectionTitle>Moldes Cortados</SectionTitle>
+            </Box>
                 <Box sx={{height: '400', width: '100%', mb: 4}}>
                 <DataGrid
                     rows={fabrics}
                     columns={fabricColumns}
-                    checkboxSelection={true}
                     getRowId={(row) => row.fabricPieceId}
                     initialState={{
                         pagination: {
