@@ -96,18 +96,9 @@ function Inventario() {
         setOpenConvertirPrendaModal(true);
     };
 
-    const handleCloseConvertirPrendaModal = () => {
-        setOpenConvertirPrendaModal(false);
-    };
-
     const handleConversionRollosSuccess = () => {
         fetchRollos();
         fetchFabrics();
-    }
-
-    const handleConversionPrendasSuccess = () => {
-        fetchFabrics();
-        fetchPrendas();
     }
 
     const handleOpenConvertirModal = () => {
@@ -707,10 +698,13 @@ function Inventario() {
             />
 
             <ConvertirPrendaModal
-                open={openConvertirPrendaModal}
-                onClose={handleCloseConvertirPrendaModal}
-                selectedPrendas={selectedPrendas}
-                onConversionSuccess={handleConversionPrendasSuccess}
+            open={openConvertirPrendaModal}
+            onClose={() => setOpenConvertirPrendaModal(false)}
+            selectedPrendas={selectedPrendas}
+            onConversionSuccess={() => {
+                fetchFabrics();
+                fetchPrendas();
+            }}
             />
         </PageLayout>
     );
