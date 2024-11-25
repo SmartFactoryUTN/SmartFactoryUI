@@ -52,9 +52,9 @@ const NAVBAR_HEIGHT = 64;
 
 const getStatusConfig = (status: string) => {
   const config = {
-    CREATED: { color: 'warning', label: 'Creada' },
-    IN_PROGRESS: { color: 'info', label: 'En curso' },
-    FINISHED: { color: 'success', label: 'Finalizada' },
+    CREATED: { color: 'warning', label: 'Por tizar' },
+    IN_PROGRESS: { color: 'info', label: 'Optimizando' },
+    FINISHED: { color: 'success', label: 'Terminada' },
     ERROR: { color: 'error', label: 'Error' }
   };
   return config[status as keyof typeof config] || config.CREATED;
