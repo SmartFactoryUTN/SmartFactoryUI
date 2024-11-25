@@ -15,15 +15,15 @@ import PageLayout from '../components/layout/PageLayout';
 import NuevoRolloModal from "./NuevoRollo.tsx";
 import ConvertirRolloModal from "./ConvertirRollo.tsx";
 import ConvertirPrendaModal from "./ConvertirPrendaModal.tsx";
-import {getFontFamily} from '../utils/fonts';
 
 import {DataGrid, GridColDef} from '@mui/x-data-grid'; // , GridRowParams
 import {esES} from '@mui/x-data-grid/locales';
-import {Box, Typography, Button, Tooltip, IconButton} from '@mui/material';
+import {Box, Button, Tooltip, IconButton} from '@mui/material';
 import CustomToolbar from "../components/CustomToolbar.tsx";
 import EditableCell from "../components/EditableCell.tsx";
 import {useEditManager} from "../components/hooks/useEditManager.tsx";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { MainTitle, SectionTitle } from '../components/TitleTypographies';
 
 {/* UI Components */
 }
@@ -469,16 +469,15 @@ function Inventario() {
         <PageLayout>
             {/* Title */}
             <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2}}>
-                <Typography color="black" variant="h4" sx={{fontFamily: getFontFamily('bodoni')}}>
-                    Inventario
-                </Typography>
+                <MainTitle>Inventario</MainTitle>
             </Box>
 
 
             {/* Rollos de Tela Table */}
-            <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <Typography variant="h5" sx={{mb: 2}}>Rollos de Tela</Typography>
-                <Box sx={{display: "flex", alignItems: "center"}}>
+            <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+            <SectionTitle>Rollos de Tela</SectionTitle>
+            <Box sx={{display: "flex", alignItems: "center"}}>
                     <Tooltip 
                         title={
                             selectedRollos.length === 0 
@@ -561,15 +560,12 @@ function Inventario() {
                     }}
                 />
             </Box>
+            </Box>
 
             {/* Fabrics Table */}
-            <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <Typography variant="h5" sx={{mb: 2}}>Moldes Cortados</Typography>
-                <Box sx={{display: "flex", alignItems: "center"}}>
-
-                </Box>
-            </Box>
-            <Box sx={{height: '400', width: '100%', mb: 4}}>
+            <Box sx={{ mb: 4 }}>
+                <SectionTitle>Moldes Cortados</SectionTitle>
+                <Box sx={{height: '400', width: '100%', mb: 4}}>
                 <DataGrid
                     rows={fabrics}
                     columns={fabricColumns}
@@ -614,11 +610,14 @@ function Inventario() {
                     }}
                 />
             </Box>
+            </Box>
+            
 
             {/* Prendas Table */}
-            <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <Typography variant="h5" sx={{mb: 2}}>Prendas</Typography>
-                <Box sx={{display: "flex", alignItems: "center"}}>
+            <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+            <SectionTitle>Prendas</SectionTitle>
+            <Box sx={{display: "flex", alignItems: "center"}}>
                     <Button
                         variant="contained"
                         color="secondary"
@@ -691,6 +690,8 @@ function Inventario() {
                     }}
                 />
             </Box>
+            </Box>
+
             <NuevoRolloModal
                 open={openModalRollo}
                 onClose={handleCloseModal}

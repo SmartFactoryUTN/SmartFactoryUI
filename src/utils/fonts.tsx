@@ -8,6 +8,10 @@ import '@fontsource/kanit/700.css';
 import '@fontsource/reddit-mono/400.css';
 import '@fontsource/tomorrow/400.css';
 import '@fontsource/tomorrow/700.css';
+import '@fontsource/playfair-display/400.css';
+import '@fontsource/playfair-display/700.css';
+import '@fontsource/lato/400.css';
+import '@fontsource/lato/700.css';
 
 // Define available font weights
 export const FontWeights = {
@@ -22,53 +26,53 @@ export const FontFamilies = {
   kanit: 'Kanit',
   mono: 'Reddit Mono',
   tomorrow: 'Tomorrow',
+  lato: 'Lato',
+  playfair: 'Playfair Display',
 } as const;
 
-// Create a type-safe theme configuration for fonts
+// Core typography settings
 export const typography = {
-  // Headers
   h1: {
-    fontFamily: FontFamilies.bodoni,
-    fontWeight: FontWeights.bold,
+    fontSize: '2rem',
+    fontWeight: 800,
+    color: 'inherit',
+    marginBottom: '0.75 rem'
   },
   h2: {
-    fontFamily: FontFamilies.kalnia,
-    fontWeight: FontWeights.bold,
+    fontSize: '1.5rem',
+    fontWeight: 400,
+    color: 'inherit',
+    marginBottom: '0.75rem'
   },
   h3: {
-    fontFamily: FontFamilies.kanit,
-    fontWeight: FontWeights.bold,
+    fontFamily: 'Kanit', // Sans-serif for interactive headers (tabs, expandable sections)
+    fontSize: '1.25rem',
+    fontWeight: 500,
+    color: 'inherit',
+    marginBottom: '0.5rem'
   },
-  // Body text
+  // Body text variants
   body1: {
-    fontFamily: FontFamilies.kalnia,
-    fontWeight: FontWeights.regular,
+    fontFamily: 'Kalnia', // Primary reading text
+    fontSize: '1rem',
+    fontWeight: 400,
+    lineHeight: 1.5
   },
   body2: {
-    fontFamily: FontFamilies.kanit,
-    fontWeight: FontWeights.regular,
+    fontFamily: 'Kanit', // Secondary text and UI elements
+    fontSize: '0.875rem',
+    fontWeight: 400,
+    lineHeight: 1.43
   },
-  // Code blocks
+  // Special use cases
   code: {
-    fontFamily: FontFamilies.mono,
-    fontWeight: FontWeights.regular,
+    fontFamily: 'Reddit Mono', // For technical/numerical values
+    fontSize: '0.875rem',
+    fontWeight: 400
   },
-  // Future-oriented text (could be used for statistics or forecasts)
   future: {
-    fontFamily: FontFamilies.tomorrow,
-    fontWeight: FontWeights.regular,
+    fontFamily: 'Tomorrow', // For calculated/projected values
+    fontSize: '0.875rem',
+    fontWeight: 700
   }
-} as const;
-
-// Helper function to get font family with fallbacks
-export const getFontFamily = (font: keyof typeof FontFamilies) => {
-  const fallbacks = {
-    [FontFamilies.bodoni]: 'serif',
-    [FontFamilies.kalnia]: 'serif',
-    [FontFamilies.kanit]: 'sans-serif',
-    [FontFamilies.mono]: 'monospace',
-    [FontFamilies.tomorrow]: 'sans-serif',
-  };
-
-  return `${FontFamilies[font]}, ${fallbacks[FontFamilies[font]]}`;
 };

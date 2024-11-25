@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 import { Box, Button, Typography, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import PageLayout from '../components/layout/PageLayout';
-import { getFontFamily } from '../utils/fonts';
 import { useUserContext } from "../components/Login/UserProvider";
 
 const Login = () => {
@@ -75,7 +74,6 @@ const Login = () => {
                     fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
                     color: 'text.secondary',
                     textAlign: 'left',
-                    fontFamily: getFontFamily('mono'),
                     mb: 0
                 }}
             >
@@ -85,7 +83,6 @@ const Login = () => {
                 variant="h1"
                 sx={{
                     fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
-                    fontFamily: getFontFamily('mono'),
                     background: 'linear-gradient(45deg, #708d81 30%, #708d81 90%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextStroke: '2px #001427',
@@ -106,7 +103,6 @@ const Login = () => {
                     color: 'text.secondary',
                     textAlign: 'center',
                     mb: 1,
-                    fontFamily: getFontFamily('mono'),
                 }}
             >
                 Ya puede comenzar a optimizar sus procesos textiles
@@ -134,7 +130,6 @@ const Login = () => {
                         //fontWeight: 'normal',
                         textAlign: 'left',
                         //fontFamily: getFontFamily('kalnia'), // Add this line
-                         fontFamily: getFontFamily('mono'),
                         mb: 0
                     }}
                 >
@@ -145,7 +140,6 @@ const Login = () => {
                     sx={{
                         fontSize: { xs: '3rem', sm: '4rem', md: '6rem' },
                         //fontWeight: 'bold',
-                        fontFamily: getFontFamily('kalnia'), // Add this line  bodoni
                         background: 'linear-gradient(45deg, #708d81 30%, #708d81 90%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextStroke: '2px #001427',
@@ -166,7 +160,6 @@ const Login = () => {
                         color: 'text.secondary',
                         textAlign: 'center',
                         mb: 1,
-                        fontFamily: getFontFamily('mono'), // Add this line
                     }}
                 >
                     Solicite una demo para digitalizar su emprendimiento y comenzar a optimizar sus procesos textiles. 
@@ -182,7 +175,6 @@ const Login = () => {
                         position: 'relative',
                         overflow: 'hidden',
                         boxShadow: '0 3px 5px 2px rgba(141, 8, 1, 0.3)',
-                        fontFamily: getFontFamily('kanit'),
                         background: 'linear-gradient(45deg, #56002D 20%, #bf0603 95%)',
                         '&::before': {
                             content: '""',
@@ -207,7 +199,6 @@ const Login = () => {
                 sx={{padding:'20px'}}
             >
             <DialogTitle
-                sx={{fontFamily: getFontFamily('mono'),padding:'30px'}}
             >
                 Ingresá tus datos y te contactaremos para darte acceso a la aplicaión.
             </DialogTitle>
@@ -238,7 +229,6 @@ const Login = () => {
             />
             </DialogContent>
             <DialogActions
-                sx={{fontFamily: getFontFamily('mono'),padding:'20px'}}
             >
             <Button 
                 onClick={handleCloseModal}

@@ -5,13 +5,13 @@ import {TizadaResult} from '../utils/types'
 import {formatDate, getStatusDisplay} from '../utils/helpers';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
-import { getFontFamily } from '../utils/fonts';
+import { MainTitle } from '../components/TitleTypographies';
 import EditableCell from "../components/EditableCell.tsx";
 import { useEditManager } from '../components/hooks/useEditManager';
 
 import {DataGrid, GridColDef} from '@mui/x-data-grid'; //GridRowParams ? Maybe needed to fetch and download a tizada by ID
 import {esES} from '@mui/x-data-grid/locales';
-import {Box, Typography, Button, Snackbar, Alert, IconButton, Tooltip} from '@mui/material';
+import {Box, Button, Snackbar, Alert, IconButton, Tooltip} from '@mui/material';
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -223,13 +223,11 @@ function MisTizadas() {
        return (
                 <PageLayout>
                 {/* Title and Button */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                    <Typography color="black" variant="h4" sx={{fontFamily: getFontFamily('bodoni')}}>
-                      Mis Tizadas
-                    </Typography>
-                    <Button variant="contained" color="primary" onClick={() => navigate('/tizadas/crear')}>
-                        Crear Nueva
-                    </Button>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <MainTitle>Mis Tizadas</MainTitle>
+                  <Button variant="contained" color="primary" onClick={() => navigate('/tizadas/crear')}>
+                      Crear Nueva
+                  </Button>
                 </Box>
                 
                 {/* Data Table */}

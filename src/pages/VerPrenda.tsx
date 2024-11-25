@@ -4,7 +4,7 @@ import { Typography, Card, CardContent, Button, Divider, Link, Box, Dialog, Dial
 import { getPrendaById } from "../api/methods.ts";
 import { Prenda, RolloDeTela } from "../utils/types.tsx";
 import PageLayout from "../components/layout/PageLayout";
-import {getFontFamily} from "../utils/fonts.tsx";
+import { MainTitle } from '../components/TitleTypographies';
 import SvgPreview from "../components/MoldePreview.tsx";
 
 const DetallePrenda: React.FC = () => {
@@ -66,9 +66,7 @@ const DetallePrenda: React.FC = () => {
                 }}
             >
                 {/* Título */}
-                <Typography variant="h4" gutterBottom sx={{fontFamily: getFontFamily('bodoni')}}>
-                    Detalle de la Prenda
-                </Typography>
+                <MainTitle>Detalle de la Prenda</MainTitle>
 
                 {/* Información General */}
                 <Card variant="outlined" sx={{ mb: 3, width: '100%' }}>
