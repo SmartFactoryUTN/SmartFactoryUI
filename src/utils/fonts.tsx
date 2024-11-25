@@ -33,12 +33,14 @@ export const FontFamilies = {
 // Core typography settings
 export const typography = {
   h1: {
+    fontFamily: 'Playfair Display',
     fontSize: '2rem',
     fontWeight: 800,
     color: 'inherit',
     marginBottom: '0.75 rem'
   },
   h2: {
+    fontFamily: 'Playfair Display',
     fontSize: '1.5rem',
     fontWeight: 400,
     color: 'inherit',
