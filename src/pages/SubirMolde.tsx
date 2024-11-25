@@ -6,6 +6,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PageLayout from '../components/layout/PageLayout';
 import {useUserContext} from "../components/Login/UserProvider.tsx";
+import { MainTitle, SubSectionTitle } from '../components/TitleTypographies';
 
 
 const SubirMolde: React.FC = () => {
@@ -64,36 +65,53 @@ const SubirMolde: React.FC = () => {
         <IconButton onClick={() => navigate('/moldes')} sx={{ mr: 2, mb: 2 }}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h4" gutterBottom>
+        <MainTitle>
           Subir Nuevo Molde
+        </MainTitle>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'left', alignItems: 'center', marginBottom: 2 }}>
+      
+        <Typography
+          color="textSecondary"
+        >
+          Seleccione un archivo e ingrese los datos para cargar un nuevo molde digital. 
         </Typography>
         </Box>
         
         <Box sx={{ mb: 3 }}>
+        <SubSectionTitle>
+            Artículo (identificador del molde)
+        </SubSectionTitle>
+
           <TextField
             fullWidth
-            label="Artículo"
+            label="Ingrese el artículo del molde"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            margin="normal"
+            sx={{mb:2}}
           />
+
+          <SubSectionTitle>
+            Descripción del molde
+          </SubSectionTitle>
           <TextField
             fullWidth
-            label="Descripción"
+            label="Ingrese la descripción del molde"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            margin="normal"
-            multiline
-            rows={3}
           />
         </Box>
+
+        <SubSectionTitle>
+            Archivo .SVG del molde digital
+        </SubSectionTitle>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '50vh',
+            height: '20vh',
             border: '2px dashed grey',
             borderRadius: 2,
             p: 2,
@@ -131,7 +149,7 @@ const SubirMolde: React.FC = () => {
               color="primary"
               onClick={handleUpload}
             >
-              Subir Molde
+              Guardar Molde
             </Button>
           </Box>
         )}
