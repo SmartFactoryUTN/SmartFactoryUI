@@ -21,6 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {useNavigate} from "react-router-dom";
 import {useUserContext} from "../components/Login/UserProvider.tsx";
+import { MainTitle, SubSectionTitle } from '../components/TitleTypographies';
 
 interface PrendaFormData {
     article: string;
@@ -290,14 +291,14 @@ function CrearPrenda() {
     return (
         <PageLayout>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                <Typography color="black" variant="h4">Agregar una nueva prenda</Typography>
+                <MainTitle>Agregar una nueva prenda</MainTitle>
             </Box>
             <form>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}> 
+                        <SubSectionTitle> 
                             Artículo de la prenda
-                        </Typography>
+                        </SubSectionTitle>
                         <TextField
                             fullWidth
                             label="Ingrese el artículo de la prenda"
@@ -320,9 +321,9 @@ function CrearPrenda() {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}> 
+                    <SubSectionTitle>
                             Descripción de la prenda
-                        </Typography>
+                    </SubSectionTitle>
                         <TextField
                             fullWidth
                             label="Ingrese una descripción o detalle de la prenda"
@@ -344,9 +345,9 @@ function CrearPrenda() {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography sx={{ flexGrow: 1, textAlign: 'left', mb:2, fontWeight: 'bold' }}>
+                        <SubSectionTitle>
                             Material
-                        </Typography>
+                        </SubSectionTitle>
                         <FormControl fullWidth error={rollError}>
                             <InputLabel error={rollError}>Seleccionar un rollo de tela</InputLabel>
                             <Select
@@ -406,9 +407,9 @@ function CrearPrenda() {
                         
                     </Grid>
                     <Grid item xs={12}>
-                    <Typography sx={{ flexGrow: 1, textAlign: 'left', mb: 2, fontWeight: 'bold' }}>
+                    <SubSectionTitle>
                     Moldes de la prenda
-                    </Typography>
+                    </SubSectionTitle>
                     <Typography variant="body2" color="text.secondary" gutterBottom sx={{mb:2, textAlign: 'left'}}>
                     Seleccione los moldes que componen este artículo e indique la cantidad necesaria de cada uno
                     </Typography>

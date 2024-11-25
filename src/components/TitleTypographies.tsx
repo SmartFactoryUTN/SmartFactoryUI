@@ -26,6 +26,21 @@ export const MainTitle: React.FC<{ children: React.ReactNode }> = ({ children })
       {children}
     </Typography>
   );
+
+  // Componente para sub-subtítulos de sección
+  export  const SubSectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <Typography 
+      variant="h5" 
+      sx={{ 
+        ...typography.h3,  // Usa la configuración definida para h2
+        mb: 2,
+        textAlign: 'left',
+        display: 'block' // Ensure block-level display
+      }}
+    >
+      {children}
+    </Typography>
+  );
   
   // Componente para descripciones de sección
   export  const SectionDescription: React.FC<{ children: React.ReactNode }> = ({ children }) => (
