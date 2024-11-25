@@ -47,7 +47,7 @@ export const typography = {
     marginBottom: '0.75rem'
   },
   h3: {
-    fontFamily: 'Kanit', // Sans-serif for interactive headers (tabs, expandable sections)
+    fontFamily: 'Lato', // Sans-serif for interactive headers (tabs, expandable sections)
     fontSize: '1.25rem',
     fontWeight: 500,
     color: 'inherit',
@@ -55,25 +55,25 @@ export const typography = {
   },
   // Body text variants
   body1: {
-    fontFamily: 'Kalnia', // Primary reading text
+    fontFamily: 'Lato', // Primary reading text
     fontSize: '1rem',
     fontWeight: 400,
     lineHeight: 1.5
   },
   body2: {
-    fontFamily: 'Kanit', // Secondary text and UI elements
-    fontSize: '0.875rem',
+    fontFamily: 'Arial', // Secondary text and UI elements
+    fontSize: '1rem',
     fontWeight: 400,
     lineHeight: 1.43
   },
   // Special use cases
   code: {
-    fontFamily: 'Reddit Mono', // For technical/numerical values
+    fontFamily: 'arial', // For technical/numerical values
     fontSize: '0.875rem',
     fontWeight: 400
   },
   future: {
-    fontFamily: 'Tomorrow', // For calculated/projected values
+    fontFamily: 'Lato', // For calculated/projected values
     fontSize: '0.875rem',
     fontWeight: 700
   }
