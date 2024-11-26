@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 //import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { SubSectionTitle } from '../components/TitleTypographies';
 
 export interface OptimizationSliderProps {
   value: number;
@@ -51,21 +52,14 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
 
         <Box sx={{ mb: 0 }}>
             {/* Main title */}
-            <Typography 
-                sx={{ 
-                    fontWeight: 'bold',
-                    flexGrow: 1, 
-                    textAlign: 'left',
-                    mb: 2  // Consistent with other section spacing
-                }}
-                >
+            <SubSectionTitle>
                 Tiempo de optimización
                 <Tooltip title="Cuánto tiempo dedicará el sistema a optimizar la disposición de los moldes">
                     <IconButton size="small" sx={{ ml: 1 }}>
                     <HelpOutlineIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
-            </Typography>
+            </SubSectionTitle>
 
         {/* New layout with number field + shorter slider */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

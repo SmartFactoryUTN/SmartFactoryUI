@@ -5,6 +5,7 @@ import {Molde} from '../utils/types';
 import PageLayout from '../components/layout/PageLayout';
 import OptimizationSlider from '../components/OptimizationSlider';
 
+import { MainTitle, SubSectionTitle } from '../components/TitleTypographies';
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 import {
@@ -384,14 +385,14 @@ function CrearTizada() {
         <PageLayout>
             {/* Title  */}
             <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2}}>
-                <Typography color="black" variant="h4">Crear una Tizada Nueva</Typography>
+                <MainTitle>Crear una Tizada Nueva</MainTitle>
             </Box>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <Typography sx={{flexGrow: 1, textAlign: 'left', mb: 2, fontWeight: 'bold'}}>
+                        <SubSectionTitle>
                             Nombre
-                        </Typography>
+                        </SubSectionTitle>
 
                         <TextField
                             fullWidth
@@ -406,9 +407,9 @@ function CrearTizada() {
                     </Grid>
                     {/* Dimensiones de la mesa de corte */}
                     <Grid item xs={12}>
-                        <Typography sx={{flexGrow: 1, textAlign: 'left', mb: 2, fontWeight: 'bold'}}>
+                        <SubSectionTitle>
                             Dimensiones de la mesa de corte
-                        </Typography>
+                        </SubSectionTitle>
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
                                 <TextField
@@ -520,9 +521,9 @@ function CrearTizada() {
                     </Grid>
                     <Grid item xs={12}>
                         <Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-                        <Typography sx={{flexGrow: 1, textAlign: 'left', fontWeight: 'bold'}}>
+                        <SubSectionTitle>
                             Moldes
-                        </Typography>
+                        </SubSectionTitle>
                         </Box>
                         {formData.molds.map((mold, index) => (
                         <Grid container spacing={2} key={index} sx={{ mb: 2 }} alignItems="center">
