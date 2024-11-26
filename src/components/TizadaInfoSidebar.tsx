@@ -25,6 +25,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import CircleIcon from '@mui/icons-material/Circle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TimerIcon from '@mui/icons-material/Timer';
+import { SectionTitle } from '../components/TitleTypographies';
 
 import {GridColDef} from '@mui/x-data-grid'; //GridRowParams ? Maybe needed to fetch and download a tizada by ID
 
@@ -231,9 +232,9 @@ export default function TizadaInfoSidebar({
             mb: 3,
           }}>
             <Box  sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
+              <SectionTitle>
                 {tizadaName}
-              </Typography>
+              </SectionTitle>
               <Chip
                 icon={<CircleIcon sx={{ fontSize: '12px !important' }} />}
                 label={statusConfig.label}
@@ -295,9 +296,9 @@ export default function TizadaInfoSidebar({
 
           {/* Molds Section */}
           <Box>
-            <Typography variant="h6" gutterBottom>
+            <SectionTitle>
               Moldes
-            </Typography>
+            </SectionTitle>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
               Total de moldes: {totalMolds}
             </Typography>
