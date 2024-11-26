@@ -1,5 +1,6 @@
-import {GridValueFormatter} from '@mui/x-data-grid';
+import { GridValueFormatter } from '@mui/x-data-grid';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 type TizadaStatus = 'CREATED' | 'IN_PROGRESS' | 'FINISHED' | 'ERROR';
  
@@ -13,22 +14,47 @@ type StatusConfig = {
 export const getStatusDisplay = (status: TizadaStatus) => {
   const statusConfig: StatusConfig = {
     CREATED: { label: 'Por tizar', color: '#ed6c02' },
-    IN_PROGRESS: { label: 'Optimizando', color: '#ff9800' },
+    IN_PROGRESS: { label: 'Optimizando', color: '#4555EE'},
     FINISHED: { label: 'Terminada', color: '#2e7d32' },
     ERROR: { label: 'Error', color: '#d32f2f' }
   };
   
+
   return (
-    <Typography
-      component="span"
-      sx={{
-      fontSize: 'inherit',
-      lineHeight: 'inherit'
-      //color: statusConfig[status].color,
-      }}
-    >
-    {statusConfig[status].label}
-    </Typography>
+    <Box sx={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      gap: 1,
+      // Ensure the container has a stable size and position
+      minHeight: '24px',
+      position: 'relative'
+    }}>
+      <Box
+        sx={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          backgroundColor: statusConfig[status].color,
+          display: 'inline-block',
+          // Add these properties to ensure the dot stays visible
+          position: 'relative',
+          zIndex: 1,
+          flexShrink: 0
+        }}
+      />
+      <Typography
+        component="span"
+        sx={{
+          fontSize: 'inherit',
+          lineHeight: 'inherit',
+          // Ensure text stays in place during updates
+          position: 'relative',
+          zIndex: 1
+        }}
+      >
+        {statusConfig[status].label}
+      </Typography>
+    </Box>
   );
 };
 

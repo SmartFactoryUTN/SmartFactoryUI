@@ -87,7 +87,7 @@ function MisTizadas() {
         { 
           field: 'state', 
           headerName: 'Estado', 
-          width: 120,
+          width: 135,
           renderCell: (params) => getStatusDisplay(params.value)
         },
         { 
