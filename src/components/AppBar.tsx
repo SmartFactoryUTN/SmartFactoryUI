@@ -93,7 +93,7 @@ const Navigation: React.FC<INavigation> = (props) => {
                         filter: 'brightness(0)', // This will make the logo black
                     }}
                 />
-                <Typography color="black">
+                <Typography color="black" sx={{    fontFamily: 'Playfair Display'}}>
                     SMART FACTORY                
                 </Typography>
                     

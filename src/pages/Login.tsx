@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import PageLayout from '../components/layout/PageLayout';
 import { useUserContext } from "../components/Login/UserProvider";
+import { MainTitle, SectionTitle } from '../components/TitleTypographies';
 
 const Login = () => {
     const { userData } = useUserContext();
@@ -76,8 +77,9 @@ const Login = () => {
                     textAlign: 'left',
                     mb: 0
                 }}
-            >
+            ><SectionTitle>
                 Bienvenido,
+            </SectionTitle>
             </Typography>
             <Typography 
                 variant="h1"
@@ -85,16 +87,15 @@ const Login = () => {
                     fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
                     background: 'linear-gradient(45deg, #708d81 30%, #708d81 90%)',
                     WebkitBackgroundClip: 'text',
-                    WebkitTextStroke: '2px #001427',
-                    textStroke: '2px #001427',
                     letterSpacing: '0.01em',
-                    textTransform: 'uppercase',
                     textAlign: 'center',
                     lineHeight: 0.7,
                     mb: 0,
                 }}
             >
-                {userData?.name}
+                <MainTitle>
+                    {userData?.name}
+                </MainTitle>
             </Typography>
             <Typography 
                 variant="h5"
@@ -104,8 +105,9 @@ const Login = () => {
                     textAlign: 'center',
                     mb: 1,
                 }}
-            >
+            ><SectionTitle>
                 Ya puede comenzar a optimizar sus procesos textiles
+            </SectionTitle>
             </Typography>
         </Box>
     );
