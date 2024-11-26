@@ -31,7 +31,7 @@ export const themeOptions: ThemeOptions = {
       contrastText: '#fff',
     },
     success: {
-      main: '#18bb24',
+      main: '#2e7d32',
       light: '#46c850',
       dark: '#118219',
       contrastText: '#fff',
