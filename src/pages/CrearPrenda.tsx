@@ -551,8 +551,12 @@ function CrearPrenda() {
                 <Snackbar
                     open={!!successMessage}
                     autoHideDuration={3000}
-                    message={successMessage}
-                />                
+                    onClose={() => setSuccessMessage("")}
+                >
+                    <Alert onClose={() => setSuccessMessage("")} severity="success">
+                        {successMessage}
+                    </Alert>
+                </Snackbar>              
             </form>
         </PageLayout>
     );
