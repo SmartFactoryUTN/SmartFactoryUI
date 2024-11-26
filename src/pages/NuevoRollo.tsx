@@ -19,6 +19,7 @@ import { FabricColor } from "../utils/types.tsx";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddIcon from "@mui/icons-material/Add";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { MainTitle, SubSectionTitle } from '../components/TitleTypographies';
 
 interface NuevoRolloModalProps {
     open: boolean;
@@ -162,27 +163,37 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth={false} fullWidth sx={{ width: '600px', maxWidth: '90%', margin: 'auto' }}>
-            <DialogTitle>Nuevo Rollo</DialogTitle>
+            <DialogTitle><MainTitle>Nuevo Rollo de Tela</MainTitle>
+            </DialogTitle>
             <DialogContent>
-                <FormControl fullWidth margin="dense">
+                <FormControl fullWidth>
+                <SubSectionTitle>
+                        Artículo del rollo de tela
+                </SubSectionTitle>
                     <TextField
                         autoFocus
-                        margin="dense"
                         label="Artículo de rollo"
                         fullWidth
                         variant="outlined"
                         value={rolloName}
+                        sx={{mb:2}}
                         onChange={(e) => setRolloName(e.target.value)}
                     />
+                    <SubSectionTitle>
+                        Descripción del rollo de tela
+                    </SubSectionTitle>
                     <TextField
-                        margin="dense"
                         label="Descripción"
                         fullWidth
                         multiline
                         variant="outlined"
                         value={rolloDescription}
+                        sx={{mb:2}}
                         onChange={(e) => setRolloDescription(e.target.value)}
                     />
+                    <SubSectionTitle>
+                        Color del material
+                    </SubSectionTitle>
                     <Autocomplete
                         options={colors}
                         filterOptions={createFilterOptions({ limit: 5 })}
@@ -207,7 +218,6 @@ const NuevoRolloModal = ({ open, onClose, onSave }: NuevoRolloModalProps) => {
                                 {...params}
                                 label="Seleccione o agregue color"
                                 variant="outlined"
-                                sx={{ mt: 2 }}
                                 InputProps={{
                                     ...params.InputProps,
                                     endAdornment: (
