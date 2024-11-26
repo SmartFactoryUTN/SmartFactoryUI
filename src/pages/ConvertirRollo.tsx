@@ -31,6 +31,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { RolloDeTela, TizadaResult } from '../utils/types';
 import { convertRollos, getTizadas, getTizadaById } from '../api/methods';
 import { useUserContext } from '../components/Login/UserProvider';
+import { MainTitle, SectionTitle, SubSectionTitle } from '../components/TitleTypographies';
 
 interface ValidationErrors {
   tizada?: string;
@@ -377,11 +378,11 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Convertir rollos seleccionados a moldes cortados</DialogTitle>
+      <DialogTitle><MainTitle>Convertir rollo de tela</MainTitle></DialogTitle>
       <DialogContent>
-        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+        <SectionTitle>
           Tizada a utilizar como patrón de corte:
-        </Typography>
+        </SectionTitle>
         
         <FormControl 
           fullWidth 
@@ -407,14 +408,12 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
             <FormHelperText>{validationErrors.tizada}</FormHelperText>
           )}
         </FormControl>
-
-        <Typography 
-          variant="subtitle1" 
-          sx={{ mt: 3, mb: 2 }}
-        >
+        
+        <Box sx={{margin:1}}>
+        <SectionTitle>
           {rollsData.length > 1 ? 'Materiales seleccionados:' : 'Material seleccionado:'}
-        </Typography>
-
+        </SectionTitle>
+        </Box>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -443,8 +442,8 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
                       )}
                     </TableCell>
                     <TableCell>
-                      <Typography variant="subtitle2">{roll.name}</Typography>
-                      <Typography variant="body2" color="textSecondary">
+                      <SubSectionTitle>{roll.name}</SubSectionTitle>
+                      <Typography variant="body2" color="textSecondary" margin='0'>
                         {roll.description}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
@@ -542,9 +541,9 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                       <Collapse in={roll.isExpanded} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
-                          <Typography variant="h6" gutterBottom component="div">
+                          <SubSectionTitle>
                             Moldes cortados a obtener
-                          </Typography>
+                          </SubSectionTitle>
                           <Table size="small">
                             <TableHead>
                               <TableRow>
