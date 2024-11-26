@@ -5,7 +5,7 @@ import {Molde} from '../utils/types'
 import {formatDate} from '../utils/helpers'
 import {useUserContext} from "../components/Login/UserProvider.tsx";
 import EditableCell from "../components/EditableCell.tsx";
-import { MainTitle } from '../components/TitleTypographies';
+import { MainTitle, SectionTitle } from '../components/TitleTypographies';
 import { useEditManager } from '../components/hooks/useEditManager';
 import CustomToolbar from "../components/CustomToolbar";
 import PageLayout from '../components/layout/PageLayout';
@@ -245,7 +245,7 @@ function MisMoldes() {
                   fullWidth
                 >
                   
-                  <DialogTitle>Vista Previa del Molde {selectedMoldeName}, {selectedMoldeDescription}</DialogTitle>
+                  <DialogTitle><SectionTitle>Vista Previa del Molde {selectedMoldeName}, {selectedMoldeDescription}</SectionTitle></DialogTitle>
                     <DialogContent>
                         { selectedMoldeUrl ? (
                             <SvgPreview url={selectedMoldeUrl!} />
