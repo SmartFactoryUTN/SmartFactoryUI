@@ -360,7 +360,7 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
 
         const response = await convertRollos(convertData);
         if (response.status !== 'success') {
-          throw new Error(`Error converting roll ${roll.name}`);
+          throw new Error(`Error al cortar el rollo ${roll.name}`);
         }
       }
 
@@ -370,7 +370,7 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
         onClose();
       }, 1500);
     } catch (error) {
-      setError("Error al convertir uno o más rollos");
+      setError("Error al cortar uno o más rollos");
     } finally {
       setIsConverting(false);
     }
@@ -378,7 +378,7 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle><MainTitle>Convertir rollo de tela</MainTitle></DialogTitle>
+      <DialogTitle><MainTitle>Cortar rollo de tela</MainTitle></DialogTitle>
       <DialogContent>
         <SectionTitle>
           Tizada a utilizar como patrón de corte:
@@ -605,7 +605,7 @@ const ConvertirRolloModal: React.FC<ConvertirRolloModalProps> = ({
             }
           }}
         >
-          {isConverting ? 'Convirtiendo...' : 'Convertir'}
+          {isConverting ? 'Cortando...' : 'Cortar'}
         </Button>
       </DialogActions>
 

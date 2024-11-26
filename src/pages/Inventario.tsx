@@ -486,7 +486,7 @@ function Inventario() {
                             sx={{marginRight: 2, mb: 2}}
                             disabled={selectedRollos.length === 0 || selectedRollos.some(rollo => rollo.stock === 0)}
                         >
-                            Convertir
+                            Cortar telas
                         </Button>
                     </span>
                     </Tooltip>
