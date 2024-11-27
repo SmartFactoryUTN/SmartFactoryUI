@@ -587,6 +587,7 @@ function Inventario() {
                             display: 'block',
                         },
                     }}
+                    checkboxSelection={true}
                     pageSizeOptions={[5]}
                     localeText={{...esES.components.MuiDataGrid.defaultProps.localeText, noRowsLabel: ""}}
                     disableRowSelectionOnClick
