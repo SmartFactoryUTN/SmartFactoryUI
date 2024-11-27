@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import TablaDecoComparativa from '../components/TablaDecoComparativa';
 import PageLayout from '../components/layout/PageLayout';
+import { MainTitle, SectionTitle } from '../components/TitleTypographies';
 
 import instaladorImage from '../assets/instalador.png';
 import configImage from '../assets/configuracion.png';
@@ -74,7 +75,7 @@ const Tutorial: React.FC = () => {
         <IconButton onClick={() => navigate('/moldes')} sx={{ mr: 2, mb: 2 }}>
           <ArrowBackIcon />
         </IconButton> 
-        <Typography color="black" variant="h4">¿Cómo digitalizar mis moldes?</Typography>
+        <MainTitle>¿Cómo digitalizar mis moldes?</MainTitle>
       </Box>
       <Typography paragraph sx={{ textAlign: 'justify' }}>
         El primer paso para digitalizar procesos textiles es contar con moldes digitalizados. Siguiendo este tutorial paso a paso, se pueden obtener moldes digitales en cuestión de minutos. Es nececsario descargar e instalar de forma gratuita el software Inkscape.
@@ -82,7 +83,9 @@ const Tutorial: React.FC = () => {
 
       {/*QUE ES UNA IMÁGEN VECTORIAL */}
       <Typography variant="h6" component="h1" gutterBottom sx={{ mt: 4, textAlign: 'left' }}>
-        ¿Qué es un molde digital?
+        <SectionTitle>
+          ¿Qué es un molde digital?
+        </SectionTitle>
       </Typography>
       <Typography paragraph sx={{ textAlign: 'justify' }}>
         Un molde digital consiste en una imagen digital (archivo en formato .svg o imágen vectorial digital) formada por líneaas que marcan el contorno de un molde.
@@ -90,7 +93,9 @@ const Tutorial: React.FC = () => {
 
       {/*POR QUE INKSCAPE */}
       <Typography variant="h6" component="h1" gutterBottom sx={{ mt: 4, textAlign: 'left' }}>
+      <SectionTitle>
         ¿Por qué digitalizar mis moldes con Inkscape?
+      </SectionTitle>
       </Typography>
       <Typography paragraph sx={{ textAlign: 'justify' }}>
       Existen múltiples alternativas para digitalizar moldes de textiles. A continuación mostramos una tabla comparativa de algunas alternativas para diseñar prendas y obtener moldes en formato digital.
@@ -110,7 +115,9 @@ const Tutorial: React.FC = () => {
 
       {/* Instalación */}
       <Typography variant="h6" component="h1" gutterBottom sx={{ mt: 4, textAlign: 'left' }}>
+      <SectionTitle>
         ¿Cómo descargar inkscape?
+      </SectionTitle>
       </Typography>
       <Typography paragraph sx={{ textAlign: 'justify' }}>
         Para instalar inkscape, hay que dirigirse a la {' '}
@@ -134,7 +141,9 @@ const Tutorial: React.FC = () => {
 
       {/* CONFIGURACION */}
       <Typography variant="h6" component="h1" gutterBottom sx={{ mt: 4, textAlign: 'left' }}>
+      <SectionTitle>
         ¿Cómo comenzar a digitalizar moldes?
+      </SectionTitle>
       </Typography>
       <Typography paragraph sx={{ textAlign: 'justify' }}>
         Antes de comenzar, es necesario ajustar el tamaño de la hoja de trabajo para asegurarse de que la escala es correcta. Se puede elegir la unidad de trabajo deseada: milímetros, centímetros o pulgadas.  
@@ -220,7 +229,9 @@ const Tutorial: React.FC = () => {
 
       {/* DIBUJAR */}
       <Typography variant="h6" component="h1" gutterBottom sx={{ mt: 4, textAlign: 'left' }}>
+      <SectionTitle>
         ¿Cómo terminar de crear el molde digital?
+      </SectionTitle>
       </Typography>
       <Typography paragraph sx={{ textAlign: 'justify' }}>
         Para crear la imágen de guía se puede crear una línea horizontal en cualquier parte de la hoja, seleccionar el primer nodo para obtener su coordanada X, y seleccionar el segundo nodo para editar su coordenada X.
@@ -305,7 +316,9 @@ const Tutorial: React.FC = () => {
 
       {/* Guardar */}
       <Typography variant="h6" component="h1" gutterBottom sx={{ mt: 4, textAlign: 'left' }}>
+      <SectionTitle>
           ¿Cómo guardar mi molde?
+      </SectionTitle>
       </Typography>
           
       <Typography paragraph sx={{ textAlign: 'justify' }}>
