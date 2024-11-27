@@ -627,7 +627,7 @@ function CrearTizada() {
                             <Button type="submit" variant="contained" color="primary" sx={{mr: 2}}>
                                 Guardar
                             </Button>
-                            <Button variant="contained" disabled={userData?.credits === undefined || userData.credits <= 0} color="primary" onClick={handleSaveAndCptimize}>
+                            <Button variant="contained" disabled={userData?.credits === undefined || userData.credits - optimizationTime <= 0} color="primary" onClick={handleSaveAndCptimize}>
                                 Guardar y tizar
                             </Button>
                         </Box>

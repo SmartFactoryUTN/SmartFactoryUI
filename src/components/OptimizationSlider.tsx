@@ -98,7 +98,6 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
               },
               width: '50%'
             }}
-            disabled={isInsufficientCredits}
           />
           <TextField
             value={value}
