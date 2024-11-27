@@ -8,7 +8,8 @@ import { useUserContext } from "../components/Login/UserProvider";
 import WorkflowSection from "./WorkflowSection"
 import HeroSection from "./HeroSection"
 import StorylaneDemoSection from "./StorylaneDemoSection"
-
+import NewUser from "./NewUser"
+import { useAuth0 } from "@auth0/auth0-react"; 
 
 interface DotNavigationProps {
   currentSection: number;
@@ -53,6 +54,7 @@ const Login: React.FC = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [sectionVisibility, setSectionVisibility] = useState([true, false, false]);
+  const { isAuthenticated } = useAuth0(); 
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
@@ -132,7 +134,6 @@ const Login: React.FC = () => {
     );
   }
 
-  // ... rest of the component remains the same, just update refs like this:
   return (
     <>
       <DotNavigation 
@@ -141,13 +142,15 @@ const Login: React.FC = () => {
         onDotClick={scrollToSection}
       />
       
-    <Box
+      <Box
         ref={(el: HTMLDivElement | null) => sectionsRef.current[0] = el}
         sx={{ ...sectionStyles, px: 3 }}
-    >
-    <HeroSection 
-        userData={userData}
-    />
+        >
+        {isAuthenticated ? (
+            <HeroSection userData={userData} />
+        ) : (
+            <NewUser />
+        )}
     </Box>
 
     <Box
