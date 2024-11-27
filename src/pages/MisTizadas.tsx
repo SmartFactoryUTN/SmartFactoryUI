@@ -62,6 +62,15 @@ function MisTizadas() {
           console.error("Error fetching tizadas:", error);
         }
       };    
+
+      // Inside MisTizadas component, add this function:
+      const hasEnoughCredits = (tizadaId: string) => {
+        const tizada = tizadas.find(t => t.uuid === tizadaId);
+        if (!tizada?.configuration?.time) return false;
+        
+        const requiredCredits = Math.ceil(tizada.configuration.time / (60 * 1000));
+        return (userData?.credits ?? 0) >= requiredCredits;
+      };
     
       const columns: GridColDef[] = [
         { 
@@ -143,21 +152,27 @@ function MisTizadas() {
                       <SyncIcon />
                     </IconButton>
                   ) : (
-                    <Tooltip title="Comenzar optimización de la tizada">
-                    <IconButton
-                      onClick={() => startTizadaProgress(params.row.uuid)}
-                      size="small"
-                      disabled={loadingTizadaId !== null}
-                      sx={{ 
-                        color: 'success.main',
-                        '&:hover': {
-                          backgroundColor: 'success.light',
-                          color: 'success.dark',
-                        }
-                      }}
-                    >
-                      <PlayArrowIcon />
-                    </IconButton>
+                    <Tooltip title={
+                      !hasEnoughCredits(params.row.uuid) 
+                        ? "Créditos insuficientes para ejecutar esta tizada" 
+                        : "Comenzar optimización de la tizada"
+                    }>
+                      <span> {/* Wrapper span to make tooltip work with disabled button */}
+                        <IconButton
+                          onClick={() => startTizadaProgress(params.row.uuid)}
+                          size="small"
+                          disabled={loadingTizadaId !== null || !hasEnoughCredits(params.row.uuid)}
+                          sx={{ 
+                            color: 'success.main',
+                            '&:hover': {
+                              backgroundColor: 'success.light',
+                              color: 'success.dark',
+                            }
+                          }}
+                        >
+                          <PlayArrowIcon />
+                        </IconButton>
+                      </span>
                     </Tooltip>
                   )
                 )}
