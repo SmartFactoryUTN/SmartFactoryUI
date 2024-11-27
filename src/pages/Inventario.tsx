@@ -24,6 +24,7 @@ import EditableCell from "../components/EditableCell.tsx";
 import {useEditManager} from "../components/hooks/useEditManager.tsx";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MainTitle, SectionTitle } from '../components/TitleTypographies';
+import { GridToolbarProps} from '@mui/x-data-grid';
 
 {/* UI Components */
 }
@@ -469,27 +470,6 @@ function Inventario() {
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
             <SectionTitle>Rollos de Tela</SectionTitle>
             <Box sx={{display: "flex", alignItems: "center"}}>
-                    <Tooltip 
-                        title={
-                            selectedRollos.length === 0 
-                                ? "Seleccione al menos un rollo" 
-                                : selectedRollos.some(rollo => rollo.stock === 0)
-                                    ? "Uno o más rollos seleccionados no tienen stock"
-                                    : ""
-                        }
-                    >
-                    <span>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={handleOpenConvertirModal}
-                            sx={{marginRight: 2, mb: 2}}
-                            disabled={selectedRollos.length === 0 || selectedRollos.some(rollo => rollo.stock === 0)}
-                        >
-                            Cortar telas
-                        </Button>
-                    </span>
-                    </Tooltip>
                     <Button variant="contained" color="primary" onClick={handleOpenModal}
                             sx={{mb: 2, minWidth: "20px", minHeight: "20px"}}>
                         {/*<Typography variant="h5">+</Typography>*/}
@@ -540,13 +520,14 @@ function Inventario() {
                         setSelectedRollos(selectedRollosData);
                     }}
                     slots={{
-                        toolbar: CustomToolbar,
+                        toolbar: CustomToolbar as React.ComponentType<GridToolbarProps>,
                     }}
                     slotProps={{
                         toolbar: {
-                            actions: ['delete'],
+                            actions: ['cut', 'delete'],
                             tooltipText: "Seleccione uno o varios rollos",
                             onDelete: handleDeleteRolls,
+                            onCut: handleOpenConvertirModal,
                         },
                     }}
                 />
@@ -592,7 +573,7 @@ function Inventario() {
                     localeText={{...esES.components.MuiDataGrid.defaultProps.localeText, noRowsLabel: ""}}
                     disableRowSelectionOnClick
                     slots={{
-                        toolbar: CustomToolbar,
+                        toolbar: CustomToolbar as React.ComponentType<GridToolbarProps>,
                     }}
                     slotProps={{
                         toolbar: {
@@ -611,15 +592,6 @@ function Inventario() {
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
             <SectionTitle>Prendas</SectionTitle>
             <Box sx={{display: "flex", alignItems: "center"}}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={handleOpenConvertirPrendaModal}
-                        sx={{marginRight: 2, mb: 2}}
-                        disabled={selectedPrendas.length === 0}
-                    >
-                        Coser Prenda
-                    </Button>
                     <Button variant="contained" color="primary" onClick={() => navigate(`/inventario/prenda/crear`)}
                             sx={{mb: 2, minWidth: "20px", minHeight: "20px"}}>
                         Crear prenda
@@ -672,13 +644,14 @@ function Inventario() {
                         setSelectedPrendas(selectedPrendasData);
                     }}
                     slots={{
-                        toolbar: CustomToolbar,
+                        toolbar: CustomToolbar as React.ComponentType<GridToolbarProps>,
                     }}
                     slotProps={{
                         toolbar: {
-                            actions: ['delete'],
+                            actions: ['sew', 'delete'],
                             tooltipText: "Seleccione una o varias prendas",
                             onDelete: handleDeleteGarments,
+                            onSew: handleOpenConvertirPrendaModal,
                         },
                     }}
                 />

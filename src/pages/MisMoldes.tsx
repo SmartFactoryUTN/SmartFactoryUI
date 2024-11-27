@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SvgPreview from "../components/MoldePreview.tsx";
+import { GridToolbarProps} from '@mui/x-data-grid';
 
 //, GridRowParams
 
@@ -211,7 +212,7 @@ function MisMoldes() {
                   disableRowSelectionOnClick
                   // onRowClick={handleRowClick}
                   slots={{
-                    toolbar: CustomToolbar,
+                    toolbar: CustomToolbar as React.ComponentType<GridToolbarProps>,
                   }}
                   slotProps={{
                     toolbar: {

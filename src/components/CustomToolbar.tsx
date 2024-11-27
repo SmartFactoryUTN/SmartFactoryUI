@@ -1,26 +1,32 @@
 import { GridToolbarContainer, GridToolbarProps, useGridApiContext } from '@mui/x-data-grid';
-import { Button, Tooltip, Box, } from '@mui/material';
+import { Button, Tooltip, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
+import GestureIcon from '@mui/icons-material/Gesture';
 
-export type ToolbarAction = 'delete' | 'download';
+export type ToolbarAction = 'delete' | 'download' | 'cut' | 'sew';
 
-interface CustomToolbarProps extends GridToolbarProps {
+interface CustomToolbarProps extends Omit<GridToolbarProps, 'onCut' | 'onSew'> {
   actions?: ToolbarAction[];
   tooltipText?: string;
   onDelete?: (selectedIds: string[]) => void;
   onDownload?: (selectedIds: string[]) => void;
+  onCut?: (selectedIds: string[]) => void;
+  onSew?: (selectedIds: string[]) => void;
 }
 
 function CustomToolbar(props: CustomToolbarProps) {
-  const { 
-    actions = [], 
+  const {
+    actions = [],
     tooltipText = "Seleccione uno o varios elementos",
-    onDelete, 
-    onDownload, 
-    ...other 
+    onDelete,
+    onDownload,
+    onCut,
+    onSew,
+    ...other
   } = props;
-  
+
   const apiRef = useGridApiContext();
   const hasSelections = apiRef.current.getSelectedRows().size > 0;
 
@@ -34,6 +40,12 @@ function CustomToolbar(props: CustomToolbarProps) {
         break;
       case 'download':
         onDownload?.(selectedIds);
+        break;
+      case 'cut':
+        onCut?.(selectedIds);
+        break;
+      case 'sew':
+        onSew?.(selectedIds);
         break;
     }
   };
@@ -58,10 +70,29 @@ function CustomToolbar(props: CustomToolbarProps) {
       >
         Descargar
       </Button>
+    ),
+    cut: (
+      <Button
+        key="cut"
+        startIcon={<ContentCutIcon />}
+        onClick={handleAction('cut')}
+        disabled={!hasSelections}
+      >
+        Cortar telas
+      </Button>
+    ),
+    sew: (
+      <Button
+        key="sew"
+        startIcon={<GestureIcon />}
+        onClick={handleAction('sew')}
+        disabled={!hasSelections}
+      >
+        Coser Prenda
+      </Button>
     )
   };
 
-  // Wrap the buttons in Tooltip only if nothing is selected
   const content = (
     <Box>
       {actions.map(action => actionButtons[action])}

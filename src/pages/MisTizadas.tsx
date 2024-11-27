@@ -16,6 +16,7 @@ import {useUserContext} from "../components/Login/UserProvider.tsx";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SyncIcon from '@mui/icons-material/Sync';
+import { GridToolbarProps} from '@mui/x-data-grid';
 
 function MisTizadas() {
     const navigate = useNavigate();
@@ -250,7 +251,7 @@ function MisTizadas() {
                     localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                     disableRowSelectionOnClick
                     slots={{
-                      toolbar: CustomToolbar,
+                      toolbar: CustomToolbar as React.ComponentType<GridToolbarProps>,
                     }}
                     slotProps={{
                       toolbar: {
