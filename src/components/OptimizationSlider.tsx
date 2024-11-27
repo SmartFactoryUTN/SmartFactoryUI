@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Slider,
@@ -13,19 +13,31 @@ import {
 import { SubSectionTitle } from '../components/TitleTypographies';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import BoltIcon from '@mui/icons-material/Bolt';
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 export interface OptimizationSliderProps {
   value: number;
   onChange: (value: number) => void;
-  availableCredits: number | undefined;
 }
 
 const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
   value,
   onChange,
-  availableCredits
 }) => {
-  // Hardcoded credits value
+
+  const [availableCredits, setAvailableCredits] = useState<number>(100); // Default to 100
+  const [loading, setLoading] = useState(true);
+  const {userData} = useUserContext();
+
+
+  useEffect(() => {
+    if (userData) {
+      if (userData.credits !== undefined) {
+        setAvailableCredits(userData.credits);
+      }
+      setLoading(false); 
+    }
+  }, [userData]);
   
   const getQualityLevel = (val: number) => {
     if (val >= 10) return 'Óptima';
@@ -41,8 +53,12 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
     return 'error';
   };
 
-  const remainingCredits = availableCredits? - value: 0;
+  const remainingCredits = availableCredits - value;
   const isInsufficientCredits = remainingCredits < 0;
+  
+  if (loading) {
+    return <Typography>Cargando créditos...</Typography>; 
+  }
 
   return (
     <Box sx={{ width: '100%' }}>

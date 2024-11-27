@@ -7,7 +7,7 @@ interface User {
     name: string;
     email: string;
     id: string | undefined;  
-    credits: number;
+    credits: number | 100;
     subscription: string | undefined;
 }
 
@@ -69,7 +69,7 @@ export const UserProvider =  ({ children }: { children: ReactNode }) => {
                         setUserData(data);
                     } catch (error) {
                         console.error("Error fetching stored user data:", error);
-                        localStorage.removeItem("access_token"); // Clean up if token fails
+                        localStorage.removeItem("access_token");
                     }
                 }
             }

@@ -70,10 +70,10 @@ function CrearTizada() {
         name: '',
         width: 100,
         height: 50,
-        utilizationPercentage: null,
+        utilizationPercentage: 90,
         maxTime: 12 * 60 * 1000, // 12 minutos en milisegundos
         molds: [{uuid: '', quantity: 1}],
-        maxIterations: 10,
+        maxIterations: 300,
     });
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
@@ -513,7 +513,6 @@ function CrearTizada() {
                                     maxTime: newValue * 60 * 1000 // Convertir a milisegundos
                                 }));
                             }}
-                            availableCredits={userData?.credits}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -628,7 +627,7 @@ function CrearTizada() {
                             <Button type="submit" variant="contained" color="primary" sx={{mr: 2}}>
                                 Guardar
                             </Button>
-                            <Button variant="contained" color="primary" onClick={handleSaveAndCptimize}>
+                            <Button variant="contained" disabled={userData?.credits === undefined || userData.credits <= 0} color="primary" onClick={handleSaveAndCptimize}>
                                 Guardar y tizar
                             </Button>
                         </Box>
