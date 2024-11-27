@@ -98,7 +98,7 @@ function App() {
                         {/* Redirect root to appropriate page based on auth status */}
                         <Route path="/" element={
                             isAuthenticated ? 
-                                <Navigate to="/tizadas" replace /> : 
+                                <Navigate to="/home" replace /> : 
                                 <Navigate to="/home" replace />
                         }/>
                     </Routes>
