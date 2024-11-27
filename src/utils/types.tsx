@@ -37,19 +37,27 @@ export interface TizadaBin {
     height: number;
 }
 
+interface TizadaConfiguration {
+    id: string;
+    time: number;  // in milliseconds
+    utilizationPercentage: number;
+}
+  
+  // Update TizadaResult to include configuration
 export interface TizadaResult {
-    uuid: string;
-    name: string;
-    parts: TizadaPart[];
-    bin: TizadaBin | null;
-    results: TizadaResultData[];
-    state: TizadaStatus;
-    active: boolean;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string | null;
-    invokedAt: string | null;
-    estimatedEndTime: string | null;
+      uuid: string;
+      name: string;
+      configuration: TizadaConfiguration;  // add this field
+      parts: TizadaPart[];
+      bin: TizadaBin | null;
+      results: TizadaResultData[];
+      state: TizadaStatus;
+      active: boolean;
+      createdAt: string;
+      updatedAt: string;
+      deletedAt: string | null;
+      invokedAt: string | null;
+      estimatedEndTime: string | null;
 }
 
 export interface TizadaResultData {

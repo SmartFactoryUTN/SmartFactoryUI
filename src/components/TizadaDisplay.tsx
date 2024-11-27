@@ -6,6 +6,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import MaterialUtilizationOverlay from '../components/MaterialUtilizationOverlay.tsx'
 import SVGViewer from './SVGViewer.tsx'
+import {useUserContext} from "../components/Login/UserProvider.tsx";
 
 interface TizadaDisplayProps {
   tizada: TizadaResult | null;
@@ -25,6 +26,13 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const { userData } = useUserContext();
+
+  
+  const hasCredits = tizada?.configuration?.time ? 
+    (userData?.credits ?? 0) >= Math.ceil(tizada.configuration.time / (60 * 1000)) : 
+  false;
+
 
   // Effect to handle container dimensions
   useEffect(() => {
@@ -159,6 +167,7 @@ const TizadaDisplay = ({ tizada, svgUrl, onStartProgress }: TizadaDisplayProps) 
               variant="contained" 
               color="primary" 
               size="large"
+              disabled={!hasCredits}
               onClick={onStartProgress}
             >
               TIZAR
