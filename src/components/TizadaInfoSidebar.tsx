@@ -110,6 +110,8 @@ export default function TizadaInfoSidebar({
   const totalMolds = tizadaInfoRows.find(row => row.property === 'Total de moldes')?.value || '0';
 
   const statusConfig = getStatusConfig(tizadaStatus);
+// In the TizadaInfoSidebar component, before rendering:
+const sortedMoldRows = [...moldRows].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <>
@@ -331,15 +333,15 @@ export default function TizadaInfoSidebar({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {moldRows.map((row) => (
-                    <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell component="th" scope="row">
-                        {row.name}
-                      </TableCell>
-                      <TableCell>{row.description}</TableCell>
-                      <TableCell align="right">{row.quantity}</TableCell>
-                    </TableRow>
-                  ))}
+                {sortedMoldRows.map((row) => (
+                  <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell component="th" scope="row">
+                      {row.name}
+                    </TableCell>
+                    <TableCell>{row.description}</TableCell>
+                    <TableCell align="right">{row.quantity}</TableCell>
+                  </TableRow>
+                ))}
                 </TableBody>
               </Table>
             </TableContainer>
