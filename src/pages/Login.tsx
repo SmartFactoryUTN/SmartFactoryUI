@@ -1,78 +1,20 @@
-import React, { useEffect, useRef, useState, ReactNode } from 'react';
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   Box, 
-  Button, 
-  Typography, 
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  IconButton,
-  Fade,
   SxProps
 } from '@mui/material';
 import { useUserContext } from "../components/Login/UserProvider";
 import WorkflowSection from "./WorkflowSection"
 import HeroSection from "./HeroSection"
 import StorylaneDemoSection from "./StorylaneDemoSection"
-// Icons
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ContentCutIcon from '@mui/icons-material/ContentCut';
-import GridOnIcon from '@mui/icons-material/GridOn';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import TuneIcon from '@mui/icons-material/Tune';
-import ScaleIcon from '@mui/icons-material/Scale';
 
-interface WorkflowStepProps {
-  icon: ReactNode;
-  title: string;
-  description: string;
-  isVisible: boolean;
-}
 
 interface DotNavigationProps {
   currentSection: number;
   totalSections: number;
   onDotClick: (index: number) => void;
 }
-
-const WorkflowStep: React.FC<WorkflowStepProps> = ({ icon, title, description, isVisible }) => (
-  <Fade in={isVisible} timeout={1000}>
-    <Box sx={{
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: 2,
-      mb: 4,
-      opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-      transition: 'opacity 0.5s, transform 0.5s'
-    }}>
-      <Box sx={{
-        p: 2,
-        borderRadius: '50%',
-        bgcolor: 'primary.main',
-        color: 'white',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        {icon}
-      </Box>
-      <Box>
-        <Typography variant="h6" gutterBottom>
-          {title}
-        </Typography>
-        <Typography color="text.secondary">
-          {description}
-        </Typography>
-      </Box>
-    </Box>
-  </Fade>
-);
 
 const DotNavigation: React.FC<DotNavigationProps> = ({ currentSection, totalSections, onDotClick }) => (
   <Box sx={{
