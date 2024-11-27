@@ -25,9 +25,6 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-
-const AVAILABLE_CREDITS = 20; // Hardcoded for testing
-
 // type TizadaType = 'RAPIDA' | 'EFICIENTE' | 'PERSONALIZADO';
 
 interface MoldSelection {
@@ -516,7 +513,7 @@ function CrearTizada() {
                                     maxTime: newValue * 60 * 1000 // Convertir a milisegundos
                                 }));
                             }}
-                            availableCredits={AVAILABLE_CREDITS}
+                            availableCredits={userData?.credits}
                         />
                     </Grid>
                     <Grid item xs={12}>

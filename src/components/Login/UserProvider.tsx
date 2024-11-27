@@ -6,7 +6,9 @@ import {BASE_API_URL} from "../../utils/constants.tsx";
 interface User {
     name: string;
     email: string;
-    id: string | undefined;  // Auth0 user ID or other identifier
+    id: string | undefined;  
+    credits: number;
+    subscription: string | undefined;
 }
 
 // Define the context type with userData and setUserData functions

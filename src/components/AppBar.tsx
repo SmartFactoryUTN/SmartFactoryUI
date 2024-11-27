@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import Logo from "../../public/azulito.svg"
-
-import {AppBar, Button, IconButton, Toolbar, Box, 
+import UserDrawer from './UserDrawer';
+import {
+    AppBar, 
+    Button, 
+    IconButton, 
+    Toolbar, 
+    Box, 
     Drawer,
-    //List,
-    //ListItem,
-    //ListItemIcon,
-    //ListItemText,
-    Divider, Typography, Tooltip} from '@mui/material';
+    Typography, 
+    Tooltip
+} from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import LogoutButton from "./Login/LogoutButton.tsx";
 import LoginButton from "./Login/LoginButton.tsx";
 import {useUserContext} from "../components/Login/UserProvider.tsx";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface INavigation {
     isAuthenticated: boolean
@@ -21,7 +24,7 @@ interface INavigation {
 const Navigation: React.FC<INavigation> = (props) => {
     const {isAuthenticated} = props;
     const { userData } = useUserContext();
-
+    const { logout } = useAuth0();
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -34,106 +37,95 @@ const Navigation: React.FC<INavigation> = (props) => {
         }
         setDrawerOpen(open);
     };
-    const drawerContent = (
-        <Box
-            sx={{ width: 250 }}
-            role="presentation"
-            onClick={toggleDrawer(false)}
-            onKeyDown={toggleDrawer(false)}
-        >
-            <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
-                <AccountCircle sx={{ mr: 1 }} />
-                <Typography variant="h6">{userData?.name}</Typography>
-            </Box>
-            <Divider />
-            {isAuthenticated && <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}><LogoutButton/></Box>}
-
-            {/*<List>
-            <ListItem>
-                    <Typography variant="h6">user@mail.com</Typography>
-                </ListItem>
-                <ListItem>
-                    <Typography variant="h6">user@mail.com</Typography>
-                </ListItem>
-                <Divider />
-                <ListItem>
-                    <ListItemIcon>
-                    </ListItemIcon>
-                </ListItem>
-            </List>*/}
-        </Box>
-    );
-
-
 
     return (
-    <AppBar position="fixed" color="default">
-        <Toolbar>
-            <Box
-                component={Link}
-                to={isAuthenticated ? "/home" : "/"}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    textDecoration: 'none',
-                    mr: 3,
-                    // Add hover effect
-                    '&:hover': {
-                        opacity: 0.8
-                    },
-                    transition: 'opacity 0.2s'
-                }}
-            >
-                <img 
-                    src={Logo} 
-                    alt="SmartFactory Logo"
-                    style={{
-                        height: '40px',
-                        width: 'auto',
-                        filter: 'brightness(0)', // This will make the logo black
+        <AppBar position="fixed" color="default">
+            <Toolbar>
+                <Box
+                    component={Link}
+                    to={isAuthenticated ? "/home" : "/"}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        textDecoration: 'none',
+                        mr: 3,
+                        '&:hover': {
+                            opacity: 0.8
+                        },
+                        transition: 'opacity 0.2s'
                     }}
-                />
-                <Typography color="black" sx={{    fontFamily: 'Playfair Display'}}>
-                    SMART FACTORY                
-                </Typography>
-                    
-            </Box>
-            
-            
-            <Box sx={{ flexGrow: 1 }} /> {/* This empty box pushes everything after it to the right */}
+                >
+                    <img 
+                        src={Logo} 
+                        alt="SmartFactory Logo"
+                        style={{
+                            height: '40px',
+                            width: 'auto',
+                            filter: 'brightness(0)',
+                        }}
+                    />
+                    <Typography color="black">
+                        SMART FACTORY                
+                    </Typography>
+                </Box>
+                
+                <Box sx={{ flexGrow: 1 }} />
 
-
-            {isAuthenticated && (
-                <div>
-                    <Button color="inherit" component={Link} to="/tizadas">Mis Tizadas</Button>
-                    <Button color="inherit" component={Link} to="/moldes">Mis Moldes</Button>
-                    <Button color="inherit" component={Link} to="/inventario">Inventario</Button>
-                </div>
-
-            )}
-
-            <Box sx={{ flexGrow: 1 }} />
-            {!isAuthenticated && <LoginButton/>}
-
-            {isAuthenticated && (
-                <Box>
-                    <Button 
-                    color="inherit"
-                    component={Link} to="/tutorial-digitalizacion">¿Cómo digitalizar moldes?
-                    </Button>
-                    <Tooltip title="Cuenta">
-                    <IconButton color="inherit" onClick={toggleDrawer(true)}>
-                        <AccountCircle/>
-
-                    </IconButton>   
-                    </Tooltip>     
-                </Box>        
+                {isAuthenticated && (
+                    <div>
+                        <Button color="inherit" component={Link} to="/tizadas">Mis Tizadas</Button>
+                        <Button color="inherit" component={Link} to="/moldes">Mis Moldes</Button>
+                        <Button color="inherit" component={Link} to="/inventario">Inventario</Button>
+                    </div>
                 )}
-            <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-                {drawerContent}
-            </Drawer>
-        </Toolbar>
-    </AppBar>
+
+                <Box sx={{ flexGrow: 1 }} />
+                {!isAuthenticated && <LoginButton/>}
+
+                {isAuthenticated && (
+                    <Box>
+                        <Button 
+                            color="inherit"
+                            component={Link} 
+                            to="/tutorial-digitalizacion"
+                        >
+                            ¿Cómo digitalizar moldes?
+                        </Button>
+                        <Tooltip title="Cuenta">
+                            <IconButton 
+                                color="inherit" 
+                                onClick={toggleDrawer(true)}
+                                aria-label="cuenta de usuario"
+                            >
+                                <AccountCircle/>
+                            </IconButton>   
+                        </Tooltip>     
+                    </Box>        
+                )}
+                
+                <Drawer 
+                    anchor="right" 
+                    open={drawerOpen} 
+                    onClose={toggleDrawer(false)}
+                    PaperProps={{
+                        sx: {
+                            '&::-webkit-scrollbar': {
+                                display: 'none'
+                            },
+                            msOverflowStyle: 'none',
+                            scrollbarWidth: 'none',
+                        }
+                    }}
+                >
+                    <UserDrawer 
+                        userData={userData}
+                        isAuthenticated={isAuthenticated}
+                        onClose={toggleDrawer(false)}
+                        logout={logout}
+                    />
+                </Drawer>
+            </Toolbar>
+        </AppBar>
     );
 };
 

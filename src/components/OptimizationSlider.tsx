@@ -3,29 +3,30 @@ import {
   Box,
   Slider,
   Typography,
-  //Alert,
-  //Paper,
   TextField,
   InputAdornment,
   IconButton,
   Tooltip,
-  //LinearProgress
+  Alert,
+  Chip
 } from '@mui/material';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-//import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { SubSectionTitle } from '../components/TitleTypographies';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import BoltIcon from '@mui/icons-material/Bolt';
 
 export interface OptimizationSliderProps {
   value: number;
   onChange: (value: number) => void;
-  availableCredits?: number;
+  availableCredits: number | undefined;
 }
 
 const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
   value,
   onChange,
-  //availableCredits = 100
+  availableCredits
 }) => {
+  // Hardcoded credits value
+  
   const getQualityLevel = (val: number) => {
     if (val >= 10) return 'Óptima';
     if (val >= 6) return 'Alta';
@@ -34,118 +35,93 @@ const OptimizationSlider: React.FC<OptimizationSliderProps> = ({
   };
 
   const getQualityColor = (val: number) => {
-    if (val >= 10) return 'success.main';
-    if (val >= 6) return 'primary.main';
-    if (val >= 4) return 'warning.main';
-    return 'error.main';
+    if (val >= 10) return 'success';
+    if (val >= 6) return 'primary';
+    if (val >= 4) return 'warning';
+    return 'error';
   };
 
-{/*}  const getDescription = (val: number) => {
-    if (val >= 10) return "Máxima optimización del material. Ideal para grandes producciones.";
-    if (val >= 6) return "Buena optimización del material con uso moderado de créditos.";
-    if (val >= 4) return "Balance entre optimización y uso de créditos.";
-    return "Optimización básica con uso mínimo de créditos.";
-  };*/}
+  const remainingCredits = availableCredits? - value: 0;
+  const isInsufficientCredits = remainingCredits < 0;
 
   return (
     <Box sx={{ width: '100%' }}>
-
-        <Box sx={{ mb: 0 }}>
-            {/* Main title */}
-            <SubSectionTitle>
-                Tiempo de optimización
-                <Tooltip title="Cuánto tiempo dedicará el sistema a optimizar la disposición de los moldes">
-                    <IconButton size="small" sx={{ ml: 1 }}>
-                    <HelpOutlineIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+      <Box sx={{ mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            
+          <SubSectionTitle>
+            Tiempo de optimización
             </SubSectionTitle>
-
-        {/* New layout with number field + shorter slider */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-
-         </Box>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      
-      <Slider
-        value={value}
-        onChange={(_, newValue) => onChange(newValue as number)}
-        min={2}
-        max={12}
-        step={1}
-        marks={[
-          { value: 2, label: '2' },
-          { value: 12, label: '12' }
-        ]}
-        sx={{
-          '& .MuiSlider-markLabel': {
-            fontSize: '0.875rem',
-          },
-          width: '50%' // Make slider shorter
-        }}
-      />
-      <TextField
-        value={value}
-        disabled
-        size="small"
-        InputProps={{
-          endAdornment: <InputAdornment position="end">minutos</InputAdornment>,
-          readOnly: true,
-          sx: { width: '120px' } // Fixed width for the text field
-        }}
-      />
-    </Box>
-
-        {/* New subtitle with quality level */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="subtitle2" color="text.secondary">
-                Calidad de optimización:&nbsp;
-            </Typography>
-            <Typography 
-                variant="subtitle1" 
-                sx={{ 
-                color: getQualityColor(value),
-                //fontWeight: 'bold'
-                }}
-            >
-                {getQualityLevel(value)}
-            </Typography>
-        </Box>
-    {/** 
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 2, 
-            bgcolor: 'grey.50',
-            mt: 2,
-            border: 1,
-            borderColor: 'grey.200'
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              Créditos a utilizar
-            </Typography>
-            <Typography variant="body2" fontWeight="bold">
-              {value} de {availableCredits} disponibles
+            <Tooltip title="Cuánto tiempo dedicará el sistema a optimizar la disposición de los moldes. Se consume 1 crédito por minuto.">
+              <IconButton size="small" sx={{float:'left', ml: -50, mb:2 }}>
+                <HelpOutlineIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <BoltIcon sx={{ color: 'secondary.main' }} />
+            <Typography>
+              Créditos disponibles: {availableCredits}
             </Typography>
           </Box>
-          <LinearProgress 
-            variant="determinate" 
-            value={(value / availableCredits) * 100}
-            sx={{ mb: 1 }}
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Slider
+            value={value}
+            onChange={(_, newValue) => onChange(newValue as number)}
+            min={2}
+            max={12}
+            step={1}
+            marks={[
+              { value: 2, label: '2' },
+              { value: 12, label: '12' }
+            ]}
+            sx={{
+              '& .MuiSlider-markLabel': {
+                fontSize: '0.875rem',
+              },
+              width: '50%'
+            }}
+            disabled={isInsufficientCredits}
           />
-          <Typography variant="body2" color="text.secondary">
-            {getDescription(value)}
+          <TextField
+            value={value}
+            disabled
+            size="small"
+            InputProps={{
+              endAdornment: <InputAdornment position="end">minutos</InputAdornment>,
+              readOnly: true,
+              sx: { width: '120px' }
+            }}
+          />
+          <Chip
+            icon={<BoltIcon />}
+            label={`Costo: ${value} créditos`}
+            color={isInsufficientCredits ? 'error' : 'default'}
+            variant="outlined"
+          />
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary">
+            Calidad de optimización:&nbsp;
           </Typography>
-          <Alert 
-        severity="info" 
-        sx={{ mb: 3 }}
-        icon={<AccessTimeIcon />}
-      >
-        Use más créditos para obtener mejores resultados. A mayor tiempo de optimización, mejor aprovechamiento del material.
-      </Alert>
-        </Paper>*/}
+          <Chip
+            label={getQualityLevel(value)}
+            color={getQualityColor(value)}
+            size="small"
+          />
+        </Box>
+
+        {isInsufficientCredits ? (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            No tienes suficientes créditos para esta optimización. Necesitas {Math.abs(remainingCredits)} créditos adicionales.
+          </Alert>
+        ) : (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            Créditos restantes después de la optimización: {remainingCredits}
+          </Alert>
+        )}
       </Box>
     </Box>
   );
