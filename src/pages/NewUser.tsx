@@ -73,7 +73,7 @@ const NewUser = () => (
             }}>
                 <PhoneIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                 <Typography color="text.secondary">
-                    3416837015
+                    1234567890
                 </Typography>
             </Box>
             <Box sx={{ 
